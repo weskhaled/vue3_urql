@@ -6,6 +6,8 @@ import { createClient as createWSClient } from 'graphql-ws'
 import { type UserModule } from '~/types'
 import { refreshToken, token } from '~/common/stores'
 
+const API_WS_URL = import.meta.env.VITE_API_WS_URL
+
 const REFRESH = gql`mutation($token: JWT!) {
   refreshToken(token: $token){
     accessToken
@@ -15,7 +17,7 @@ const REFRESH = gql`mutation($token: JWT!) {
 
 const wsClient = createWSClient({
   webSocketImpl: WebSocket,
-  url: 'ws://localhost:8000/graphql',
+  url: API_WS_URL,
   connectionParams: () => {
     if (!token.value)
       return undefined

@@ -1,21 +1,17 @@
 <script setup lang="ts">
 import { gql, useQuery, useSubscription } from '@urql/vue'
-import { Message } from '~/composables/message'
 
 defineOptions({
   name: 'IndexPage',
 })
 
 const { t } = useI18n()
-const user = useUserStore()
+// const user = useUserStore()
+const { message } = useMessage()
 
-const name = $ref(user.savedName)
+// const name = $ref(user.savedName)
+// const router = useRouter()
 
-const router = useRouter()
-function go() {
-  if (name)
-    router.push(`/hi/${encodeURIComponent(name)}`)
-}
 const pageSize: any = ref(5)
 const variables = reactive(
   {
@@ -85,7 +81,7 @@ const columns = reactive([
 ])
 useSubscription({ query: subscriptionListenForNewPlaceGql }, (__messages = [], response) => {
   if (response) {
-    Message.info({
+    message.info({
       content: response.listenForNewPlace.address,
       duration: 5000,
     })

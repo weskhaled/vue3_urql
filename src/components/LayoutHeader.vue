@@ -1,17 +1,15 @@
 <script setup lang="ts">
 import { availableLocales } from '~/modules/i18n'
 import { currentUser, refreshToken, token, userLang } from '~/common/stores'
-import { Message } from '~/composables/message'
 
-const { t } = useI18n()
+// const { t } = useI18n()
 const router = useRouter()
-
-const formatted = useDateFormat(useNow(), 'YYYY')
+const { message } = useMessage()
 
 async function logout() {
   token.value = null
   refreshToken.value = null
-  Message.info({ content: 'Logout', showIcon: true })
+  message.info({ content: 'Logout', showIcon: true })
   await router.push('/login')
 }
 </script>

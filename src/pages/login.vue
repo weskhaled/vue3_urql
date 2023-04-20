@@ -1,31 +1,42 @@
 <script setup lang="ts">
-import { gql, useMutation } from '@urql/vue'
+import { useMutation } from '@urql/vue'
 import { isAuthenticated, refreshToken, token } from '~/common/stores'
 
 const router = useRouter()
-
-const querySignIn = gql`
+const { message } = useMessage()
+const { t } = useI18n()
+const variables = reactive({
+  input: { password: '0000', username: 'weskhaled' },
+})
+const querySignIn = `
     mutation SignIn($input: SignInInput!) {
-    signIn(input: $input) {
-      refreshToken
-      accessToken
-    }
+      signIn(input: $input) {
+        refreshToken
+        accessToken
+      }
   }`
+// const querySignIn = graphql`
+//     mutation SignIn($input: SignInInput!) {
+//       signIn(input: $input) {
+//         refreshToken
+//         accessToken
+//       }
+//   }`
 
 const loginResult = useMutation(querySignIn)
 
 async function login() {
-  const variables = {
-    input: { password: '0000', username: 'weskhaled' },
-  }
-
   loginResult.executeMutation(variables).then(async ({ data, error }) => {
     if (data) {
       refreshToken.value = data.signIn.refreshToken
       token.value = data.signIn.accessToken
       await router.push('/')
     }
-    error && console.log(error)
+
+    error && (message.error({
+      content: error.graphQLErrors[0]?.message || t('unauthorized'),
+      duration: 2000,
+    }))
   })
 }
 onMounted(() => {

@@ -5,11 +5,11 @@ import {
 } from '@arco-design/web-vue/es/icon'
 import { gql, useQuery } from '@urql/vue'
 import { isDark } from '~/composables/dark'
-import { Message } from '~/composables/message'
 import { currentUser, sideCollapsed } from '~/common/stores'
 
-const { t } = useI18n()
-const router = useRouter()
+// const { t } = useI18n()
+// const router = useRouter()
+const { message } = useMessage()
 
 function onCollapse(val, type) {
   const content = type === 'responsive' ? 'Trigger Responsive Contraction' : 'Click to trigger contraction'
@@ -21,7 +21,7 @@ function onCollapse(val, type) {
 }
 
 function onClickMenuItem(key) {
-  Message.info({ content: `You select ${key}`, showIcon: true })
+  message.info({ content: `You select ${key}`, showIcon: true })
 }
 
 const queryMe = gql`

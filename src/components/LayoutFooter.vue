@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { t, availableLocales, locale } = useI18n()
+// const { t } = useI18n()
 
 const formatted = useDateFormat(useNow(), 'YYYY')
 </script>
