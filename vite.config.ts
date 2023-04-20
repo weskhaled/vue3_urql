@@ -17,7 +17,7 @@ import Unocss from 'unocss/vite'
 import Shiki from 'markdown-it-shiki'
 // @ts-expect-error failed to resolve types
 import VueMacros from 'unplugin-vue-macros/vite'
-import WebfontDownload from 'vite-plugin-webfont-dl'
+// import WebfontDownload from 'vite-plugin-webfont-dl'
 import { ArcoResolver } from 'unplugin-vue-components/resolvers'
 
 export default ({ mode }) => {
@@ -166,7 +166,7 @@ export default ({ mode }) => {
       }),
 
       // https://github.com/feat-agency/vite-plugin-webfont-dl
-      WebfontDownload(),
+      // WebfontDownload(),
     ],
     css: {
       preprocessorOptions: {
