@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/graphql/:match*",
+      "destination": "https://weskhaled-nest.up.railway.app/graphql"
+    }
+  ]
+}
