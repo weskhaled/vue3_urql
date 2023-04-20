@@ -9,7 +9,7 @@ const { message } = useMessage()
 async function logout() {
   token.value = null
   refreshToken.value = null
-  message.info({ content: 'Logout', showIcon: true })
+  message.warning({ content: 'Loged out', showIcon: true, closable: true })
   await router.push('/login')
 }
 </script>

@@ -1,4 +1,4 @@
-@import './markdown.css';
+@import './markdown.less';
 
 html,
 body,
@@ -18,7 +18,7 @@ html.dark {
 }
 
 #nprogress .bar {
-  background: rgb(13,148,136);
+  background: rgb(24, 15, 195);
   opacity: 0.75;
   position: fixed;
   z-index: 1031;
@@ -27,7 +27,14 @@ html.dark {
   width: 100%;
   height: 2px;
 }
+
 .arco-menu-horizontal .arco-menu-item,
-.arco-menu-horizontal .arco-menu-pop{
-  display: inline-flex!important;
+.arco-menu-horizontal .arco-menu-pop {
+  display: inline-flex !important;
+}
+
+form {
+  label>strong>svg {
+    vertical-align: initial;
+  }
 }

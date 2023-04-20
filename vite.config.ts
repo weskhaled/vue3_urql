@@ -15,14 +15,13 @@ import Inspector from 'vite-plugin-vue-inspector'
 import LinkAttributes from 'markdown-it-link-attributes'
 import Unocss from 'unocss/vite'
 import Shiki from 'markdown-it-shiki'
+// @ts-expect-error failed to resolve types
 import VueMacros from 'unplugin-vue-macros/vite'
+import WebfontDownload from 'vite-plugin-webfont-dl'
 import { ArcoResolver } from 'unplugin-vue-components/resolvers'
 
 export default ({ mode }) => {
   process.env = { ...process.env, ...loadEnv(mode, process.cwd()) }
-
-  // import.meta.env.VITE_NAME available here with: process.env.VITE_NAME
-  // import.meta.env.VITE_PORT available here with: process.env.VITE_PORT
 
   return defineConfig({
     resolve: {
@@ -32,8 +31,6 @@ export default ({ mode }) => {
     },
 
     plugins: [
-      // Preview(),
-
       VueMacros({
         plugins: {
           vue: Vue({
@@ -167,6 +164,9 @@ export default ({ mode }) => {
       Inspector({
         toggleButtonVisibility: 'never',
       }),
+
+      // https://github.com/feat-agency/vite-plugin-webfont-dl
+      WebfontDownload(),
     ],
     css: {
       preprocessorOptions: {
