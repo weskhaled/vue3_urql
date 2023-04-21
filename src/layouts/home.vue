@@ -13,7 +13,7 @@ const { message } = useMessage()
 
 function onCollapse(val, type) {
   const content = type === 'responsive' ? 'Trigger Responsive Contraction' : 'Click to trigger contraction'
-  Message.info({
+  message.info({
     content,
     duration: 2000,
   })

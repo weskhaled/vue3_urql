@@ -64,7 +64,7 @@ onMounted(() => {
       <div class="hidden lg:flex flex-col justify-between bg-[#00aaff] lg:p-8 xl:p-12 lg:max-w-sm xl:max-w-1/2 text-white">
         <div class="flex items-center justify-start space-x-3">
           <span class="bg-white rounded-full w-8 h-8" />
-          <a href="#" class="font-medium text-3xl font-lobster">Webrand</a>
+          <a href="#" class="font-medium text-3xl font-dancingscript">Webrand</a>
         </div>
         <div class="space-y-5">
           <h1 class="lg:text-3xl xl:text-5xl xl:leading-snug font-extrabold">

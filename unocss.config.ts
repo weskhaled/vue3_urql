@@ -27,22 +27,18 @@ export default defineConfig({
     }),
     presetTypography(),
     presetWebFonts({
-      provider: 'google', // default provider
+      // provider: 'google',
       fonts: {
         // these will extend the default theme
-        sans: 'Poppins',
+        sans: 'Montserrat',
         mono: ['Fira Code', 'Fira Mono:400,700'],
         // custom ones
-        lobster: 'Lobster',
-        lato: [
+        dancingscript: [
           {
-            name: 'Lato',
-            weights: ['400', '700'],
-            italic: true,
-          },
-          {
-            name: 'sans-serif',
-            provider: 'none',
+            name: 'Dancing Script',
+            italic: false,
+            weights: ['500', '700'],
+            provider: 'google',
           },
         ],
       },
