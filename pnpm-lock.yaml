@@ -16,6 +16,7 @@ specifiers:
   '@vitejs/plugin-vue': ^4.1.0
   '@vue-macros/volar': ^0.9.5
   '@vue/test-utils': ^2.3.2
+  '@vueuse/components': ^10.0.2
   '@vueuse/core': ^10.0.2
   '@vueuse/head': ^1.1.23
   critters: ^0.0.16
@@ -68,6 +69,7 @@ dependencies:
   '@urql/devtools': 2.0.3_graphql@16.6.0
   '@urql/exchange-auth': 2.1.0_graphql@16.6.0
   '@urql/vue': 1.1.0_graphql@16.6.0+vue@3.2.47
+  '@vueuse/components': 10.0.2_vue@3.2.47
   '@vueuse/core': 10.0.2_vue@3.2.47
   '@vueuse/head': 1.1.23_vue@3.2.47
   graphql: 16.6.0
@@ -3487,6 +3489,17 @@ packages:
       '@vue/compiler-dom': 3.2.47
       '@vue/server-renderer': 3.2.47_vue@3.2.47
     dev: true
+
+  /@vueuse/components/10.0.2_vue@3.2.47:
+    resolution: {integrity: sha512-pjZy9/EdYdawraSrY8r1BpTTtuY8/ePjTI5bdhbUMeqnKnoN/tAXl4VH2xhonDxgXiHCN3qqJe4hnU4RFgo3fw==}
+    dependencies:
+      '@vueuse/core': 10.0.2_vue@3.2.47
+      '@vueuse/shared': 10.0.2_vue@3.2.47
+      vue-demi: 0.14.0_vue@3.2.47
+    transitivePeerDependencies:
+      - '@vue/composition-api'
+      - vue
+    dev: false
 
   /@vueuse/core/10.0.2_vue@3.2.47:
     resolution: {integrity: sha512-/UGc2cXbxbeIFLDSJyHUjI9QZ4CJJkhiJe9TbKNPSofcWmYhhUgJ+7iw9njXTKu/Xc3Z6UeXVR9fosW1+cyrnQ==}

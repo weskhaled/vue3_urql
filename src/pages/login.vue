@@ -64,7 +64,7 @@ onMounted(() => {
       <div class="hidden lg:flex flex-col justify-between bg-[#00aaff] lg:p-8 xl:p-12 lg:max-w-sm xl:max-w-1/2 text-white">
         <div class="flex items-center justify-start space-x-3">
           <span class="bg-white rounded-full w-8 h-8" />
-          <a href="#" class="font-medium text-3xl font-dancingscript">Webrand</a>
+          <a href="#" class="font-medium text-3xl font-script">Webrand</a>
         </div>
         <div class="space-y-5">
           <h1 class="lg:text-3xl xl:text-5xl xl:leading-snug font-extrabold">
@@ -87,11 +87,11 @@ onMounted(() => {
       <div class="flex flex-1 flex-col items-center justify-center px-10 relative">
         <div class="flex lg:hidden justify-between items-center w-full py-4">
           <div class="flex items-center justify-start space-x-3">
-            <span class="bg-black rounded-full w-8 h-8" />
-            <a href="#" class="font-medium text-3xl font-lobster">Webrand</a>
+            <span class="bg-blue-600 dark:bg-blue-600 rounded-full w-8 h-8" />
+            <a href="#" class="font-medium text-3xl font-script">Webrand</a>
           </div>
           <div class="flex items-center space-x-2">
-            <span>Not a member? </span>
+            <span class="hidden md:inline-block">Not a member? </span>
             <a href="#" class="underline font-medium text-[#070eff]">
               Sign up now
             </a>

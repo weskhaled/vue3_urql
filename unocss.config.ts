@@ -33,11 +33,11 @@ export default defineConfig({
         sans: 'Montserrat',
         mono: ['Fira Code', 'Fira Mono:400,700'],
         // custom ones
-        dancingscript: [
+        script: [
           {
-            name: 'Dancing Script',
+            name: 'Kaushan Script',
             italic: false,
-            weights: ['500', '700'],
+            weights: ['400'],
             provider: 'google',
           },
         ],
