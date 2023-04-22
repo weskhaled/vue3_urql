@@ -13,6 +13,7 @@ const router = useRouter()
 useHead({
   title: 'Vitesse',
   meta: [
+    { name: 'viewport', content: 'user-scalable=no' },
     { name: 'description', content: 'Opinionated Vite Starter Template' },
     {
       name: 'theme-color',
