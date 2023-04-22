@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { gql, useQuery, useSubscription } from '@urql/vue'
 import { IconSearch } from '@arco-design/web-vue/es/icon'
-import { smAndSmaller } from '~/common/stores'
+import { mdAndLarger, smAndSmaller } from '~/common/stores'
 
 defineOptions({
   name: 'IndexPage',
@@ -74,7 +74,8 @@ const columns = [
       slotName: 'name-filter',
       icon: () => h(IconSearch),
     },
-
+    fixed: 'left',
+    width: 160,
   },
   {
     title: 'Address',
@@ -135,9 +136,15 @@ function handleChange(__data, extra, __currentDataSource) {
   }
 }
 const { data, error, fetching } = await useQuery({ query: getManyPlacesGql, variables })
-
 const allPlaces = computed(() => data?.value?.getManyPlaces?.data || [])
 const total = computed(() => data?.value?.getManyPlaces?.count || 0)
+if (error.value) {
+  fetching.value = true
+  message.error({
+    content: error.value.graphQLErrors[0]?.message || t('cannot_get_data'),
+    duration: 2000,
+  })
+}
 </script>
 
 <template>
@@ -152,13 +159,10 @@ const total = computed(() => data?.value?.getManyPlaces?.count || 0)
     </p>
     <a-date-picker style="width: 200px;" />
 
-    <div v-if="error">
-      Oh no... {{ error }}
-    </div>
-    <div v-else class="mt-1">
+    <div class="mt-1">
       <a-table
-        size="small"
-        scrollbar :columns="columns" :scroll="{ x: smAndSmaller ? (windowWidth + 200) : '100%', y: 300 }" :data="allPlaces" :loading="fetching"
+        size="small" :scrollbar="mdAndLarger" :columns="columns"
+        :scroll="{ x: smAndSmaller ? (windowWidth + 200) : '100%', y: 300 }" :data="allPlaces" :loading="fetching"
         :pagination="{ total, pageSize, showPageSize: true, pageSizeOptions: [5, 10, 20] }"
         @page-size-change="(val) => { pageSize = val; variables.input.pagination.size = val }" @change="handleChange"
       >
