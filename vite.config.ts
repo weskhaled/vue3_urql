@@ -17,7 +17,7 @@ import Unocss from 'unocss/vite'
 import Shiki from 'markdown-it-shiki'
 // @ts-expect-error failed to resolve types
 import VueMacros from 'unplugin-vue-macros/vite'
-import { ViteWebfontDownload } from 'vite-plugin-webfont-dl'
+// import { ViteWebfontDownload } from 'vite-plugin-webfont-dl'
 import { ArcoResolver } from 'unplugin-vue-components/resolvers'
 
 export default ({ mode }) => {
@@ -160,16 +160,16 @@ export default ({ mode }) => {
         toggleButtonVisibility: 'never',
       }),
 
-      // https://github.com/feat-agency/vite-plugin-webfont-dl
-      ViteWebfontDownload([
-        'https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;700&family=Fira+Code:wght@400;600&family=Montserrat:ital,wght@0,200;0,400;0,700;1,200;1,400;1,700&display=swap',
-      ], {
-        injectAsStyleTag: false,
-        minifyCss: true,
-        async: true,
-        cache: true,
-        proxy: false,
-      }),
+      // // https://github.com/feat-agency/vite-plugin-webfont-dl
+      // ViteWebfontDownload([
+      //   'https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;700&family=Fira+Code:wght@400;600&family=Montserrat:ital,wght@0,200;0,400;0,700;1,200;1,400;1,700&display=swap',
+      // ], {
+      //   injectAsStyleTag: false,
+      //   minifyCss: true,
+      //   async: true,
+      //   cache: true,
+      //   proxy: false,
+      // }),
     ],
     css: {
       preprocessorOptions: {
