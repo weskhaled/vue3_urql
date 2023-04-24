@@ -140,6 +140,7 @@ const allPlaces = computed(() => data?.value?.getManyPlaces?.data || [])
 const total = computed(() => data?.value?.getManyPlaces?.count || 0)
 if (error.value) {
   fetching.value = true
+
   message.error({
     content: error.value.graphQLErrors[0]?.message || t('cannot_get_data'),
     duration: 2000,

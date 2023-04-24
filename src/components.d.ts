@@ -32,7 +32,6 @@ declare module '@vue/runtime-core' {
     ASubMenu: typeof import('@arco-design/web-vue')['SubMenu']
     ATable: typeof import('@arco-design/web-vue')['Table']
     ATooltip: typeof import('@arco-design/web-vue')['Tooltip']
-    copy: typeof import('./components/LayoutHeader copy.vue')['default']
     LayoutFooter: typeof import('./components/LayoutFooter.vue')['default']
     LayoutHeader: typeof import('./components/LayoutHeader.vue')['default']
     LayoutSider: typeof import('./components/LayoutSider.vue')['default']
