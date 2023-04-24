@@ -30,7 +30,7 @@ function handleSubmit({ values, errors }) {
       if (data) {
         refreshToken.value = data.signIn.refreshToken
         token.value = data.signIn.accessToken
-        await router.push('/')
+        await router.push({ name: 'admin' })
       }
 
       error && (message.error({
@@ -42,16 +42,8 @@ function handleSubmit({ values, errors }) {
   }
 }
 
-// const querySignIn = graphql`
-//     mutation SignIn($input: SignInInput!) {
-//       signIn(input: $input) {
-//         refreshToken
-//         accessToken
-//       }
-//   }`
-
 onMounted(() => {
-  isAuthenticated.value && router.push({ name: 'index' })
+  isAuthenticated.value && router.push({ name: 'admin' })
 })
 </script>
 
@@ -62,10 +54,10 @@ onMounted(() => {
     <div class="flex flex-row w-full">
       <!-- Sidebar -->
       <div class="hidden lg:flex flex-col justify-between bg-[#00aaff] lg:p-8 xl:p-12 lg:max-w-sm xl:max-w-1/2 text-white">
-        <div class="flex items-center justify-start space-x-3">
+        <a href="javascript:;" class="flex items-center justify-start space-x-3" @click="() => router.push('/')">
           <span class="bg-white rounded-full w-8 h-8" />
-          <a href="#" class="font-medium text-3xl font-script">Webrand</a>
-        </div>
+          <span href="#" class="font-medium text-3xl font-script">Webrand</span>
+        </a>
         <div class="space-y-5">
           <h1 class="lg:text-3xl xl:text-5xl xl:leading-snug font-extrabold">
             Enter your account and discover new
@@ -176,4 +168,5 @@ onMounted(() => {
 <route lang="yaml">
 meta:
   layout: default
+  requiresAuth: false
 </route>

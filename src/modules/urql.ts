@@ -50,6 +50,7 @@ const clientConfig = {
             // Update our local variables and write to our storage
             token.value = result.data.refreshToken.accessToken
             refreshToken.value = result.data.refreshToken.refreshToken
+            // window?.location?.reload()
           }
           else {
             // This is where auth has gone wrong and we need to clean up and redirect to a login page
@@ -59,6 +60,8 @@ const clientConfig = {
         },
         didAuthError(error, _operation) {
           return error.graphQLErrors.some(e => e.extensions?.code === 'UNAUTHENTICATED')
+          token.value = null
+          refreshToken.value = null
         },
       }
     }),

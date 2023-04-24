@@ -29,7 +29,7 @@ function onClickMenuItem(key) {
   <a-layout-sider
     v-on-click-outside="() => smAndSmaller && (sideCollapsed = true)"
     :theme="isDark ? 'dark' : 'light'" :width="230" collapsible :default-collapsed="sideCollapsed"
-    :collapsed="sideCollapsed" class="!absolute !sm:relative z-10"
+    :collapsed="sideCollapsed" class="!absolute !sm:relative z-98"
     @collapse="onCollapse"
   >
     <a-menu

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import enUS from '@arco-design/web-vue/es/locale/lang/en-us'
 import frFR from '@arco-design/web-vue/es/locale/lang/fr-fr'
-import { isAuthenticated, userLang } from '~/common/stores'
+import { userLang } from '~/common/stores'
 
 import { availableLocales, loadLanguageAsync } from '~/modules/i18n'
 
@@ -13,7 +13,7 @@ const router = useRouter()
 useHead({
   title: 'Vitesse',
   meta: [
-    { name: 'viewport', content: 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' },
+    // { name: 'viewport', content: 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' },
     { name: 'description', content: 'Opinionated Vite Starter Template' },
     {
       name: 'theme-color',
@@ -39,13 +39,10 @@ const localeProvider = computed(() => {
 watch(userLang, async (val) => {
   val && availableLocales.includes(val) && (await loadLanguageAsync(val))
 })
-watchOnce(isAuthenticated, async (val, oldVal) => {
-  if (val && !oldVal)
-    return await router.push('/')
-
-  if (!val)
-    return await router.push('/login')
-}, { immediate: true })
+// watchOnce(isAuthenticated, async (val, oldVal) => {
+//   if (!oldVal)
+//     return await router.push('/')
+// }, { immediate: true })
 </script>
 
 <template>

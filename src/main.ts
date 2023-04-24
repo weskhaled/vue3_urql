@@ -17,9 +17,9 @@ export const createApp = ViteSSG(
   { routes, base: import.meta.env.BASE_URL },
   async (ctx) => {
     // install all modules under `modules/`
-    (await Promise.all(Object.values(import.meta.glob<{ install: UserModule } >('./**/modules/*.ts', { eager: true })))).forEach(i => i.install?.(ctx))
-    // Object.values(import.meta.glob<{ install: UserModule }>('./modules/*.ts', { eager: true }))
-    //   .forEach(i => i.install?.(ctx))
+    // (await Promise.all(Object.values(import.meta.glob<{ install: UserModule } >('./**/modules/*.ts', { eager: true })))).forEach(i => i.install?.(ctx))
+    Object.values(import.meta.glob<{ install: UserModule }>('./modules/*.ts', { eager: true }))
+      .forEach(i => i.install?.(ctx))
     // ctx.app.use(Previewer)
   },
 )
