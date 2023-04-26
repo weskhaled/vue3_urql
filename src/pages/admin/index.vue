@@ -149,40 +149,44 @@ if (error.value) {
 </script>
 
 <template>
-  <a-breadcrumb :style="{ margin: '16px 0' }">
-    <a-breadcrumb-item>Home</a-breadcrumb-item>
-    <a-breadcrumb-item>List</a-breadcrumb-item>
-    <a-breadcrumb-item>App</a-breadcrumb-item>
-  </a-breadcrumb>
-  <div>
-    <p>
-      <em text-sm opacity-75>{{ t('intro.desc') }}</em>
-    </p>
-    <a-date-picker style="width: 200px;" />
+  <div class="p-2 bg-gray-100 min-h-full flex flex-col">
+    <div class="mb-2 bg-white shadow shadow-gray-200">
+      <a-breadcrumb class="p-2">
+        <a-breadcrumb-item>Home</a-breadcrumb-item>
+        <a-breadcrumb-item>List</a-breadcrumb-item>
+        <a-breadcrumb-item>App</a-breadcrumb-item>
+      </a-breadcrumb>
+    </div>
+    <div class="bg-white p-2 min-h-full flex-1 shadow shadow-gray-200 [--border-radius-medium:0]">
+      <p>
+        <em text-sm opacity-75>{{ t('intro.desc') }}</em>
+      </p>
+      <a-date-picker style="width: 200px;" />
 
-    <div class="mt-1">
-      <a-table
-        size="medium" :scrollbar="mdAndLarger" :columns="columns"
-        :scroll="{ x: smAndSmaller ? (windowWidth + 200) : '100%', y: 300 }" :data="allPlaces" :loading="fetching"
-        :pagination="{ total, pageSize, showPageSize: true, pageSizeOptions: [5, 10, 20] }"
-        @page-size-change="(val) => { pageSize = val; variables.input.pagination.size = val }" @change="handleChange"
-      >
-        <template #name-filter="{ filterValue, setFilterValue, handleFilterConfirm, handleFilterReset }">
-          <div class="custom-filter bg-white p-2 shadow border">
-            <a-space direction="vertical">
-              <a-input :model-value="filterValue[0]" @input="(value) => setFilterValue([value])" />
-              <div class="custom-filter-footer flex justify-between">
-                <a-button type="primary" @click="handleFilterConfirm">
-                  Confirm
-                </a-button>
-                <a-button @click="handleFilterReset">
-                  Reset
-                </a-button>
-              </div>
-            </a-space>
-          </div>
-        </template>
-      </a-table>
+      <div class="mt-1">
+        <a-table
+          size="medium" :scrollbar="mdAndLarger" :columns="columns"
+          :scroll="{ x: smAndSmaller ? (windowWidth + 200) : '100%', y: 300 }" :data="allPlaces" :loading="fetching"
+          :pagination="{ total, pageSize, showPageSize: true, pageSizeOptions: [5, 10, 20] }"
+          @page-size-change="(val) => { pageSize = val; variables.input.pagination.size = val }" @change="handleChange"
+        >
+          <template #name-filter="{ filterValue, setFilterValue, handleFilterConfirm, handleFilterReset }">
+            <div class="custom-filter bg-white p-2 shadow border">
+              <a-space direction="vertical">
+                <a-input :model-value="filterValue[0]" @input="(value) => setFilterValue([value])" />
+                <div class="custom-filter-footer flex justify-between">
+                  <a-button type="primary" @click="handleFilterConfirm">
+                    Confirm
+                  </a-button>
+                  <a-button @click="handleFilterReset">
+                    Reset
+                  </a-button>
+                </div>
+              </a-space>
+            </div>
+          </template>
+        </a-table>
+      </div>
     </div>
   </div>
 </template>

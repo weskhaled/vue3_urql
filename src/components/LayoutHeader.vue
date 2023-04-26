@@ -10,16 +10,82 @@ async function logout() {
   token.value = null
   refreshToken.value = null
   message.warning({ content: 'Loged out', showIcon: true, closable: true })
-  await router.push('/login')
+  await router.push({ name: 'auth-login' })
 }
 </script>
 
 <template>
-  <div class="flex items-center justify-between px-2">
-    <div class="grow-full flex items-center">
+  <div class="flex items-center justify-between px-2 dark:[--color-menu-light-bg:#0f0f0f]">
+    <div class="grow-0 flex items-center">
       <span class="bg-dark-50 inline-block h-10 w-10 sm:w-35 my-2" />
     </div>
-    <div class="grow-0 header-menu">
+    <div class="grow-1 flex header-menu justify-end">
+      <div>
+        <a-menu
+          mode="horizontal"
+          theme="light"
+        >
+          <a-sub-menu key="0">
+            <template #icon>
+              <IconApps />
+            </template>
+            <template #title>
+              Navigation 1
+            </template>
+            <a-menu-item key="0_0">
+              Menu 1
+            </a-menu-item>
+            <a-menu-item key="0_1">
+              Menu 2
+            </a-menu-item>
+            <a-menu-item key="0_2">
+              Menu 3
+            </a-menu-item>
+            <a-menu-item key="0_3">
+              Menu 4
+            </a-menu-item>
+          </a-sub-menu>
+          <a-sub-menu key="1">
+            <template #icon>
+              <IconBug />
+            </template>
+            <template #title>
+              Navigation 2
+            </template>
+            <a-menu-item key="1_0">
+              Menu 1
+            </a-menu-item>
+            <a-menu-item key="1_1">
+              Menu 2
+            </a-menu-item>
+            <a-menu-item key="1_2">
+              Menu 3
+            </a-menu-item>
+          </a-sub-menu>
+          <a-sub-menu key="2">
+            <template #icon>
+              <IconBulb />
+            </template>
+            <template #title>
+              Navigation 3
+            </template>
+            <a-menu-item key="2_0">
+              Menu 1
+            </a-menu-item>
+            <a-menu-item key="2_1">
+              Menu 2
+            </a-menu-item>
+            <a-sub-menu key="2_2" title="Navigation 4">
+              <a-menu-item key="2_2_0">
+                Menu 1
+              </a-menu-item>
+              <a-menu-item key="2_2_1">
+                Menu 2
+              </a-menu-item>
+            </a-sub-menu>
+          </a-sub-menu>
+        </a-menu>
+      </div>
       <div class="flex items-center">
         <a-dropdown trigger="hover">
           <a-button class="px-2 mr-2" type="text">
@@ -85,3 +151,9 @@ async function logout() {
     </div>
   </div>
 </template>
+
+<style scoped lang="less">
+// :deep(.arco-menu-horizontal .arco-menu-inner) {
+//   @apply !p-0;
+// }
+</style>

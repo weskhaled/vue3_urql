@@ -1,8 +1,4 @@
 <script setup lang="ts">
-import {
-  IconCalendar,
-  IconHome,
-} from '@arco-design/web-vue/es/icon'
 import { vOnClickOutside } from '@vueuse/components'
 import { isDark } from '~/composables/dark'
 import { sideCollapsed, smAndSmaller } from '~/common/stores'
@@ -106,23 +102,19 @@ function onClickMenuItem(key) {
 <style scoped lang="less">
 .menu-side-nav {
   // @apply h-[calc(80px+8px)];
-  height: calc(100vh - 104px);
+  height: calc(100vh - 106px);
 }
 
 .arco-layout-sider-has-trigger {
   padding: 0;
+  @apply flex flex-col;
 }
 
 :deep(.arco-layout-sider-children) {
   height: unset !important;
-  ;
 }
 
 :deep(.arco-layout-sider-trigger) {
   @apply !bg-slate-100 !dark:bg-gray-900;
 }
-
-// .header-menu :deep(){
-//   @apply flex justify-end;
-// }
 </style>

@@ -18,7 +18,7 @@ import Shiki from 'markdown-it-shiki'
 // @ts-expect-error failed to resolve types
 import VueMacros from 'unplugin-vue-macros/vite'
 // import { ViteWebfontDownload } from 'vite-plugin-webfont-dl'
-import { ArcoResolver } from 'unplugin-vue-components/resolvers'
+import { ArcoResolver, VueUseComponentsResolver } from 'unplugin-vue-components/resolvers'
 
 export default ({ mode }) => {
   process.env = { ...process.env, ...loadEnv(mode, process.cwd()) }
@@ -29,7 +29,6 @@ export default ({ mode }) => {
         '~/': `${path.resolve(__dirname, 'src')}/`,
       },
     },
-
     plugins: [
       VueMacros({
         plugins: {
@@ -71,7 +70,14 @@ export default ({ mode }) => {
           'src/stores',
         ],
         vueTemplate: true,
-        resolvers: [ArcoResolver()],
+        resolvers: [
+          VueUseComponentsResolver(),
+          ArcoResolver({
+            sideEffect: true,
+            importStyle: 'less',
+            resolveIcons: true,
+          }),
+        ],
       }),
 
       // https://github.com/antfu/unplugin-vue-components
@@ -82,8 +88,11 @@ export default ({ mode }) => {
         include: [/\.vue$/, /\.vue\?vue/, /\.md$/],
         dts: 'src/components.d.ts',
         resolvers: [
+          VueUseComponentsResolver(),
           ArcoResolver({
             sideEffect: true,
+            importStyle: 'less',
+            resolveIcons: true,
           }),
         ],
       }),
@@ -174,7 +183,11 @@ export default ({ mode }) => {
     css: {
       preprocessorOptions: {
         less: {
-          modifyVars: { 'arcoblue-6': '#ff0000', 'primary-color': '#13c2c2' },
+          // modifyVars: {
+          //   'primary-6': '#0075ff',
+          //   'border-radius-small': '0',
+          //   'border-radius-medium': '0',
+          // },
           javascriptEnabled: true,
         },
       },

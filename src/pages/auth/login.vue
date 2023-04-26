@@ -54,7 +54,7 @@ onMounted(() => {
     <div class="flex flex-row w-full">
       <!-- Sidebar -->
       <div class="hidden lg:flex flex-col justify-between bg-[#00aaff] lg:p-8 xl:p-12 lg:max-w-sm xl:max-w-1/2 text-white">
-        <a href="javascript:;" class="flex items-center justify-start space-x-3" @click="() => router.push('/')">
+        <a href="" class="flex items-center justify-start space-x-3" @click.prevent="router.push('/')">
           <span class="bg-white rounded-full w-8 h-8" />
           <span href="#" class="font-medium text-3xl font-script">Webrand</span>
         </a>
