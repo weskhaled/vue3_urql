@@ -31,7 +31,7 @@ error.value && (message.error('Error', `${error.value}`))
 </script>
 
 <template>
-  <a-layout class="layout-demo h-full font-sans relative">
+  <a-layout class="layout-demo h-full font-sans relative !arco-theme-1">
     <a-layout-header class="shadow z-99 bg-light-50 dark:bg-dark-900">
       <LayoutHeader />
     </a-layout-header>
@@ -86,12 +86,14 @@ error.value && (message.error('Error', `${error.value}`))
   </a-layout>
 </template>
 
-<style>
+<style lang="less" scoped>
 .button-trigger {
-  @apply absolute cursor-pointer rounded-50% z-100 items-center justify-center fixed text-sm flex h-40px w-40px text-zinc-100 bg-blue-600 shadow-md;
+  @apply absolute cursor-pointer rounded-full z-100 items-center justify-center fixed text-sm flex h-40px w-40px text-zinc-100 bg-blue-600 shadow-md;
   transition: all 0.1s;
 }
 /* .arco-trigger-popup {
   @apply !ml-20px;
 } */
+:deep(.body) {
+}
 </style>

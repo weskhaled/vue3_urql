@@ -24,7 +24,7 @@ const variables = reactive(
         size: 5,
       },
       relations: 'user',
-      order: { id: 'ASC' },
+      order: {},
       where: {},
     },
   })
@@ -102,8 +102,11 @@ useSubscription({ query: subscriptionListenForNewPlaceGql }, (__messages = [], r
 }).executeSubscription()
 
 function handleChange(__data, extra, __currentDataSource) {
-  const { page, filters, sorter } = extra
-  variables.input.pagination.page = page - 1
+  const { page, filters, sorter, type } = extra
+  if (type === 'pagination') {
+    variables.input.pagination.page = page - 1
+    return
+  }
 
   if (sorter)
     variables.input.order = { ...variables.input.order, [sorter.field]: sorter.direction === 'ascend' ? 'ASC' : 'DESC' }
@@ -114,6 +117,7 @@ function handleChange(__data, extra, __currentDataSource) {
   const filterName = filters?.name && filters?.name[0]
   if (filterName?.length) {
     variables.input.where = {
+      ...variables.input.where,
       name: {
         $contains: filterName,
       },
@@ -149,15 +153,15 @@ if (error.value) {
 </script>
 
 <template>
-  <div class="p-2 bg-gray-100 min-h-full flex flex-col">
-    <div class="mb-2 bg-white shadow shadow-gray-200">
+  <div class="p-2 bg-gray-100 dark:bg-zinc-900 min-h-full flex flex-col">
+    <div class="mb-2 bg-white dark:bg-dark-950 shadow shadow-gray-200 dark:shadow-gray-900">
       <a-breadcrumb class="p-2">
         <a-breadcrumb-item>Home</a-breadcrumb-item>
         <a-breadcrumb-item>List</a-breadcrumb-item>
         <a-breadcrumb-item>App</a-breadcrumb-item>
       </a-breadcrumb>
     </div>
-    <div class="bg-white p-2 min-h-full flex-1 shadow shadow-gray-200 [--border-radius-medium:0]">
+    <div class="bg-white dark:bg-dark-950 p-2 min-h-full flex-1 shadow shadow-gray-200 dark:shadow-gray-900">
       <p>
         <em text-sm opacity-75>{{ t('intro.desc') }}</em>
       </p>
@@ -165,20 +169,20 @@ if (error.value) {
 
       <div class="mt-1">
         <a-table
-          size="medium" :scrollbar="mdAndLarger" :columns="columns"
-          :scroll="{ x: smAndSmaller ? (windowWidth + 200) : '100%', y: 300 }" :data="allPlaces" :loading="fetching"
+          size="medium" :scrollbar="false" :columns="columns"
+          :scroll="{ x: smAndSmaller ? (windowWidth + 200) : '100%', y: 500 }" :data="allPlaces" :loading="fetching"
           :pagination="{ total, pageSize, showPageSize: true, pageSizeOptions: [5, 10, 20] }"
           @page-size-change="(val) => { pageSize = val; variables.input.pagination.size = val }" @change="handleChange"
         >
           <template #name-filter="{ filterValue, setFilterValue, handleFilterConfirm, handleFilterReset }">
-            <div class="custom-filter bg-white p-2 shadow border">
+            <div class="custom-filter bg-white dark:bg-zinc-900 p-2 shadow border dark:border-zinc-950">
               <a-space direction="vertical">
-                <a-input :model-value="filterValue[0]" @input="(value) => setFilterValue([value])" />
+                <a-input size="small" :model-value="filterValue[0]" @input="(value) => setFilterValue([value])" />
                 <div class="custom-filter-footer flex justify-between">
-                  <a-button type="primary" @click="handleFilterConfirm">
+                  <a-button size="mini" type="primary" @click="handleFilterConfirm">
                     Confirm
                   </a-button>
-                  <a-button @click="handleFilterReset">
+                  <a-button size="mini" @click="handleFilterReset">
                     Reset
                   </a-button>
                 </div>

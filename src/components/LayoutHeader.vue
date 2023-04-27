@@ -15,7 +15,7 @@ async function logout() {
 </script>
 
 <template>
-  <div class="flex items-center justify-between px-2 dark:[--color-menu-light-bg:#0f0f0f]">
+  <div class="flex items-center justify-between px-2">
     <div class="grow-0 flex items-center">
       <span class="bg-dark-50 inline-block h-10 w-10 sm:w-35 my-2" />
     </div>
