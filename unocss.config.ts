@@ -11,7 +11,7 @@ import {
 
 export default defineConfig({
   shortcuts: [
-    ['arco-theme-1', '[--primary-6:0,150,255] [--border-radius-medium:0px] [--border-radius-medium:0] [--border-radius-small:0] dark:[--color-menu-light-bg:#0f0f0f]'],
+    ['arco-theme-1', '[--primary-6:0,150,255] [--border-radius-medium:0px] [--border-radius-medium:2px] [--border-radius-small:2px] dark:[--color-menu-light-bg:#0f0f0f]'],
     ['btn', 'px-4 py-1 rounded inline-block bg-teal-700 text-white cursor-pointer hover:bg-teal-800 disabled:cursor-default disabled:bg-gray-600 disabled:opacity-50'],
     ['icon-btn', 'inline-block cursor-pointer select-none opacity-75 transition duration-200 ease-in-out hover:opacity-100 hover:text-teal-600'],
   ],
