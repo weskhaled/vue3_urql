@@ -28,10 +28,16 @@ export default defineConfig({
     }),
     presetTypography(),
     presetWebFonts({
-      // provider: 'google',
+      provider: 'google',
       fonts: {
         // these will extend the default theme
-        sans: 'Montserrat',
+        sans: [
+          {
+            name: 'Montserrat',
+            italic: true,
+            weights: ['300', '400', '600', '700', '800'],
+          },
+        ],
         mono: ['Fira Code', 'Fira Mono:400,700'],
         // custom ones
         script: [

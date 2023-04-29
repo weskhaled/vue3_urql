@@ -87,6 +87,7 @@ export default ({ mode }) => {
         // allow auto import and register components used in markdown
         include: [/\.vue$/, /\.vue\?vue/, /\.md$/],
         dts: 'src/components.d.ts',
+        directoryAsNamespace: true,
         resolvers: [
           VueUseComponentsResolver(),
           ArcoResolver({

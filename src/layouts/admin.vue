@@ -33,16 +33,16 @@ error.value && (message.error('Error', `${error.value}`))
 <template>
   <a-layout class="layout-demo h-full font-sans relative !arco-theme-1">
     <a-layout-header class="shadow z-99 bg-light-50 dark:bg-dark-900">
-      <LayoutHeader />
+      <AdminLayoutHeader />
     </a-layout-header>
     <a-layout>
-      <LayoutSider />
+      <AdminLayoutSider />
       <a-layout class="max-h-[calc(100vh-58px)] overscroll-y-auto !ml-12 !sm:ml-0">
         <a-layout-content class="">
           <RouterView />
         </a-layout-content>
         <a-layout-footer>
-          <LayoutFooter />
+          <AdminLayoutFooter />
         </a-layout-footer>
       </a-layout>
     </a-layout>

@@ -54,9 +54,11 @@ onMounted(() => {
     <div class="flex flex-row w-full">
       <!-- Sidebar -->
       <div class="hidden lg:flex flex-col justify-between bg-[#00aaff] lg:p-8 xl:p-12 lg:max-w-sm xl:max-w-1/2 text-white">
-        <a href="" class="flex items-center justify-start space-x-3" @click.prevent="router.push('/')">
+        <a href="" class="flex items-center justify-start space-x-3" @click.stop="router.push('/')">
           <span class="bg-white rounded-full w-8 h-8" />
-          <span href="#" class="font-medium text-3xl font-script">Webrand</span>
+          <span href="#" class="font-medium text-3xl font-script">
+            Webrand
+          </span>
         </a>
         <div class="space-y-5">
           <h1 class="lg:text-3xl xl:text-5xl xl:leading-snug font-extrabold">
@@ -79,8 +81,12 @@ onMounted(() => {
       <div class="flex flex-1 flex-col items-center justify-center px-10 relative">
         <div class="flex lg:hidden justify-between items-center w-full py-4">
           <div class="flex items-center justify-start space-x-3">
-            <span class="bg-blue-600 dark:bg-blue-600 rounded-full w-8 h-8" />
-            <a href="#" class="font-medium text-3xl font-script">Webrand</a>
+            <a href="" class="flex items-center justify-start space-x-3" @click.stop="router.push('/')">
+              <span class="bg-blue rounded-full w-8 h-8" />
+              <span href="#" class="font-medium text-3xl font-script dark:text-light-50">
+                Webrand
+              </span>
+            </a>
           </div>
           <div class="flex items-center space-x-2">
             <span class="hidden md:inline-block">Not a member? </span>
