@@ -1,10 +1,10 @@
 <script setup lang="ts">
-// import { Button, Space } from '@arco-design/web-vue'
+import { Button, Space } from '@arco-design/web-vue'
 import { createApi } from 'unsplash-js'
 import '@arco-design/web-vue/es/button/style/css.js'
 import '@arco-design/web-vue/es/space/style/css.js'
 
-// const { notification } = useNotification()
+const { notification } = useNotification()
 const router = useRouter()
 const { y: windowScrollY } = useWindowScroll()
 const photos = ref([])
@@ -35,16 +35,16 @@ unsplash.search.getPhotos({
 })
 
 onMounted(() => {
-  // notification.info({
-  //   title: 'Notification',
-  //   content: 'This is a notification!',
-  //   duration: 0,
-  //   closable: true,
-  //   footer: () => h(Space, {}, () => [
-  //     h(Button, { size: 'mini', type: 'primary', onClick: () => notification.remove() }, () => 'Ok'),
-  //     h(Button, { size: 'mini', type: 'secondary', onClick: () => { router.push('/admin') } }, () => 'Go To Admin'),
-  //   ]),
-  // })
+  notification.info({
+    title: 'Notification',
+    content: 'This is a notification!',
+    duration: 0,
+    closable: true,
+    footer: () => h(Space, {}, () => [
+      h(Button, { size: 'mini', type: 'primary', onClick: () => notification.remove() }, () => 'Ok'),
+      h(Button, { size: 'mini', type: 'secondary', onClick: () => { router.push('/admin') } }, () => 'Go To Admin'),
+    ]),
+  })
 })
 </script>
 
@@ -62,7 +62,7 @@ onMounted(() => {
           <a class="mx-3" href="">Portfolio</a>
           <a class="mx-3" href="">About</a>
           <a class="mx-3" href="">Contact</a>
-          <a class="mx-3" href="" @click.stop="async() => await router.push('/admin')">Admin</a>
+          <a class="mx-3" href="" @click.prevent="router.push('/admin')">Admin</a>
         </nav>
       </div>
       <div class="header-right block text-black">
