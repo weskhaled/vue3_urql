@@ -59,7 +59,7 @@ function onSlideChange() {
         <div class="header-image" :style="{ 'background-image': `url(${slide.image.raw}&w=900&h=700&fit=crop)` }" />
 
         <div class="container">
-          <div class="animate__delay-1s transition-opacity delay-0" :class="[index === activeSlideIndex ? `animate__animated ${slide.animationClasses}` : 'opacity-0']">
+          <div class="animate__delay-0s transition-opacity delay-0" :class="[index === activeSlideIndex ? `animate__animated ${slide.animationClasses}` : 'opacity-0']">
             <component :is="slide.content" />
           </div>
         </div>

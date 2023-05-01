@@ -38,6 +38,7 @@ declare module '@vue/runtime-core' {
     ATabs: typeof import('@arco-design/web-vue')['Tabs']
     ATooltip: typeof import('@arco-design/web-vue')['Tooltip']
     ATrigger: typeof import('@arco-design/web-vue')['Trigger']
+    CommonCodeMirror: typeof import('./components/common/CodeMirror.vue')['default']
     copy: typeof import('./components/TheCounter copy.vue')['default']
     HeroSlider: typeof import('./components/HeroSlider.vue')['default']
     IconApps: typeof import('@arco-design/web-vue/es/icon')['IconApps']

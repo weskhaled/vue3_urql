@@ -11,16 +11,6 @@ const data = ref([
     title: 'Tab 2',
     content: 'Content of Tab Panel 2',
   },
-  {
-    key: '3',
-    title: 'Tab 3',
-    content: 'Content of Tab Panel 3',
-  },
-  {
-    key: '4',
-    title: 'Tab 4',
-    content: 'Content of Tab Panel 4',
-  },
 ])
 
 function handleAdd() {
@@ -37,7 +27,7 @@ function handleDelete(key) {
 </script>
 
 <template>
-  <div class="container-wide" data-local-scroll>
+  <div class="container-wide min-w-sm max-w-lg" data-local-scroll>
     <div class="row align-items-center">
       <div class="col-md-8 offset-md-2">
         <div class="windowscreen">
@@ -71,7 +61,7 @@ function handleDelete(key) {
     @apply pt-0;
   }
   .arco-tabs-nav {
-    @apply pl-13;
+    @apply pl-12;
   }
   overflow: hidden;
   width: 100%;
