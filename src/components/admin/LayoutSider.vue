@@ -101,13 +101,12 @@ function onClickMenuItem(key) {
 
 <style scoped lang="less">
 .menu-side-nav {
-  // @apply h-[calc(80px+8px)];
+  // @apply [--color-menu-light-bg:black];
   height: calc(100vh - 106px);
 }
 
 .arco-layout-sider-has-trigger {
-  padding: 0;
-  @apply flex flex-col;
+  @apply flex flex-col border-none p-0;
 }
 
 :deep(.arco-layout-sider-children) {

@@ -209,13 +209,13 @@ export default ({ mode }) => {
     ssgOptions: {
       script: 'async',
       formatting: 'none',
-      format: 'cjs',
+      format: 'esm',
       onFinished() { generateSitemap() },
     },
 
     ssr: {
       // TODO: workaround until they support native ESM
-      noExternal: ['workbox-window', /vue-i18n/, '@arco-design/web-vue'],
+      noExternal: ['workbox-window', /vue-i18n/, '@arco-design/web-vue', 'scroll-into-view-if-needed'],
     },
     server: {
       hmr: {

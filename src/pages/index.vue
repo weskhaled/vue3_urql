@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Button, Space } from '@arco-design/web-vue'
 import { createApi } from 'unsplash-js'
+import TheWindow from '~/components/TheWindow.vue'
 import '@arco-design/web-vue/es/button/style/css.js'
 import '@arco-design/web-vue/es/space/style/css.js'
 
@@ -11,11 +12,11 @@ const photos = ref([])
 
 const unsplash = createApi({ accessKey: 'KnusTYrUWihWRDFXPuFh7CWbKy50hwk62obIIsLRH6c' })
 unsplash.search.getPhotos({
-  query: 'architecture',
+  query: 'build',
   page: 1,
   perPage: 10,
   orientation: 'landscape',
-  color: isDark.value ? 'black' : 'white',
+  color: isDark.value ? 'black' : 'blue',
 }).then((result) => {
   // if (result.errors) {
   //   // handle error here
@@ -30,18 +31,29 @@ unsplash.search.getPhotos({
   // handle success here
   // console.log(`received ${results.length} photos out of ${total}`)
   // console.log('first photo: ', results[0])
-  photos.value = results
+  photos.value = results.map((r, index) => ({
+    title: `${index + 1} / ${results.length}`,
+    content: h(TheWindow, {}),
+    animationClasses: 'animate__bounce',
+    image: {
+      full: r.urls.full,
+      raw: r.urls.raw,
+      screen: `${r.urls.raw}&w=900&h=700&fit=crop`,
+      thumb: `${r.urls.thumb}`,
+    },
+  }))
   // }
 })
 
 onMounted(() => {
   notification.info({
+    id: 'onMountedNotif',
     title: 'Notification',
     content: 'This is a notification!',
     duration: 0,
     closable: true,
     footer: () => h(Space, {}, () => [
-      h(Button, { size: 'mini', type: 'primary', onClick: () => notification.remove() }, () => 'Ok'),
+      h(Button, { size: 'mini', type: 'primary', onClick: () => notification.remove('onMountedNotif') }, () => 'Ok'),
       h(Button, { size: 'mini', type: 'secondary', onClick: () => { router.push('/admin') } }, () => 'Go To Admin'),
     ]),
   })
@@ -49,7 +61,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <header class="header fixed top-0 w-full z-10 transition-all" :class="{ 'bg-white shadow-md shadow-dark-50/5': (windowScrollY > 200) }">
+  <header class="header fixed top-0 w-full z-10 transition-all" :class="{ 'bg-white dark:bg-dark-700 shadow-md shadow-dark-50/5': (windowScrollY > 200) }">
     <div class="header-container container mx-auto flex justify-between items-center px-4 transition-all" :class="[windowScrollY > 200 ? 'py-4' : 'py-10']">
       <div class="header-left">
         <a class="header-logo" href="#"><img
@@ -57,15 +69,15 @@ onMounted(() => {
           src="http://ui8-kalli.herokuapp.com/kalli/img/kalli-black.svg" width="56" alt="Kalli"
         ></a>
       </div>
-      <div class="header-center">
-        <nav class="header-nav font-sans text-lg font-semibold">
-          <a class="mx-3" href="">Portfolio</a>
-          <a class="mx-3" href="">About</a>
-          <a class="mx-3" href="">Contact</a>
-          <a class="mx-3" href="" @click.prevent="router.push('/admin')">Admin</a>
+      <div class="header-center hidden sm:block">
+        <nav class="header-nav font-sans text-lg">
+          <a class="mx-3 font-bold transition-color text-dark-700 hover:(text-dark-200 font-bold) dark:text-light-200 hover:(text-light-400)" href="">Portfolio</a>
+          <a class="mx-3 font-bold transition-color text-dark-700 hover:(text-dark-200 font-bold) dark:text-light-200 hover:(text-light-400)" href="">About</a>
+          <a class="mx-3 font-bold transition-color text-dark-700 hover:(text-dark-200 font-bold) dark:text-light-200 hover:(text-light-400)" href="">Contact</a>
+          <a class="mx-3 font-bold transition-color text-dark-700 hover:(text-dark-200 font-bold) dark:text-light-200 hover:(text-light-400)" href="" @click.prevent="router.push('/admin')">Admin</a>
         </nav>
       </div>
-      <div class="header-right block text-black">
+      <div class="header-right block text-black dark:text-white">
         <button class="header-action" data-menu-open="">
           <svg class="icon fill-current w-5 h-5 icon-grid" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 17 17">
             <path
@@ -76,8 +88,8 @@ onMounted(() => {
       </div>
     </div>
   </header>
-  <div class="min-h-[calc(100vh-200px)] relative font-sans">
-    <HeroSlider :grab-cursor="true" class="h-[calc(80vh)]" :sliders="photos" />
+  <div class="min-h-[calc(100vh-0px)] relative font-sans">
+    <HeroSlider :grab-cursor="true" class="h-[calc(100vh)]" :sliders="photos" />
   </div>
   <div class="container mx-auto">
     <article class="prose lg:prose-xl">
