@@ -34,6 +34,7 @@ export default defineConfig({
         sans: [
           {
             name: 'Montserrat',
+            // name: 'Work Sans',
             italic: true,
             weights: ['300', '400', '600', '700', '800'],
           },

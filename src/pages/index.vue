@@ -7,14 +7,13 @@ import '@arco-design/web-vue/es/space/style/css.js'
 
 const { notification } = useNotification()
 const router = useRouter()
-const { y: windowScrollY } = useWindowScroll()
 const photos = ref([])
 
 const unsplash = createApi({ accessKey: 'KnusTYrUWihWRDFXPuFh7CWbKy50hwk62obIIsLRH6c' })
 unsplash.search.getPhotos({
-  query: 'build',
+  query: 'Architecture',
   page: 1,
-  perPage: 10,
+  perPage: 5,
   orientation: 'landscape',
   color: isDark.value ? 'black' : 'blue',
 }).then((result) => {
@@ -33,8 +32,8 @@ unsplash.search.getPhotos({
   // console.log('first photo: ', results[0])
   photos.value = results.map((r, index) => ({
     title: `${index + 1} / ${results.length}`,
-    content: h(TheWindow, {}),
-    animationClasses: 'animate__bounce',
+    content: index === 1 ? h(TheWindow, {}) : h('div', { class: 'text-left text-white max-w-lg ml-0' }, [h('h1', { class: 'font-bold text-2rem md:text-4rem leading-tight' }, 'How can we help you today?'), h('p', { class: 'text-1rem' }, 'Expert customer support team is all around the globe, ready and excited to help.')]),
+    animationClasses: index === 2 ? 'animate__pulse' : 'animate__bounce',
     image: {
       full: r.urls.full,
       raw: r.urls.raw,
@@ -61,23 +60,41 @@ onMounted(() => {
 </script>
 
 <template>
-  <header class="header fixed top-0 w-full z-10 transition-all" :class="{ 'bg-white dark:bg-dark-700 shadow-md shadow-dark-50/5': (windowScrollY > 200) }">
-    <div class="header-container container mx-auto flex justify-between items-center px-4 transition-all" :class="[windowScrollY > 200 ? 'py-4' : 'py-10']">
+  <header
+    class="home-header top-0 left-0 right-0 z-50 md:transition-all w-full z-10 transition-all transform md:fixed"
+    :class="{ 'bg-white/50 dark:bg-dark-900/80 shadow-sm shadow-dark-50/5 backdrop-blur': (windowScrollY > 200) }"
+  >
+    <div
+      class="header-container px-2 container mx-auto flex justify-between items-center transition-all font-sans text-lg font-semibold"
+      :class="[windowScrollY > 200 ? 'py-4' : 'py-10']"
+    >
       <div class="header-left">
         <a class="header-logo" href="#"><img
           class="header-pic"
-          src="http://ui8-kalli.herokuapp.com/kalli/img/kalli-black.svg" width="56" alt="Kalli"
+          :src="`http://ui8-kalli.herokuapp.com/kalli/img/kalli-${isDark ? 'white' : 'black'}.svg`" width="56" alt="Kalli"
         ></a>
       </div>
       <div class="header-center hidden sm:block">
-        <nav class="header-nav font-sans text-lg">
-          <a class="mx-3 font-bold transition-color text-dark-700 hover:(text-dark-200 font-bold) dark:text-light-200 hover:(text-light-400)" href="">Portfolio</a>
-          <a class="mx-3 font-bold transition-color text-dark-700 hover:(text-dark-200 font-bold) dark:text-light-200 hover:(text-light-400)" href="">About</a>
-          <a class="mx-3 font-bold transition-color text-dark-700 hover:(text-dark-200 font-bold) dark:text-light-200 hover:(text-light-400)" href="">Contact</a>
-          <a class="mx-3 font-bold transition-color text-dark-700 hover:(text-dark-200 font-bold) dark:text-light-200 hover:(text-light-400)" href="" @click.prevent="router.push('/admin')">Admin</a>
+        <nav class="header-nav">
+          <a
+            class="mx-3 transition-color text-dark-700 hover:(text-dark-200) dark:text-light-200 dark:hover:(text-light-400)"
+            href=""
+          >Portfolio</a>
+          <a
+            class="mx-3 transition-color text-dark-700 hover:(text-dark-200) dark:text-light-200 dark:hover:(text-light-400)"
+            href=""
+          >About</a>
+          <a
+            class="mx-3 transition-color text-dark-700 hover:(text-dark-200) dark:text-light-200 dark:hover:(text-light-400)"
+            href=""
+          >Contact</a>
+          <a
+            class="mx-3 transition-color text-dark-700 hover:(text-dark-200) dark:text-light-200 dark:hover:(text-light-400)"
+            href="" @click.prevent="router.push('/admin')"
+          >Admin</a>
         </nav>
       </div>
-      <div class="header-right block text-black dark:text-white">
+      <div class="header-right flex justify-center text-black dark:text-white">
         <button class="header-action" data-menu-open="">
           <svg class="icon fill-current w-5 h-5 icon-grid" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 17 17">
             <path
@@ -88,8 +105,8 @@ onMounted(() => {
       </div>
     </div>
   </header>
-  <div class="min-h-[calc(100vh-0px)] relative font-sans">
-    <HeroSlider :grab-cursor="true" class="h-[calc(100vh)]" :sliders="photos" />
+  <div class="relative font-sans">
+    <HeroSlider :grab-cursor="true" class="h-[calc(100vh-8rem)] min-h-400px" :sliders="photos" />
   </div>
   <div class="container mx-auto">
     <article class="prose lg:prose-xl">
@@ -151,6 +168,100 @@ onMounted(() => {
       <!-- ... -->
     </article>
   </div>
+  <div class="mx-auto max-w-lg">
+    <TheWindow class="shadow-md shadow-dark-50/10" />
+  </div>
+  <div class="relative font-sans">
+    <HeroSlider :grab-cursor="true" class="h-[calc(100vh-8rem)] min-h-400px" :sliders="photos" />
+  </div>
+  <p>
+    But a recent study shows that the celebrated appetizer may be linked to a series of rabies cases
+    springing up around the country.
+  </p>
+  <p>
+    For years parents have espoused the health benefits of eating garlic bread with cheese to their
+    children, with the food earning such an iconic status in our culture that kids will often dress
+    up as warm, cheesy loaf for Halloween.
+  </p>
+  <p>
+    But a recent study shows that the celebrated appetizer may be linked to a series of rabies cases
+    springing up around the country.
+  </p>
+  <p>
+    But a recent study shows that the celebrated appetizer may be linked to a series of rabies cases
+    springing up around the country.
+  </p>
+  <p>
+    But a recent study shows that the celebrated appetizer may be linked to a series of rabies cases
+    springing up around the country.
+  </p>
+  <p>
+    But a recent study shows that the celebrated appetizer may be linked to a series of rabies cases
+    springing up around the country.
+  </p>
+  <p>
+    For years parents have espoused the health benefits of eating garlic bread with cheese to their
+    children, with the food earning such an iconic status in our culture that kids will often dress
+    up as warm, cheesy loaf for Halloween.
+  </p>
+  <p>
+    But a recent study shows that the celebrated appetizer may be linked to a series of rabies cases
+    springing up around the country.
+  </p>
+  <p>
+    For years parents have espoused the health benefits of eating garlic bread with cheese to their
+    children, with the food earning such an iconic status in our culture that kids will often dress
+    up as warm, cheesy loaf for Halloween.
+  </p>
+  <p>
+    But a recent study shows that the celebrated appetizer may be linked to a series of rabies cases
+    springing up around the country.
+  </p>
+  <p>
+    For years parents have espoused the health benefits of eating garlic bread with cheese to their
+    children, with the food earning such an iconic status in our culture that kids will often dress
+    up as warm, cheesy loaf for Halloween.
+  </p>
+  <p>
+    But a recent study shows that the celebrated appetizer may be linked to a series of rabies cases
+    springing up around the country.
+  </p>
+  <p>
+    For years parents have espoused the health benefits of eating garlic bread with cheese to their
+    children, with the food earning such an iconic status in our culture that kids will often dress
+    up as warm, cheesy loaf for Halloween.
+  </p>
+  <p>
+    But a recent study shows that the celebrated appetizer may be linked to a series of rabies cases
+    springing up around the country.
+  </p>
+  <p>
+    For years parents have espoused the health benefits of eating garlic bread with cheese to their
+    children, with the food earning such an iconic status in our culture that kids will often dress
+    up as warm, cheesy loaf for Halloween.
+  </p>
+  <p>
+    But a recent study shows that the celebrated appetizer may be linked to a series of rabies cases
+    springing up around the country.
+  </p>
+  <p>
+    For years parents have espoused the health benefits of eating garlic bread with cheese to their
+    children, with the food earning such an iconic status in our culture that kids will often dress
+    up as warm, cheesy loaf for Halloween.
+  </p>
+  <p>
+    But a recent study shows that the celebrated appetizer may be linked to a series of rabies cases
+    springing up around the country.
+  </p>
+  <p>
+    For years parents have espoused the health benefits of eating garlic bread with cheese to their
+    children, with the food earning such an iconic status in our culture that kids will often dress
+    up as warm, cheesy loaf for Halloween.
+  </p>
+  <p>
+    But a recent study shows that the celebrated appetizer may be linked to a series of rabies cases
+    springing up around the country.
+  </p>
 </template>
 
 <style lang="less">

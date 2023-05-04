@@ -12,12 +12,11 @@ export interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   sliders: () => [],
-  options: () => ({ modules: ['pagination'], autoplay: { delay: 999999999, disableOnInteraction: false, pauseOnMouseEnter: true } }),
+  options: () => ({ modules: ['pagination'], autoplay: { delay: 25000, disableOnInteraction: false, pauseOnMouseEnter: true } }),
 })
 // const { modelValue } = defineModels<{
 //   modelValue: string
 // }>()
-const { y: windowScrollY } = useWindowScroll()
 
 const modules = computed(() => {
   const swiperModules = [Autoplay]
@@ -27,14 +26,22 @@ const modules = computed(() => {
 })
 const sliderRef = ref()
 const activeSlideIndex = ref(0)
-const progresswidth = ref(0)
+const progressWidth = ref(0)
+const sliderWrapperRef = ref()
+const { height: sliderHeight, top: sliderTop } = useElementBounding(sliderWrapperRef)
+const sliderContainerIsVisible = useElementVisibility(sliderWrapperRef)
+
 function onSwiper(swiper: any) {
   sliderRef.value = swiper
 }
 const pagination = {
   clickable: true,
   renderBullet(index, className) {
-    return `<span class="${className}" tabindex="0" role="button" aria-label="Go to slide ${index + 1}"><span class="tooltip-content"><span class="tooltip-text"><span class="tooltip-inner"><img src="${props.sliders[index]?.image.thumb}" class="img-responsive" style="width: 100%; height: 100%;"></span></span></span></span>`
+    return `
+    <span class="${className}" tabindex="0" role="button" aria-label="Go to slide ${index + 1}">
+      <div role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="1" class="progress-circle-wrapper" style="width: 12px;height: 12px;"><svg viewBox="0 0 16 16" class="progress-circle-svg"><circle class="progress-circle-bg" fill="none" cx="8" cy="8" r="6" stroke-width="4"></circle><circle class="progress-circle-bar" fill="none" cx="8" cy="8" r="6" stroke-width="4" style="stroke-dasharray: 37.6991; stroke-dashoffset: var(--progress-percent);"></circle></svg></div>
+      <span class="tooltip-content"><span class="tooltip-text"><span class="tooltip-inner"><img src="${props.sliders[index]?.image.thumb}" class="img-responsive" style="width: 100%; height: 100%;"></span></span></span>
+    </span>`
   },
 }
 function onSlideChange() {
@@ -45,37 +52,47 @@ function onSlideChange() {
 
 <template>
   <Swiper
-    :autoplay="options?.autoplay || false" :navigation="options.modules.includes('navigation')"
-    :pagination="options.modules.includes('pagination') ? pagination : false" :modules="modules" class="hero-slider"
-    :slides-per-view="1" :space-between="0" @swiper="onSwiper" @slide-change="onSlideChange"
-    @autoplay-time-left="(s, time, progress) => progresswidth = 1 - progress"
-    @mouse-over="() => sliderRef?.autoplay.pause()"
-    @mouse-out="() => sliderRef?.autoplay.resume()"
+    ref="sliderWrapperRef" :autoplay="options?.autoplay || false" :navigation="options.modules.includes('navigation')"
+    :pagination="options.modules.includes('pagination') ? pagination : false" :modules="modules" class="hero-slider shadow-inner"
+    :slides-per-view="1" :space-between="0" :style="{ '--progress-percent': 37.6991 - (progressWidth * 37.6991) }"
+    @swiper="onSwiper" @slide-change="onSlideChange"
+    @autoplay-time-left="(__s, __time, progress) => progressWidth = 1 - progress"
+    @mouse-over="() => sliderRef?.autoplay.pause()" @mouse-out="() => sliderRef?.autoplay.resume()"
   >
-    <SwiperSlide v-for="(slide, index) in sliders" :key="slide.id" class="bg-blue-300 flex h-full justify-center items-center">
-      <header>
-        <div class="pattern pattern-1" />
-        <div class="pattern back-35-g" />
-        <div class="header-image" :style="{ 'background-image': `url(${slide.image.raw}&w=900&h=700&fit=crop)` }" />
+    <SwiperSlide
+      v-for="(slide, index) in sliders" :key="slide.id" class="bg-dark-900 flex h-full relative"
+      :style="{ '--progress-percent-display': index === activeSlideIndex ? 'block' : 'none' }"
+    >
+      <header class="justify-center items-center flex w-full">
+        <div
+          class="z-9 absolute top-0 right-0 w-full h-full"
+          style="background-color: #e5e5f7;opacity: 0.2;background-image:  repeating-linear-gradient(45deg, #000000 25%, transparent 25%, transparent 75%, #000000 75%, #000000), repeating-linear-gradient(45deg, #000000 25%, #e5e5f7 25%, #e5e5f7 75%, #000000 75%, #000000);background-position: 0 0, 1px 1px;background-size: 2px 2px;"
+        />
+        <div
+          class="z-9 absolute top-0 right-0 w-full h-full opacity-20"
+          style="background: radial-gradient(circle at 55% 60%,#00aaff, #002aff, rgba(144,143,255,1))"
+        />
+        <div
+          class="header-image opacity-70"
+          :style="{ 'background-position': `50% ${(sliderHeight + windowScrollY + sliderTop - (windowScrollY + sliderHeight)) / 50}%`, 'background-image': `url(${slide.image.raw}&w=900&h=700&fit=crop)` }"
+        />
 
-        <div class="container">
-          <div class="animate__delay-0s transition-opacity delay-0" :class="[index === activeSlideIndex ? `animate__animated ${slide.animationClasses}` : 'opacity-0']">
+        <div
+          class="container mx-auto relative w-full z-10 relative transition-opacity duration-1 p-2 top-0"
+          :style="sliderContainerIsVisible ? { top: `${1 - (sliderHeight + windowScrollY + sliderTop - (windowScrollY + sliderHeight)) * 0.25}px` } : ''"
+        >
+          <div
+            class="animate__delay-0s transition-opacity delay-0"
+            :class="[index === activeSlideIndex ? `animate__animated ${slide.animationClasses}` : 'opacity-0']"
+          >
             <component :is="slide.content" />
           </div>
         </div>
       </header>
-      <!-- <UseImage :src="`${slide.image.raw}&w=900&h=700&fit=crop`">
-        <template #loading>
-          Loading..
-        </template>
-        <template #error>
-          Failed
-        </template>
-      </UseImage> -->
     </SwiperSlide>
 
     <div class="swiper-progressBar">
-      <div class="swiper-bar" :style="{ width: `${progresswidth * 100}%` }" />
+      <div class="swiper-bar" :style="{ width: `${progressWidth * 100}%` }" />
     </div>
     <nav class="nav-slit">
       <a
@@ -108,9 +125,11 @@ function onSlideChange() {
 
 <style lang="less">
 .hero-slider {
+  @apply bg-black;
   >.swiper-wrapper>.swiper-slide>img {
     @apply w-full h-full object-cover;
   }
+
   .header-image {
     position: absolute;
     width: 100%;
@@ -121,6 +140,7 @@ function onSlideChange() {
     background-position: 50% 0%;
     background-size: cover !important;
   }
+
   .swiper-progressBar {
     width: 100%;
     background: rgba(0, 0, 0, 0.5);
@@ -142,7 +162,6 @@ function onSlideChange() {
     background-color: transparent;
 
     a {
-      border: none;
       background-color: #000000;
       padding: 5px;
       color: #fff;
@@ -266,7 +285,7 @@ function onSlideChange() {
 
 /* Gap filler */
 .swiper-pagination {
-  @apply absolute bottom-4 w-full text-center z-11 left-1/2 py-2px px-5px transform translate-x--50% bottom-2 rounded-xl w-auto bg-black/75;
+  @apply absolute bottom-8 w-full text-center z-11 right-1/2 md:right-3/4 transform translate-x-50% md:translate-x--0% py-2px px-5px rounded-xl w-auto bg-black/75;
 
   >span.swiper-pagination-bullet {
     @apply relative block float-left m-5px w-2 h-2 rounded-full transition-shadow duration-3 ease;
@@ -277,10 +296,14 @@ function onSlideChange() {
 
     &.swiper-pagination-bullet-active {
       --at-apply: opacity-100 bg-transparent shadow-white;
-      box-shadow: 0 0 0 2px white;
+      // box-shadow: 0 0 0 2px white;
 
       &:before {
         @apply transform scale-35 bg-white;
+      }
+
+      .progress-circle-wrapper {
+        display: block !important;
       }
     }
 
@@ -323,6 +346,26 @@ function onSlideChange() {
         }
       }
     }
+  }
+
+  .progress-circle-wrapper {
+    @apply absolute top--2px left--2px hidden;
+    text-align: center;
+    line-height: 1;
+    vertical-align: text-bottom;
+  }
+
+  .progress-circle-svg {
+    transform: rotate(-90deg);
+  }
+
+  .progress-circle-bar {
+    stroke: rgba(255, 255, 255, 1);
+    // transition: stroke-dashoffset .6s cubic-bezier(0,0,1,1) 0s,stroke .6s cubic-bezier(0,0,1,1);
+  }
+
+  .progress-circle-bg {
+    stroke: rgba(255, 255, 255, 0.4)
   }
 }
 </style>

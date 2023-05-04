@@ -95,7 +95,7 @@ const columns = [
 useSubscription({ query: subscriptionListenForNewPlaceGql }, (__messages = [], response) => {
   if (response) {
     message.info({
-      content: response.listenForNewPlace.address,
+      content: `${response.listenForNewPlace.address} - ${response.listenForNewPlace.name}`,
       duration: 5000,
     })
   }

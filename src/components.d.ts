@@ -39,7 +39,6 @@ declare module '@vue/runtime-core' {
     ATooltip: typeof import('@arco-design/web-vue')['Tooltip']
     ATrigger: typeof import('@arco-design/web-vue')['Trigger']
     CommonCodeMirror: typeof import('./components/common/CodeMirror.vue')['default']
-    copy: typeof import('./components/TheCounter copy.vue')['default']
     HeroSlider: typeof import('./components/HeroSlider.vue')['default']
     IconApps: typeof import('@arco-design/web-vue/es/icon')['IconApps']
     IconBug: typeof import('@arco-design/web-vue/es/icon')['IconBug']
@@ -56,6 +55,6 @@ declare module '@vue/runtime-core' {
     TheInput: typeof import('./components/TheInput.vue')['default']
     TheWindow: typeof import('./components/TheWindow.vue')['default']
     ThisForTest: typeof import('./components/ThisForTest.vue')['default']
-    UseImage: typeof import('@vueuse/components')['UseImage']
+    UseElementSize: typeof import('@vueuse/components')['UseElementSize']
   }
 }

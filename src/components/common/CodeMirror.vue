@@ -3,7 +3,7 @@
 import { Decoration } from '@codemirror/view'
 import { useEventListener, useThrottleFn } from '@vueuse/core'
 import type { CompletionSource } from '@codemirror/autocomplete'
-import { addMarks, filterMarks, useCodeMirror } from '~/composables/codemirror'
+import { addMarks, filterMarks, useCodeMirror } from './codemirror'
 
 const props = defineProps<{
   modelValue: string
@@ -60,8 +60,8 @@ onMounted(async () => {
     relative
     font-mono
     text-sm
+    border-none
     data-enable-grammarly="false"
-    h-full
   />
 </template>
 

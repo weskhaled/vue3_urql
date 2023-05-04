@@ -66,7 +66,7 @@ export const vitesseTheme = EditorView.theme({
   '.cm-gutters': {
     backgroundColor: background,
     color: lineNumber,
-    border: 'none',
+    borderRight: '1px solid var(--cm-line-highlight-border);',
   },
 
   '.cm-activeLineGutter': {

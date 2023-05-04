@@ -12,6 +12,7 @@ import { htmlLanguage } from '@codemirror/lang-html'
 import type { CompletionSource } from '@codemirror/autocomplete'
 import { acceptCompletion, completionKeymap } from '@codemirror/autocomplete'
 import type { MaybeRef } from '@vueuse/core'
+import './codemirror.css'
 import { vitesse } from './theme'
 
 // Effects can be attached to transactions to communicate with the extension
