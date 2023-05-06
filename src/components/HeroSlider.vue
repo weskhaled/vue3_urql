@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { breakpointsTailwind, useBreakpoints } from '@vueuse/core'
 import { Autoplay, Navigation, Pagination } from 'swiper'
 // Import Swiper Vue.js components
 import { Swiper, SwiperSlide } from 'swiper/vue'
@@ -17,7 +18,8 @@ const props = withDefaults(defineProps<Props>(), {
 // const { modelValue } = defineModels<{
 //   modelValue: string
 // }>()
-
+const breakpoints = useBreakpoints(breakpointsTailwind)
+const mdAndLarger = breakpoints.greater('md')
 const modules = computed(() => {
   const swiperModules = [Autoplay]
   props.options.modules.includes('navigation') && (swiperModules.push(Navigation))
@@ -28,6 +30,14 @@ const sliderRef = ref()
 const activeSlideIndex = ref(0)
 const progressWidth = ref(0)
 const sliderWrapperRef = ref()
+const sliderStyles: any = reactive({
+  container: {
+    top: '0px',
+  },
+  hederImage: {
+    backgroundPosition: '50% 0',
+  },
+})
 const { height: sliderHeight, top: sliderTop } = useElementBounding(sliderWrapperRef)
 const sliderContainerIsVisible = useElementVisibility(sliderWrapperRef)
 
@@ -48,15 +58,27 @@ function onSlideChange() {
   const { activeIndex } = sliderRef.value
   activeSlideIndex.value = activeIndex
 }
+watch(windowScrollY, (val) => {
+  if (mdAndLarger.value) {
+    if (sliderContainerIsVisible.value) {
+      const percentInView = sliderHeight.value + val + sliderTop.value - (val + sliderHeight.value)
+      sliderStyles.container.top = `${1 - percentInView * 0.2}px`
+      sliderStyles.container.opacity = `${((percentInView * 0.1) + 100)}%`
+      sliderStyles.hederImage.backgroundPosition = `50% ${percentInView / 50}%`
+    }
+  }
+})
 </script>
 
 <template>
   <Swiper
-    ref="sliderWrapperRef" :autoplay="options?.autoplay || false" :navigation="options.modules.includes('navigation')"
-    :pagination="options.modules.includes('pagination') ? pagination : false" :modules="modules" class="hero-slider shadow-inner"
-    :slides-per-view="1" :space-between="0" :style="{ '--progress-percent': 37.6991 - (progressWidth * 37.6991) }"
-    @swiper="onSwiper" @slide-change="onSlideChange"
-    @autoplay-time-left="(__s, __time, progress) => progressWidth = 1 - progress"
+    ref="sliderWrapperRef" :autoplay="options?.autoplay || false"
+    :navigation="options.modules.includes('navigation')"
+    :loop="false"
+    :pagination="options.modules.includes('pagination') ? pagination : false" :modules="modules"
+    class="hero-slider shadow-inner" :slides-per-view="1" :space-between="0"
+    :style="{ '--progress-percent': 37.6991 - (progressWidth * 37.6991) }" @swiper="onSwiper"
+    @slide-change="onSlideChange" @autoplay-time-left="(__s, __time, progress) => progressWidth = 1 - progress"
     @mouse-over="() => sliderRef?.autoplay.pause()" @mouse-out="() => sliderRef?.autoplay.resume()"
   >
     <SwiperSlide
@@ -74,16 +96,16 @@ function onSlideChange() {
         />
         <div
           class="header-image opacity-70"
-          :style="{ 'background-position': `50% ${(sliderHeight + windowScrollY + sliderTop - (windowScrollY + sliderHeight)) / 50}%`, 'background-image': `url(${slide.image.raw}&w=900&h=700&fit=crop)` }"
+          :style="{ ...sliderStyles.hederImage, 'background-image': `url(${slide.image.raw}&w=900&h=700&fit=crop)` }"
         />
 
         <div
-          class="container mx-auto relative w-full z-10 relative transition-opacity duration-1 p-2 top-0"
-          :style="sliderContainerIsVisible ? { top: `${1 - (sliderHeight + windowScrollY + sliderTop - (windowScrollY + sliderHeight)) * 0.25}px` } : ''"
+          class="container mx-auto relative w-full z-10 relative transition-opacity duration-0s px-6 md:px-3 py-3 top-0"
+          :style="{ ...sliderStyles.container }"
         >
           <div
-            class="animate__delay-0s transition-opacity delay-0"
-            :class="[index === activeSlideIndex ? `animate__animated ${slide.animationClasses}` : 'opacity-0']"
+            v-if="index === activeSlideIndex" class="transition-opacity duration-0.5s opacity-0"
+            :class="{ 'opacity-100': sliderContainerIsVisible, 'animate__animated': index === activeSlideIndex }"
           >
             <component :is="slide.content" />
           </div>
@@ -95,28 +117,32 @@ function onSlideChange() {
       <div class="swiper-bar" :style="{ width: `${progressWidth * 100}%` }" />
     </div>
     <nav class="nav-slit">
-      <a
-        class="prev" :class="[`${activeSlideIndex < 1 && '!opacity-20 pointer-events-none'}`]" href="javascript:;"
-        @click="sliderRef.slidePrev()"
-      >
+      <a class="prev" href="javascript:;" @click="activeSlideIndex < 1 ? sliderRef.slideTo(sliders.length) : sliderRef.slidePrev()">
         <span class="icon-wrap">
           <i class="icon i-carbon-chevron-left" />
         </span>
-        <div>
-          <h3 id="title-prev">{{ sliders[activeSlideIndex - 1]?.title }}</h3>
-          <img id="thumb-prev" :src="sliders[activeSlideIndex - 1]?.image.thumb" alt="Previous thumb">
+        <div class="">
+          <h3 id="title-prev">{{ activeSlideIndex < 1 ? sliders[sliders.length - 1]?.title : sliders[activeSlideIndex
+            - 1]?.title }}</h3>
+          <img
+            id="thumb-prev"
+            :src="activeSlideIndex < 1 ? sliders[sliders.length - 1]?.image.thumb : sliders[activeSlideIndex - 1]?.image.thumb"
+            alt="Previous thumb"
+          >
         </div>
       </a>
-      <a
-        class="next" :class="[`${activeSlideIndex + 1 >= sliders.length && '!opacity-20 pointer-events-none'}`]"
-        href="javascript:;" @click="sliderRef.slideNext()"
-      >
+      <a class="next" href="javascript:;" @click="activeSlideIndex + 1 >= sliders.length ? sliderRef.slideTo(0) : sliderRef.slideNext()">
         <span class="icon-wrap">
           <i class="icon i-carbon-chevron-right" />
         </span>
-        <div>
-          <h3 id="title-next">{{ sliders[activeSlideIndex + 1]?.title }}</h3>
-          <img id="thumb-next" :src="sliders[activeSlideIndex + 1]?.image.thumb" alt="Next thumb">
+        <div class="">
+          <h3 id="title-next">{{ activeSlideIndex + 1 >= sliders.length ? sliders[0]?.title : sliders[activeSlideIndex
+            + 1]?.title }}</h3>
+          <img
+            id="thumb-next"
+            :src="activeSlideIndex + 1 >= sliders.length ? sliders[0]?.image.thumb : sliders[activeSlideIndex + 1]?.image.thumb"
+            alt="Next thumb"
+          >
         </div>
       </a>
     </nav>
@@ -126,34 +152,22 @@ function onSlideChange() {
 <style lang="less">
 .hero-slider {
   @apply bg-black;
+
   >.swiper-wrapper>.swiper-slide>img {
     @apply w-full h-full object-cover;
   }
 
   .header-image {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    z-index: -1;
+    @apply absolute w-full h-full -z-1 !bg-cover bg-position-['50px'] left-0 top-0;
     background-position: 50% 0%;
-    background-size: cover !important;
   }
 
   .swiper-progressBar {
-    width: 100%;
+    @apply w-full absolute z-2 left-0 bottom-0;
     background: rgba(0, 0, 0, 0.5);
-    position: absolute;
-    bottom: 0px;
-    left: 0px;
-    z-index: 2;
 
     .swiper-bar {
-      width: 0%;
-      max-width: 100%;
-      height: 4px;
-      background: #1f8cef;
+      @apply w-0 max-w-full h-4px bg-white;
     }
   }
 
@@ -162,25 +176,9 @@ function onSlideChange() {
     background-color: transparent;
 
     a {
-      background-color: #000000;
-      padding: 5px;
-      color: #fff;
-      opacity: 0.9;
-      position: absolute;
-      top: 50%;
-      display: block;
-      outline: none;
-      text-align: left;
-      z-index: 1000;
+      @apply absolute outline-none block top-1/2 p-1 bg-black text-white opacity-90 text-left z-55;
       transform: translateY(-50%);
       transition: all 0.4s ease;
-      position: absolute;
-      top: 50%;
-      display: block;
-      outline: none;
-      text-align: left;
-      z-index: 1000;
-      transform: translateY(-50%);
 
       .icon-wrap {
         position: relative;
@@ -215,19 +213,7 @@ function onSlideChange() {
         perspective: 1000px;
 
         h3 {
-          position: absolute;
-          top: 100%;
-          margin: 0;
-          padding: 0 20px;
-          width: 100%;
-          background: #000;
-          color: #fff;
-          text-transform: uppercase;
-          white-space: nowrap;
-          letter-spacing: 1px;
-          font-weight: 600;
-          font-size: 12px;
-          line-height: 30px;
+          @apply absolute top-full m-0 py-.5 px-2 w-full bg-black color-white uppercase text-sm leading-8 font-semibold;
           transition: transform 0.3s;
           transform: rotateX(-90deg);
           transform-origin: 50% 0;
@@ -285,7 +271,7 @@ function onSlideChange() {
 
 /* Gap filler */
 .swiper-pagination {
-  @apply absolute bottom-8 w-full text-center z-11 right-1/2 md:right-3/4 transform translate-x-50% md:translate-x--0% py-2px px-5px rounded-xl w-auto bg-black/75;
+  @apply absolute bottom-8 w-full text-center z-11 right-1/2 md: right-3/4 transform translate-x-50% md:translate-x--0% py-2px px-5px rounded-xl w-auto bg-black/75;
 
   >span.swiper-pagination-bullet {
     @apply relative block float-left m-5px w-2 h-2 rounded-full transition-shadow duration-3 ease;
@@ -303,7 +289,7 @@ function onSlideChange() {
       }
 
       .progress-circle-wrapper {
-        display: block !important;
+        @apply !opacity-100;
       }
     }
 
@@ -349,10 +335,7 @@ function onSlideChange() {
   }
 
   .progress-circle-wrapper {
-    @apply absolute top--2px left--2px hidden;
-    text-align: center;
-    line-height: 1;
-    vertical-align: text-bottom;
+    @apply absolute top--2px left--2px opacity-0 transition-opacity duration-200;
   }
 
   .progress-circle-svg {
@@ -361,11 +344,10 @@ function onSlideChange() {
 
   .progress-circle-bar {
     stroke: rgba(255, 255, 255, 1);
-    // transition: stroke-dashoffset .6s cubic-bezier(0,0,1,1) 0s,stroke .6s cubic-bezier(0,0,1,1);
   }
 
   .progress-circle-bg {
-    stroke: rgba(255, 255, 255, 0.4)
+    stroke: rgba(255, 255, 255, 0.5)
   }
 }
 </style>

@@ -41,7 +41,7 @@ function handleDelete(key) {
 </script>
 
 <template>
-  <div class="container-wide mx-auto min-w-sm max-w-lg" data-local-scroll>
+  <div class="container mx-auto min-w-xs max-w-lg" data-local-scroll>
     <div class="row align-items-center">
       <div class="col-md-8 offset-md-2">
         <div class="windowscreen">
