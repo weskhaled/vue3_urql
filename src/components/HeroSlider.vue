@@ -13,13 +13,13 @@ export interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   sliders: () => [],
-  options: () => ({ modules: ['pagination'], autoplay: { delay: 25000, disableOnInteraction: false, pauseOnMouseEnter: true } }),
+  options: () => ({ modules: ['pagination'], autoplay: { delay: 250000, disableOnInteraction: false, pauseOnMouseEnter: true } }),
 })
 // const { modelValue } = defineModels<{
 //   modelValue: string
 // }>()
 const breakpoints = useBreakpoints(breakpointsTailwind)
-const mdAndLarger = breakpoints.greater('md')
+const mdAndLarger = breakpoints.greater('sm')
 const modules = computed(() => {
   const swiperModules = [Autoplay]
   props.options.modules.includes('navigation') && (swiperModules.push(Navigation))
@@ -49,7 +49,7 @@ const pagination = {
   renderBullet(index, className) {
     return `
     <span class="${className}" tabindex="0" role="button" aria-label="Go to slide ${index + 1}">
-      <div role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="1" class="progress-circle-wrapper" style="width: 12px;height: 12px;"><svg viewBox="0 0 16 16" class="progress-circle-svg"><circle class="progress-circle-bg" fill="none" cx="8" cy="8" r="6" stroke-width="4"></circle><circle class="progress-circle-bar" fill="none" cx="8" cy="8" r="6" stroke-width="4" style="stroke-dasharray: 37.6991; stroke-dashoffset: var(--progress-percent);"></circle></svg></div>
+      <div role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="1" class="progress-circle-wrapper" style="width: 12px;height: 12px;"><svg viewBox="0 0 16 16" class="progress-circle-svg"><circle class="progress-circle-bg" fill="none" cx="8" cy="8" r="6" stroke-width="4"></circle><circle class="progress-circle-bar" fill="none" cx="8" cy="8" r="6" stroke-width="4" style="stroke-dasharray: 37.6991; stroke-dashoffset: var(--slider-progress-percent);"></circle></svg></div>
       <span class="tooltip-content"><span class="tooltip-text"><span class="tooltip-inner"><img src="${props.sliders[index]?.image.thumb}" class="img-responsive" style="width: 100%; height: 100%;"></span></span></span>
     </span>`
   },
@@ -64,7 +64,7 @@ watch(windowScrollY, (val) => {
       const percentInView = sliderHeight.value + val + sliderTop.value - (val + sliderHeight.value)
       sliderStyles.container.top = `${1 - percentInView * 0.2}px`
       sliderStyles.container.opacity = `${((percentInView * 0.1) + 100)}%`
-      sliderStyles.hederImage.backgroundPosition = `50% ${percentInView / 50}%`
+      sliderStyles.hederImage.backgroundPosition = `50% ${percentInView / 25}%`
     }
   }
 })
@@ -74,18 +74,20 @@ watch(windowScrollY, (val) => {
   <Swiper
     ref="sliderWrapperRef" :autoplay="options?.autoplay || false"
     :navigation="options.modules.includes('navigation')"
-    :loop="false"
     :pagination="options.modules.includes('pagination') ? pagination : false" :modules="modules"
     class="hero-slider shadow-inner" :slides-per-view="1" :space-between="0"
-    :style="{ '--progress-percent': 37.6991 - (progressWidth * 37.6991) }" @swiper="onSwiper"
+    :style="{ '--slider-progress-percent': 37.6991 - (progressWidth * 37.6991) }" @swiper="onSwiper"
     @slide-change="onSlideChange" @autoplay-time-left="(__s, __time, progress) => progressWidth = 1 - progress"
     @mouse-over="() => sliderRef?.autoplay.pause()" @mouse-out="() => sliderRef?.autoplay.resume()"
   >
     <SwiperSlide
       v-for="(slide, index) in sliders" :key="slide.id" class="bg-dark-900 flex h-full relative"
-      :style="{ '--progress-percent-display': index === activeSlideIndex ? 'block' : 'none' }"
     >
       <header class="justify-center items-center flex w-full">
+        <div
+          class="header-image opacity-70"
+          :style="{ ...sliderStyles.hederImage, 'background-image': `url(https://tailwindcss.com/_next/static/media/docs-dark@tinypng.1bbe175e.png)` }"
+        />
         <div
           class="z-9 absolute top-0 right-0 w-full h-full"
           style="background-color: #e5e5f7;opacity: 0.2;background-image:  repeating-linear-gradient(45deg, #000000 25%, transparent 25%, transparent 75%, #000000 75%, #000000), repeating-linear-gradient(45deg, #000000 25%, #e5e5f7 25%, #e5e5f7 75%, #000000 75%, #000000);background-position: 0 0, 1px 1px;background-size: 2px 2px;"
@@ -96,11 +98,15 @@ watch(windowScrollY, (val) => {
         />
         <div
           class="header-image opacity-70"
-          :style="{ ...sliderStyles.hederImage, 'background-image': `url(${slide.image.raw}&w=900&h=700&fit=crop)` }"
+          :style="{ ...sliderStyles.hederImage, 'background-image': `url(${slide.image.screen})` }"
+        />
+        <div
+          class="header-image opacity-70"
+          :style="{ ...sliderStyles.hederImage, 'background-image': `url(https://tailwindcss.com/_next/static/media/0-dark@tinypng.74768a0b.png)` }"
         />
 
         <div
-          class="container mx-auto relative w-full z-10 relative transition-opacity duration-0s px-6 md:px-3 py-3 top-0"
+          class="container mx-auto relative w-full z-10 relative transition-opacity duration-0s px-8 md:px-5 py-3 top-0"
           :style="{ ...sliderStyles.container }"
         >
           <div
@@ -163,11 +169,10 @@ watch(windowScrollY, (val) => {
   }
 
   .swiper-progressBar {
-    @apply w-full absolute z-2 left-0 bottom-0;
-    background: rgba(0, 0, 0, 0.5);
+    @apply w-full absolute z-2 left-0 bottom-0 bg-black/50;
 
     .swiper-bar {
-      @apply w-0 max-w-full h-4px bg-white;
+      @apply w-0 max-w-full h-4px bg-blue-7;
     }
   }
 
@@ -176,7 +181,7 @@ watch(windowScrollY, (val) => {
     background-color: transparent;
 
     a {
-      @apply absolute outline-none block top-1/2 p-1 bg-black text-white opacity-90 text-left z-55;
+      @apply absolute outline-none block top-1/2 p-1 bg-white/90 dark:bg-black/90 text-black dark:text-white opacity-90 text-left z-55;
       transform: translateY(-50%);
       transition: all 0.4s ease;
 
@@ -213,7 +218,7 @@ watch(windowScrollY, (val) => {
         perspective: 1000px;
 
         h3 {
-          @apply absolute top-full m-0 py-.5 px-2 w-full bg-black color-white uppercase text-sm leading-8 font-semibold;
+          @apply absolute top-full m-0 py-.5 px-2 w-full bg-white/70 dark:bg-black color-black dark:color-white uppercase text-sm leading-8 font-semibold;
           transition: transform 0.3s;
           transform: rotateX(-90deg);
           transform-origin: 50% 0;
@@ -271,7 +276,7 @@ watch(windowScrollY, (val) => {
 
 /* Gap filler */
 .swiper-pagination {
-  @apply absolute bottom-8 w-full text-center z-11 right-1/2 md: right-3/4 transform translate-x-50% md:translate-x--0% py-2px px-5px rounded-xl w-auto bg-black/75;
+  @apply absolute bottom-8 w-full text-center z-11 right-1/2 md:right-3/4 transform translate-x-50% md:translate-x--0% py-2px px-5px rounded-xl w-auto bg-black/75;
 
   >span.swiper-pagination-bullet {
     @apply relative block float-left m-5px w-2 h-2 rounded-full transition-shadow duration-3 ease;
@@ -285,7 +290,7 @@ watch(windowScrollY, (val) => {
       // box-shadow: 0 0 0 2px white;
 
       &:before {
-        @apply transform scale-35 bg-white;
+        @apply transform scale-35 bg-white hidden;
       }
 
       .progress-circle-wrapper {

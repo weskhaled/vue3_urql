@@ -184,11 +184,11 @@ export default ({ mode }) => {
     css: {
       preprocessorOptions: {
         less: {
-          // modifyVars: {
-          //   'primary-6': '#0075ff',
-          //   'border-radius-small': '0',
-          //   'border-radius-medium': '0',
-          // },
+          modifyVars: {
+            // 'primary-6': '#0075ff',
+            'border-radius-small': '0',
+            'border-radius-medium': '2px',
+          },
           javascriptEnabled: true,
         },
       },

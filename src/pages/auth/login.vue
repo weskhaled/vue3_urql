@@ -112,14 +112,22 @@ onMounted(() => {
                 <a-input
                   v-model="form.username"
                   placeholder="please enter your username..."
-                />
+                >
+                  <template #prefix>
+                    <i i-carbon-user block />
+                  </template>
+                </a-input>
               </a-form-item>
               <a-form-item
                 label="Password"
                 field="password" :rules="[{ required: true, message: 'name is required' }, { minLength: 4, message: 'must be greater than 4 characters' }]"
                 :validate-trigger="['change', 'input']"
               >
-                <a-input-password v-model="form.password" placeholder="please enter your password" />
+                <a-input-password v-model="form.password" placeholder="please enter your password">
+                  <template #prefix>
+                    <i i-carbon-password block />
+                  </template>
+                </a-input-password>
               </a-form-item>
               <a-form-item field="rememberMe">
                 <a-checkbox v-model="form.rememberMe">
