@@ -25,6 +25,9 @@ dependencies:
   '@codemirror/view':
     specifier: ^6.10.1
     version: 6.10.1
+  '@iconify-json/la':
+    specifier: ^1.1.4
+    version: 1.1.4
   '@unocss/reset':
     specifier: ^0.51.12
     version: 0.51.12
@@ -2072,6 +2075,12 @@ packages:
       '@iconify/types': 2.0.0
     dev: true
 
+  /@iconify-json/la@1.1.4:
+    resolution: {integrity: sha512-9isaXr/uGwtv2tU99oLLoK1zMXABXYJMugmxwS8KSYCK3DrBD0wp4GSM5jbm8angemxcfMpNZwySywDcOulfmA==}
+    dependencies:
+      '@iconify/types': 2.0.0
+    dev: false
+
   /@iconify-json/line-md@1.1.23:
     resolution: {integrity: sha512-gaA4OPpHa4SuHXtCDH2LUqMN/zUL4uVvTPFnHc+Ki3mGOZg1q2yZ0+vrwnWK0iMKf7tlffprZmQ5lIZZc/Irrg==}
     dependencies:
@@ -2086,7 +2095,6 @@ packages:
 
   /@iconify/types@2.0.0:
     resolution: {integrity: sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==}
-    dev: true
 
   /@iconify/utils@2.1.5:
     resolution: {integrity: sha512-6MvDI+I6QMvXn5rK9KQGdpEE4mmLTcuQdLZEiX5N+uZB+vc4Yw9K1OtnOgkl8mp4d9X0UrILREyZgF1NUwUt+Q==}

@@ -39,6 +39,7 @@ declare module '@vue/runtime-core' {
     ATable: typeof import('@arco-design/web-vue')['Table']
     ATabPane: typeof import('@arco-design/web-vue')['TabPane']
     ATabs: typeof import('@arco-design/web-vue')['Tabs']
+    ATag: typeof import('@arco-design/web-vue')['Tag']
     ATooltip: typeof import('@arco-design/web-vue')['Tooltip']
     ATrigger: typeof import('@arco-design/web-vue')['Trigger']
     CommonCodeMirror: typeof import('./components/common/CodeMirror.vue')['default']

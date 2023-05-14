@@ -26,6 +26,7 @@
     "@codemirror/lang-xml": "^6.0.2",
     "@codemirror/state": "^6.2.0",
     "@codemirror/view": "^6.10.1",
+    "@iconify-json/la": "^1.1.4",
     "@unocss/reset": "^0.51.12",
     "@urql/exchange-auth": "^2.1.0",
     "@urql/vue": "^1.1.0",

@@ -106,7 +106,7 @@ watch(windowScrollY, (val) => {
         />
 
         <div
-          class="container mx-auto relative w-full z-10 relative transition-opacity duration-0s px-8 md:px-5 py-3 top-0"
+          class="container mx-auto relative w-full z-10 relative transition-opacity duration-0s px-8 md:px-6 py-3 top-0"
           :style="{ ...sliderStyles.container }"
         >
           <div
