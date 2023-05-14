@@ -555,7 +555,7 @@ const { results } = useFuse(inputSkillsSearch, skills, {
                   <div class="recent-posts">
                     <a v-for="post in [1, 2]" :key="post" href="#" class="media post mb-3 block">
                       <div class="float-left mr-2">
-                        <img class="media-object" alt="" src="img/forest.jpg" style="width: 70px; height: 60px;">
+                        <img class="media-object" alt="" src="/img/forest.jpg" style="width: 70px; height: 60px;">
                       </div>
                       <div class="media-body">
                         <h4 class="media-heading">Top aligned media</h4>
