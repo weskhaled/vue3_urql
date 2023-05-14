@@ -41,6 +41,7 @@
     "nprogress": "^0.2.0",
     "pinia": "^2.0.34",
     "swiper": "^9.3.0",
+    "typed.js": "^2.0.16",
     "unsplash-js": "^7.0.15",
     "vue": "^3.3.1",
     "vue-demi": "^0.14.0",

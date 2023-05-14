@@ -70,6 +70,9 @@ dependencies:
   swiper:
     specifier: ^9.3.0
     version: 9.3.0
+  typed.js:
+    specifier: ^2.0.16
+    version: 2.0.16
   unsplash-js:
     specifier: ^7.0.15
     version: 7.0.15
@@ -10139,6 +10142,10 @@ packages:
       for-each: 0.3.3
       is-typed-array: 1.1.10
     dev: true
+
+  /typed.js@2.0.16:
+    resolution: {integrity: sha512-IBB52GlJiTUOnomwdVVf7lWgC6gScn8md+26zTHj5oJWA+4pSuclHE76rbGI2hnyO+NT+QXdIUHbfjAY5nEtcw==}
+    dev: false
 
   /typescript@4.9.5:
     resolution: {integrity: sha512-1FXk9E2Hm+QzZQ7z+McJiHL4NW1F2EzMu9Nq9i3zAaGqibafqYwCVU6WyWAuyQRRzOlxou8xZSyXLEN8oKj24g==}

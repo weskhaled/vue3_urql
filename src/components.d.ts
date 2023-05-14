@@ -9,7 +9,7 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
-    ABackTop: typeof import('@arco-design/web-vue')['BackTop']
+    AAvatar: typeof import('@arco-design/web-vue')['Avatar']
     ABreadcrumb: typeof import('@arco-design/web-vue')['Breadcrumb']
     ABreadcrumbItem: typeof import('@arco-design/web-vue')['BreadcrumbItem']
     AButton: typeof import('@arco-design/web-vue')['Button']
@@ -40,6 +40,8 @@ declare module '@vue/runtime-core' {
     ATabPane: typeof import('@arco-design/web-vue')['TabPane']
     ATabs: typeof import('@arco-design/web-vue')['Tabs']
     ATag: typeof import('@arco-design/web-vue')['Tag']
+    ATimeline: typeof import('@arco-design/web-vue')['Timeline']
+    ATimelineItem: typeof import('@arco-design/web-vue')['TimelineItem']
     ATooltip: typeof import('@arco-design/web-vue')['Tooltip']
     ATrigger: typeof import('@arco-design/web-vue')['Trigger']
     CommonCodeMirror: typeof import('./components/common/CodeMirror.vue')['default']
@@ -60,5 +62,6 @@ declare module '@vue/runtime-core' {
     TheWindow: typeof import('./components/TheWindow.vue')['default']
     ThisForTest: typeof import('./components/ThisForTest.vue')['default']
     UseElementSize: typeof import('@vueuse/components')['UseElementSize']
+    UseElementVisibility: typeof import('@vueuse/components')['UseElementVisibility']
   }
 }

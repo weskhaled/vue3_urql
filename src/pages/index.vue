@@ -12,6 +12,7 @@ import TheWindow from '~/components/TheWindow.vue'
 
 const windowHeight = useWindowSize().height
 const inputSkillsSearch = ref('')
+const { y: wrapperY } = useScroll(typeof window !== 'undefined' ? window : null, { behavior: 'smooth' })
 const { notification } = useNotification()
 const router = useRouter()
 const photos: Ref<any[]> = ref([])
@@ -41,15 +42,15 @@ unsplash.search.getPhotos({
   const animations = ['animate__slideInDown', 'animate__bounce', 'animate__backInRight', 'animate__backInLeft', 'animate__fadeInUp']
   photos.value = [
     {
-      title: '1/2',
-      content: h('div', { class: 'text-left text-white max-w-xl ml-0' }, [h('h1', { class: 'font-bold text-2rem md:text-4rem leading-tight delay-0.5s animate__animated animate__slideInDown' }, 'Hi, I’am Khaled. Proffesional Developer based on Paris 👋'), h('p', { class: 'text-1rem animate__delay-0.5s animate__animated animate__backInUp' }, 'Expert customer support team is all around the globe, ready and excited to help.')]),
+      title: '1 / 2',
+      content: h('div', { class: 'text-left text-white max-w-xl ml-0' }, [h('h1', { class: 'font-bold text-2rem md:text-4rem leading-tight ![--animate-delay:0.1s] animate__animated animate__slideInDown' }, 'Hi, I’am Khaled. Proffesional Developer based on Paris 👋'), h('p', { class: 'text-1rem ![--animate-delay:0.15s] animate__delay-2s animate__animated animate__backInUp' }, 'Expert customer support team is all around the globe, ready and excited to help.')]),
       image: {
         screen: '/img/slider-1.jpg',
         thumb: '/img/slider-1.jpg',
       },
     },
     {
-      title: '2/2',
+      title: '2 / 2',
       content: h(TheWindow, { class: 'delay-0s animate__animated animate__slideInDown' }),
       image: {
         screen: '/img/slider-2.jpg',
@@ -237,20 +238,28 @@ const { results } = useFuse(inputSkillsSearch, skills, {
             class="header-right"
             :class="(windowScrollY > 200) ? '[--primary-6:0,0,0] md:dark:[--primary-6:255,255,255]' : '[--primary-6:0,0,0] md:[--primary-6:255,255,255] dark:[--primary-6:255,255,255]'"
           >
-            <a-button class="!hover:bg-white/10" type="text" size="large" @click="toggleDark()">
+            <a-button class="!hover:bg-zinc-6/30" type="text" size="large" @click="router.push('/admin')">
               <template #icon>
                 <span
-                  class="w-6 h-6 mx-1 block text-lg i-line-md-moon-alt-to-sunny-outline-loop-transition dark:i-line-md-moon-twotone-alt-loop"
+                  class="w-5 h-5 mx-1 block text-lg i-line-md-account"
+                />
+              </template>
+            </a-button>
+
+            <a-button class="!hover:bg-zinc-6/30 ml-2" type="text" size="large" @click="toggleDark()">
+              <template #icon>
+                <span
+                  class="w-5 h-5 mx-1 block text-lg i-line-md-moon-alt-to-sunny-outline-loop-transition dark:i-line-md-moon-twotone-alt-loop"
                 />
               </template>
             </a-button>
 
             <a-button
-              class="!hover:bg-white/10 ml-3" type="text" size="large"
-              @click.stop="() => sourceTransition = (sourceTransition === 100 ? 0 : 100)"
+              class="!hover:bg-zinc-6/30 ml-2" type="text" size="large"
+              @click.stop="async() => sourceTransition = (sourceTransition === 100 ? 0 : 100)"
             >
               <template #icon>
-                <span i-line-md-grid-3-twotone class="w-6 h-6 mx-1 block text-lg" />
+                <span i-line-md-grid-3 class="w-5 h-5 mx-1 block text-lg" />
               </template>
             </a-button>
           </div>
@@ -258,28 +267,28 @@ const { results } = useFuse(inputSkillsSearch, skills, {
 
         <div
           class="flex transition-height top-20 w-full items-center justify-center bg-light-1/80 dark:bg-zinc-9/70 overflow-hidden"
-          :class="{ 'b-t b-zinc-5/20': outputTransition === 100 }"
+          :class="{ 'b-t b-zinc-5/20': outputTransition > 0 }"
           :style="{ height: `${((windowHeight - (windowHeight > 500 ? 200 : 0)) * outputTransition) * 0.01}px` }"
         >
           <nav
-            class="header-nav-mobile overflow-y-auto m-auto h-full w-full flex items-center justify-center flex-col text-center my-auto gap-4 md:text-3xl/10 text-xl font-semibold p-2"
+            class="header-nav-mobile overflow-y-auto m-auto h-full w-full flex items-center justify-center flex-col text-center my-auto gap-4 md:text-3xl/10 text-xl font-semibold p-1"
           >
-            <a href="" :class="[outputTransition > 0 ? 'animate__animated animate__fadeInLeft animate__delay-1s opacity-100' : 'duration-0.1s animate__animated animate__fadeOutUp opacity-0']" class="![--animate-delay:0.1s]">
+            <a href="" :class="[outputTransition === 100 ? 'animate__animated animate__fadeInLeft animate__delay-1s opacity-100' : '![--animate-delay:0.1s] animate__delay-1s duration-0.1s animate__animated animate__fadeOutUp opacity-0']" class="![--animate-delay:0.1s]">
               <span>
                 Portfolio
               </span>
             </a>
-            <a href="" :class="[outputTransition > 0 ? 'animate__animated animate__fadeInLeft animate__delay-1s opacity-100' : 'duration-0.1s animate__animated animate__fadeOutUp opacity-0']" class="![--animate-delay:0.15s]">
+            <a href="" :class="[outputTransition === 100 ? 'animate__animated animate__fadeInLeft animate__delay-1s opacity-100' : '![--animate-delay:0.15s] animate__delay-1s duration-0.1s animate__animated animate__fadeOutUp opacity-0']" class="![--animate-delay:0.15s]">
               <span>
                 Blog
               </span>
             </a>
-            <a href="" :class="[outputTransition > 0 ? 'animate__animated animate__fadeInLeft animate__delay-1s opacity-100' : 'duration-0.1s animate__animated animate__fadeOutUp opacity-0']" class="![--animate-delay:0.2s]">
+            <a href="" :class="[outputTransition === 100 ? 'animate__animated animate__fadeInLeft animate__delay-1s opacity-100' : '![--animate-delay:0.2s] animate__delay-1s duration-0.1s animate__animated animate__fadeOutUp opacity-0']" class="![--animate-delay:0.2s]">
               <span>
                 Contact
               </span>
             </a>
-            <a href="" :class="[outputTransition > 0 ? 'animate__animated animate__fadeInLeft animate__delay-1s opacity-100' : 'duration-0.1s animate__animated animate__fadeOutUp opacity-0']" class="![--animate-delay:0.25s]" @click.prevent="router.push('/admin')">
+            <a href="" :class="[outputTransition === 100 ? 'animate__animated animate__fadeInLeft animate__delay-1s opacity-100' : '![--animate-delay:0.25s] animate__delay-1s duration-0.1s animate__animated animate__fadeOutUp opacity-0']" class="![--animate-delay:0.25s]" @click.prevent="router.push('/admin')">
               <span>
                 Admin
               </span>
@@ -301,7 +310,7 @@ const { results } = useFuse(inputSkillsSearch, skills, {
               >
                 <span i-carbon-arrow-down block text-white text-sm m-auto leading-8 class="icon-shadow" />
               </button>
-              <a-tabs size="large">
+              <a-tabs size="large" default-active-key="2">
                 <a-tab-pane key="1" title="Tech">
                   <div>
                     <a-input-search v-model="inputSkillsSearch" placeholder="Please enter something" allow-clear>
@@ -343,25 +352,108 @@ const { results } = useFuse(inputSkillsSearch, skills, {
                           <span>
                             {{ skill.item.title }}
                           </span>
-                          <a-progress size="mini" :percent="skill.item.percent" />
+                          <a-progress class="hidden md:block" size="mini" :percent="skill.item.percent" />
                         </span>
                       </SwiperSlide>
                     </Swiper>
                   </div>
                 </a-tab-pane>
-                <a-tab-pane key="2" title="Client">
-                  Content of Tab Panel 2
-                </a-tab-pane>
-                <a-tab-pane key="3" title="Utils">
-                  Content of Tab Panel 3
+                <a-tab-pane key="2" title="Clients">
+                  <div>
+                    <Swiper
+                      class="pb-5" :slides-per-view="2" :space-between="10" direction="horizontal" :mousewheel="true"
+                      :free-mode="true" :grab-cursor="true" :scrollbar="{
+                        hide: true,
+                      }" :modules="[Scrollbar, Mousewheel, FreeMode]"
+                    >
+                      <SwiperSlide class="overflow-hidden flex items-center cursor-pointer group relative backdrop-blur flex justify-center content-center bg-zinc-3/20 p-2 h-20 transition-all hover:(bg-zinc-4/40)">
+                        <div>
+                          <span
+                            class="inline-block text-4/5 border-2px border-black dark:border-white font-semibold py-1 px-2"
+                          >
+                            <span class="font-light">
+                              WE</span>BRAND
+                          </span>
+                        </div>
+                      </SwiperSlide>
+                      <SwiperSlide class="overflow-hidden flex items-center cursor-pointer group relative backdrop-blur flex justify-center content-center bg-zinc-3/20 p-2 h-20 transition-all hover:(bg-zinc-4/40)">
+                        <div>
+                          <span class="uppercase inline-block text-4/6 py-1 px-2 font-semibold">
+                            <span font-light>First</span>Design
+                          </span>
+                        </div>
+                      </SwiperSlide>
+                      <SwiperSlide class="overflow-hidden flex items-center cursor-pointer group relative backdrop-blur flex justify-center content-center bg-zinc-3/20 p-2 h-20 transition-all hover:(bg-zinc-4/40)">
+                        <div>
+                          <span class="uppercase inline-block text-4/6 py-1 px-2 font-semibold relative">
+                            <span i-carbon-deployment-unit-presentation inline-block text-8 absolute class="top--1.5 left--4" />
+                            ALAIS D'OPTIQUE
+                          </span>
+                        </div>
+                      </SwiperSlide>
+                      <SwiperSlide class="overflow-hidden flex items-center cursor-pointer group relative backdrop-blur flex justify-center content-center bg-zinc-3/20 p-2 h-20 transition-all hover:(bg-zinc-4/40)">
+                        <div>
+                          <sup class="">Tunisian</sup>
+                          <span text-xl>
+                            <span font-light style="-webkit-text-fill-color: transparent;background: -webkit-linear-gradient( 120deg, #00aaff 30%, #00eeff );-webkit-background-clip: text;">Aero</span>
+                            <span font-500 style="-webkit-text-fill-color: transparent;background: -webkit-linear-gradient( 120deg, #ff8c00 20%, #ffdd00 );-webkit-background-clip: text;">DAY</span>
+                          </span>
+                        </div>
+                      </SwiperSlide>
+                      <SwiperSlide class="overflow-hidden flex items-center cursor-pointer group relative backdrop-blur flex justify-center content-center bg-zinc-3/20 p-2 h-20 transition-all hover:(bg-zinc-4/40)">
+                        <div>
+                          <span text-xl>
+                            <span font-mono inline font-bold text-6 style="-webkit-text-fill-color: transparent;background: -webkit-linear-gradient( 45deg, #0037ff 50%, #008cff );-webkit-background-clip: text;">Core.AI</span>
+                            <sup class="uppercase text-5.1 text-blue-7">+</sup>
+                          </span>
+                        </div>
+                      </SwiperSlide>
+                    </swiper>
+                  </div>
                 </a-tab-pane>
               </a-tabs>
             </div>
           </div>
         </div>
       </section>
+      <section bg-white dark:bg-black>
+        <div class="container mx-auto relative z-1 px-4 mx">
+          <UseElementVisibility v-slot="{ isVisible }">
+            <div flex items-center :class="[isVisible ? 'animate__animated animate__fadeInLeft animate__delay-0s opacity-100' : 'opacity-0']">
+              <a-avatar :size="32">
+                <img
+                  alt="avatar"
+                  src="https://p1-arco.byteimg.com/tos-cn-i-uwbnlip3yd/3ee5f13fb09879ecb5185e440cef6eb9.png~tplv-uwbnlip3yd-webp.webp"
+                >
+              </a-avatar>
+              <span
+                id="typed" ml-2 text-lg inline-block
+              >
+                Here you will find my resume...
+              </span>
+            </div>
+          </UseElementVisibility>
+        </div>
+      </section>
       <section container-full mx-auto relative z-1 bg-white dark:bg-black>
         <div class="container mx-auto px-4">
+          <div p-5>
+            <a-timeline mode="alternate" label-position="relative">
+              <a-timeline-item label="2017-03-10" dot-color="#52C419">
+                The first milestone
+              </a-timeline-item>
+              <a-timeline-item
+                label="2018-05-12"
+                dot-color="#F5222D"
+                label-position="same"
+              >
+                The second milestone
+              </a-timeline-item>
+              <a-timeline-item label="2020-09-30" position="bottom">
+                The third milestone
+              </a-timeline-item>
+            </a-timeline>
+          </div>
           <article class="prose mx-auto lg:prose-xl">
             <h1 m-0>
               Garlic bread with cheese: What the science tells us
@@ -430,7 +522,7 @@ const { results } = useFuse(inputSkillsSearch, skills, {
           <HeroSlider :grab-cursor="true" class="h-[calc(50vh)] min-h-500px" :sliders="photos" />
         </div>
       </section>
-      <section relative z-1>
+      <section relative z-1 class="bg-white/5 dark:bg-zinc-9/30 backdrop-blur">
         <p>
           But a recent study shows that the celebrated appetizer may be linked to a series of rabies cases
           springing up around the country.
@@ -520,20 +612,20 @@ const { results } = useFuse(inputSkillsSearch, skills, {
           springing up around the country.
         </p>
       </section>
-      <footer block pb-px>
+      <footer block pb-0px>
         <div class="footer-container py-4 relative z-1 bg-light-2 dark:bg-dark-8">
           <div class="container px-4 mx-auto">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div class="">
                 <section class="">
                   <h4
-                    class="mb-3 uppercase font-semibold flex items-center gap-4 after:h-px after:flex-1 after:bg-zinc-5/20  after:content-['']"
+                    class="my-2 uppercase font-semibold flex items-center gap-4 after:h-px after:flex-1 after:bg-zinc-5/20  after:content-['']"
                   >
                     TEXT WIDGET
                   </h4>
                   <div class="textwidget">
                     <span
-                      class="inline-block text-lg/5 border-2px border-black dark:border-white font-semibold py-1 px-2"
+                      class="inline-block text-4/5 border-2px uppercase border-black dark:border-white font-semibold py-1 px-2"
                     ><span
                       class="font-light"
                     >WES</span>Khaled</span>
@@ -548,7 +640,7 @@ const { results } = useFuse(inputSkillsSearch, skills, {
               <div class="">
                 <section class="widget">
                   <h4
-                    class="mb-3 uppercase font-semibold flex items-center gap-4 after:h-px after:flex-1 after:bg-zinc-5/20  after:content-['']"
+                    class="my-2 uppercase font-semibold flex items-center gap-4 after:h-px after:flex-1 after:bg-zinc-5/20  after:content-['']"
                   >
                     Latest News
                   </h4>
@@ -560,8 +652,8 @@ const { results } = useFuse(inputSkillsSearch, skills, {
                       <div class="media-body">
                         <h4 class="media-heading">Top aligned media</h4>
                         <p>Cras sit amet nibh libero, in gravida nulla.</p>
-                        <div class="date b-b border-zinc-5/50 text-right mt--3">
-                          <span class="text-white bg-black dark:(text-black bg-zinc-1) ml-auto p-1  text-3/5">
+                        <div class="date b-b border-zinc-5/50 text-right mt--1">
+                          <span class="text-white bg-black dark:(text-black bg-zinc-1) p-.7  text-3/3">
                             January 29, 2015
                           </span>
                         </div>
@@ -574,7 +666,7 @@ const { results } = useFuse(inputSkillsSearch, skills, {
                 <section class="widget">
                   <div class="">
                     <h4
-                      class="mb-3 uppercase font-semibold flex items-center gap-4 after:h-px after:flex-1 after:bg-zinc-5/20  after:content-['']"
+                      class="my-2 uppercase font-semibold flex items-center gap-4 after:h-px after:flex-1 after:bg-zinc-5/20  after:content-['']"
                     >
                       Get In Touch
                     </h4>
@@ -583,15 +675,15 @@ const { results } = useFuse(inputSkillsSearch, skills, {
                     </p>
                     <div class="space10px" />
                     <div class="contact-info">
-                      <i class="i-la-map-pin" /> Tunisia St. 14/05 Olivie Oriant City <br>
+                      <i class="i-la-map-pin" /> France, Paris <br>
                       <i class="i-la-phone" />+ (216) 22 35 68 13 <br>
-                      <i class="i-la-envelope" /> <a href="first.last@email.com">first.last@email.com</a>
+                      <i class="i-la-envelope" /> <a href="mailto:weskhaled@gmail.com">weskhaled@gmail.com</a>
                     </div>
                     <!-- /.widget -->
                     <div class="space10px" />
                     <div class="widget">
                       <h4
-                        class="mb-3 uppercase font-semibold flex items-center gap-4 after:h-px after:flex-1 after:bg-zinc-5/20  after:content-['']"
+                        class="my-2 uppercase font-semibold flex items-center gap-4 after:h-px after:flex-1 after:bg-zinc-5/20  after:content-['']"
                       >
                         Newsletter
                       </h4>
@@ -612,7 +704,7 @@ const { results } = useFuse(inputSkillsSearch, skills, {
               <div class="">
                 <section class="widget">
                   <h4
-                    class="mb-3 uppercase font-semibold flex items-center gap-4 after:h-px after:flex-1 after:bg-zinc-5/20  after:content-['']"
+                    class="my-2 uppercase font-semibold flex items-center gap-4 after:h-px after:flex-1 after:bg-zinc-5/20  after:content-['']"
                   >
                     tags
                   </h4>
@@ -642,11 +734,11 @@ const { results } = useFuse(inputSkillsSearch, skills, {
             </div>
           </div>
         </div>
-        <div class="copyrights bottom-0 z-0 w-auto bg-light-5 dark:bg-dark-9 b-t-px border-zinc-4/15">
+        <div class="copyrights bottom-0 z-0 w-full bg-light-5 dark:bg-dark-9 b-t-px border-zinc-4/15">
           <div class="container mx-auto p-3">
             <div class="grid grid-cols-1 md:grid-cols-2">
               <p class="text-center md:text-left leading-8">
-                Copyrights © 2014 All Rights Reserved by Young Inc.
+                Copyrights © 2023 All Rights Reserved by Young Inc.
               </p>
               <div class="text-center md:text-left">
                 <div
@@ -674,10 +766,10 @@ const { results } = useFuse(inputSkillsSearch, skills, {
         </div>
       </footer>
     </div>
-    <a-back-top target-container="#wrapper">
-      <a-button>UP</a-button>
-    </a-back-top>
   </div>
+  <a-button :class="[windowScrollY < 200 && 'translate-y-[calc(100%+50px)]']" type="primary" shape="circle" class="transition-all translate-y-0 fixed right-15 bottom-10 z-5" @click="wrapperY = 0">
+    <i i-carbon-arrow-up class="" />
+  </a-button>
 </template>
 
 <style lang="less" scoped>
@@ -749,12 +841,12 @@ footer .social-icon {
 }
 .header-nav-mobile {
   >a {
-    @apply block overflow-hidden min-w-full md:min-w-sm p-2;
+    @apply block overflow-hidden min-w-full md:min-w-sm p-1 transition-all;
     &:hover {
-      @apply bg-white dark:bg-black block;
+      @apply bg-white/75 dark:bg-black/75 block;
       >span {
         @apply block;
-        animation: toTopFromBottom 0.2s forwards;
+        animation: toTopFromBottom 0.3s forwards;
       }
     }
   }
