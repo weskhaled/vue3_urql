@@ -238,11 +238,9 @@ const { results } = useFuse(inputSkillsSearch, skills, {
             class="header-right"
             :class="(windowScrollY > 200) ? '[--primary-6:0,0,0] md:dark:[--primary-6:255,255,255]' : '[--primary-6:0,0,0] md:[--primary-6:255,255,255] dark:[--primary-6:255,255,255]'"
           >
-            <a-button class="!hover:bg-zinc-6/30" type="text" size="large" @click="router.push('/admin')">
+            <a-button class="!hover:bg-zinc-6/30" type="text" size="large" @click.stop="router.push('/auth/login')">
               <template #icon>
-                <span
-                  class="w-5 h-5 mx-1 block text-lg i-line-md-account"
-                />
+                <span class="w-5 h-5 mx-1 block text-lg i-line-md-account" />
               </template>
             </a-button>
 
@@ -256,7 +254,7 @@ const { results } = useFuse(inputSkillsSearch, skills, {
 
             <a-button
               class="!hover:bg-zinc-6/30 ml-2" type="text" size="large"
-              @click.stop="async() => sourceTransition = (sourceTransition === 100 ? 0 : 100)"
+              @click.stop="async () => sourceTransition = (sourceTransition === 100 ? 0 : 100)"
             >
               <template #icon>
                 <span i-line-md-grid-3 class="w-5 h-5 mx-1 block text-lg" />
@@ -273,22 +271,38 @@ const { results } = useFuse(inputSkillsSearch, skills, {
           <nav
             class="header-nav-mobile overflow-y-auto m-auto h-full w-full flex items-center justify-center flex-col text-center my-auto gap-4 md:text-3xl/10 text-xl font-semibold p-1"
           >
-            <a href="" :class="[outputTransition === 100 ? 'animate__animated animate__fadeInLeft animate__delay-1s opacity-100' : '![--animate-delay:0.1s] animate__delay-1s duration-0.1s animate__animated animate__fadeOutUp opacity-0']" class="![--animate-delay:0.1s]">
+            <a
+              href=""
+              :class="[outputTransition === 100 ? 'animate__animated animate__fadeInLeft animate__delay-1s opacity-100' : '![--animate-delay:0.1s] animate__delay-1s duration-0.1s animate__animated animate__fadeOutUp opacity-0']"
+              class="![--animate-delay:0.1s]"
+            >
               <span>
                 Portfolio
               </span>
             </a>
-            <a href="" :class="[outputTransition === 100 ? 'animate__animated animate__fadeInLeft animate__delay-1s opacity-100' : '![--animate-delay:0.15s] animate__delay-1s duration-0.1s animate__animated animate__fadeOutUp opacity-0']" class="![--animate-delay:0.15s]">
+            <a
+              href=""
+              :class="[outputTransition === 100 ? 'animate__animated animate__fadeInLeft animate__delay-1s opacity-100' : '![--animate-delay:0.15s] animate__delay-1s duration-0.1s animate__animated animate__fadeOutUp opacity-0']"
+              class="![--animate-delay:0.15s]"
+            >
               <span>
                 Blog
               </span>
             </a>
-            <a href="" :class="[outputTransition === 100 ? 'animate__animated animate__fadeInLeft animate__delay-1s opacity-100' : '![--animate-delay:0.2s] animate__delay-1s duration-0.1s animate__animated animate__fadeOutUp opacity-0']" class="![--animate-delay:0.2s]">
+            <a
+              href=""
+              :class="[outputTransition === 100 ? 'animate__animated animate__fadeInLeft animate__delay-1s opacity-100' : '![--animate-delay:0.2s] animate__delay-1s duration-0.1s animate__animated animate__fadeOutUp opacity-0']"
+              class="![--animate-delay:0.2s]"
+            >
               <span>
                 Contact
               </span>
             </a>
-            <a href="" :class="[outputTransition === 100 ? 'animate__animated animate__fadeInLeft animate__delay-1s opacity-100' : '![--animate-delay:0.25s] animate__delay-1s duration-0.1s animate__animated animate__fadeOutUp opacity-0']" class="![--animate-delay:0.25s]" @click.prevent="router.push('/admin')">
+            <a
+              href="javascript:;"
+              :class="[outputTransition === 100 ? 'animate__animated animate__fadeInLeft animate__delay-1s opacity-100' : '![--animate-delay:0.25s] animate__delay-1s duration-0.1s animate__animated animate__fadeOutUp opacity-0']"
+              class="![--animate-delay:0.25s]" @click.prevent="router.push('/auth/login')"
+            >
               <span>
                 Admin
               </span>
@@ -331,8 +345,8 @@ const { results } = useFuse(inputSkillsSearch, skills, {
                   </div>
                   <div class="pt-4">
                     <Swiper
-                      class="pb-5" :slides-per-view="4" :space-between="10" direction="horizontal" :mousewheel="true"
-                      :free-mode="true" :grab-cursor="true" :scrollbar="{
+                      class="pb-5" :slides-per-view="4" :space-between="10" direction="horizontal"
+                      :mousewheel="true" :free-mode="true" :grab-cursor="true" :scrollbar="{
                         hide: true,
                       }" :modules="[Scrollbar, Mousewheel, FreeMode]"
                     >
@@ -341,12 +355,12 @@ const { results } = useFuse(inputSkillsSearch, skills, {
                         class="overflow-hidden cursor-pointer group relative backdrop-blur flex justify-center content-center bg-zinc-3/20 p-2 h-20 transition-all hover:(bg-zinc-4/40)"
                       >
                         <span
-                          :class="`${skill.item.logo}`" block m-auto p-1 w-12 h-12 transition-all duration-0.2s origin-top
-                          class="group-hover:(-translate-y-25% w-12 h-12)"
+                          :class="`${skill.item.logo}`" block m-auto p-1 w-12 h-12 transition-all duration-0.2s
+                          origin-top class="group-hover:(-translate-y-25% w-12 h-12)"
                         />
                         <span
-                          absolute bottom-0 w-full font-mono text-center transition-all leading-4 flex p-2 justify-between
-                          items-center
+                          absolute bottom-0 w-full font-mono text-center transition-all leading-4 flex p-2
+                          justify-between items-center
                           class="bg-white/80 dark:(bg-black/80 text-white) translate-y-full group-hover:translate-y-0"
                         >
                           <span>
@@ -361,12 +375,14 @@ const { results } = useFuse(inputSkillsSearch, skills, {
                 <a-tab-pane key="2" title="Clients">
                   <div>
                     <Swiper
-                      class="pb-5" :slides-per-view="2" :space-between="10" direction="horizontal" :mousewheel="true"
-                      :free-mode="true" :grab-cursor="true" :scrollbar="{
+                      class="pb-5" :slides-per-view="2" :space-between="10" direction="horizontal"
+                      :mousewheel="true" :free-mode="true" :grab-cursor="true" :scrollbar="{
                         hide: true,
                       }" :modules="[Scrollbar, Mousewheel, FreeMode]"
                     >
-                      <SwiperSlide class="overflow-hidden flex items-center cursor-pointer group relative backdrop-blur flex justify-center content-center bg-zinc-3/20 p-2 h-20 transition-all hover:(bg-zinc-4/40)">
+                      <SwiperSlide
+                        class="overflow-hidden flex items-center cursor-pointer group relative backdrop-blur flex justify-center content-center bg-zinc-3/20 p-2 h-20 transition-all hover:(bg-zinc-4/40)"
+                      >
                         <div>
                           <span
                             class="inline-block text-4/5 border-2px border-black dark:border-white font-semibold py-1 px-2"
@@ -376,34 +392,54 @@ const { results } = useFuse(inputSkillsSearch, skills, {
                           </span>
                         </div>
                       </SwiperSlide>
-                      <SwiperSlide class="overflow-hidden flex items-center cursor-pointer group relative backdrop-blur flex justify-center content-center bg-zinc-3/20 p-2 h-20 transition-all hover:(bg-zinc-4/40)">
+                      <SwiperSlide
+                        class="overflow-hidden flex items-center cursor-pointer group relative backdrop-blur flex justify-center content-center bg-zinc-3/20 p-2 h-20 transition-all hover:(bg-zinc-4/40)"
+                      >
                         <div>
                           <span class="uppercase inline-block text-4/6 py-1 px-2 font-semibold">
                             <span font-light>First</span>Design
                           </span>
                         </div>
                       </SwiperSlide>
-                      <SwiperSlide class="overflow-hidden flex items-center cursor-pointer group relative backdrop-blur flex justify-center content-center bg-zinc-3/20 p-2 h-20 transition-all hover:(bg-zinc-4/40)">
+                      <SwiperSlide
+                        class="overflow-hidden flex items-center cursor-pointer group relative backdrop-blur flex justify-center content-center bg-zinc-3/20 p-2 h-20 transition-all hover:(bg-zinc-4/40)"
+                      >
                         <div>
-                          <span class="uppercase inline-block text-4/6 py-1 px-2 font-semibold relative">
-                            <span i-carbon-deployment-unit-presentation inline-block text-8 absolute class="top--1.5 left--4" />
+                          <span class="uppercase inline-block text-3/5 py-1 px-2 relative">
+                            <span
+                              i-carbon-deployment-unit-presentation inline-block text-8 absolute
+                              class="top--1.5 left--4"
+                            />
                             ALAIS D'OPTIQUE
                           </span>
                         </div>
                       </SwiperSlide>
-                      <SwiperSlide class="overflow-hidden flex items-center cursor-pointer group relative backdrop-blur flex justify-center content-center bg-zinc-3/20 p-2 h-20 transition-all hover:(bg-zinc-4/40)">
+                      <SwiperSlide
+                        class="overflow-hidden flex items-center cursor-pointer group relative backdrop-blur flex justify-center content-center bg-zinc-3/20 p-2 h-20 transition-all hover:(bg-zinc-4/40)"
+                      >
                         <div>
-                          <sup class="">Tunisian</sup>
+                          <sup class="text-1.5 top--3">Tunisian</sup>
                           <span text-xl>
-                            <span font-light style="-webkit-text-fill-color: transparent;background: -webkit-linear-gradient( 120deg, #00aaff 30%, #00eeff );-webkit-background-clip: text;">Aero</span>
-                            <span font-500 style="-webkit-text-fill-color: transparent;background: -webkit-linear-gradient( 120deg, #ff8c00 20%, #ffdd00 );-webkit-background-clip: text;">DAY</span>
+                            <span
+                              font-light
+                              style="-webkit-text-fill-color: transparent;background: -webkit-linear-gradient( 120deg, #00aaff 30%, #00eeff );-webkit-background-clip: text;"
+                            >Aero</span>
+                            <span
+                              font-500
+                              style="-webkit-text-fill-color: transparent;background: -webkit-linear-gradient( 120deg, #ff8c00 20%, #ffdd00 );-webkit-background-clip: text;"
+                            >DAY</span>
                           </span>
                         </div>
                       </SwiperSlide>
-                      <SwiperSlide class="overflow-hidden flex items-center cursor-pointer group relative backdrop-blur flex justify-center content-center bg-zinc-3/20 p-2 h-20 transition-all hover:(bg-zinc-4/40)">
+                      <SwiperSlide
+                        class="overflow-hidden flex items-center cursor-pointer group relative backdrop-blur flex justify-center content-center bg-zinc-3/20 p-2 h-20 transition-all hover:(bg-zinc-4/40)"
+                      >
                         <div>
                           <span text-xl>
-                            <span font-mono inline font-bold text-6 style="-webkit-text-fill-color: transparent;background: -webkit-linear-gradient( 45deg, #0037ff 50%, #008cff );-webkit-background-clip: text;">Core.AI</span>
+                            <span
+                              font-mono inline font-bold text-6
+                              style="-webkit-text-fill-color: transparent;background: -webkit-linear-gradient( 45deg, #0037ff 50%, #008cff );-webkit-background-clip: text;"
+                            >Core.AI</span>
                             <sup class="uppercase text-5.1 text-blue-7">+</sup>
                           </span>
                         </div>
@@ -416,44 +452,201 @@ const { results } = useFuse(inputSkillsSearch, skills, {
           </div>
         </div>
       </section>
-      <section bg-white dark:bg-black>
-        <div class="container mx-auto relative z-1 px-4 mx">
+      <section bg-white dark:bg-black relative z-1>
+        <div class="container max-w-3xl mx-auto p-4 mx">
           <UseElementVisibility v-slot="{ isVisible }">
-            <div flex items-center :class="[isVisible ? 'animate__animated animate__fadeInLeft animate__delay-0s opacity-100' : 'opacity-0']">
-              <a-avatar :size="32">
+            <div flex items-center mb-3>
+              <a-avatar
+                :size="32"
+                :class="[isVisible ? 'animate__animated animate__fadeInUp animate__delay-0s opacity-100' : 'opacity-0']"
+              >
                 <img
                   alt="avatar"
-                  src="https://p1-arco.byteimg.com/tos-cn-i-uwbnlip3yd/3ee5f13fb09879ecb5185e440cef6eb9.png~tplv-uwbnlip3yd-webp.webp"
+                  src="https://weskhaled.vercel.app/assets/img/photos/developer/avatar-sm.jpg"
                 >
               </a-avatar>
               <span
-                id="typed" ml-2 text-lg inline-block
+                id="typed" ml-2 text-lg inline-block font-light
+                :class="[isVisible ? 'animate__animated animate__fadeInRight animate__delay-0s opacity-100' : 'opacity-0']"
               >
                 Here you will find my resume...
               </span>
+            </div>
+          </UseElementVisibility>
+          <div py-4>
+            <h3 class="text-lg font-semibold md:text-3xl/10 mb-3 font-script">
+              I'm Khaled, 33 years old Full-Stack JS/TS developer based in Paris.
+            </h3>
+            <p class="text-xl/10 font-mono mb-2">
+              Hard-working, designer and developer offering excellent work ethic, enthusiasm and adaptability with
+              experience in graphic design, frontend, backend and AWS development.
+            </p>
+            <h3
+              class="my-8 text-xl font-semibold flex items-center gap-4 before:h-px before:flex-1 before:bg-zinc-4/20  before:content-[''] after:h-px after:flex-1 after:bg-zinc-4/20  after:content-['']"
+            >
+              Skills & Abilities
+            </h3>
+            <div max-w-lg mx-auto mb-20>
+              <div mb-4>
+                <span text-xs block mb--3>HTML & CSS</span>
+                <a-progress
+                  :percent="0.95" :color="{
+                    '0%': 'rgb(var(--primary-6))',
+                    '100%': 'rgb(var(--success-6))',
+                  }"
+                />
+              </div>
+              <div mb-4>
+                <span text-xs block mb--3>NodeJs</span>
+                <a-progress
+                  :percent="0.8" :color="{
+                    '0%': 'rgb(var(--primary-6))',
+                    '100%': 'rgb(var(--success-6))',
+                  }"
+                />
+              </div>
+              <div mb-4>
+                <span text-xs block mb--3>VueJs</span>
+                <a-progress
+                  :percent="0.9" :color="{
+                    '0%': 'rgb(var(--primary-6))',
+                    '100%': 'rgb(var(--success-6))',
+                  }"
+                />
+              </div>
+              <div mb-4>
+                <span text-xs block mb--3>Angular</span>
+                <a-progress
+                  :percent="0.85" :color="{
+                    '0%': 'rgb(var(--primary-6))',
+                    '100%': 'rgb(var(--success-6))',
+                  }"
+                />
+              </div>
+              <div mb-4>
+                <span text-xs block mb--3>Figma</span>
+                <a-progress
+                  :percent="0.75" :color="{
+                    '0%': 'rgb(var(--primary-6))',
+                    '100%': 'rgb(var(--success-6))',
+                  }"
+                />
+              </div>
+            </div>
+            <h3
+              class="my-8 text-xl font-semibold flex items-center gap-4 before:h-px before:flex-1 before:bg-zinc-4/20  before:content-[''] after:h-px after:flex-1 after:bg-zinc-4/20  after:content-['']"
+            >
+              Jobs & Education
+            </h3>
+            <div>
+              <a-timeline mode="alternate" label-position="relative">
+                <a-timeline-item label="2012">
+                  L3 – Développement des SI
+                  <span block font-mono text-xs>
+                    Institut Sup. Technologie, Tunisie
+                  </span>
+                </a-timeline-item>
+                <a-timeline-item label="2015" label-position="same">
+                  M2 – Master en logiciels libres
+                  <span block font-mono text-xs>
+                    Institut Sup. Informatique, Tunisie
+                  </span>
+                </a-timeline-item>
+                <a-timeline-item label="2014-09 / 2016-02" position="bottom">
+                  Junior Front-end Developer
+                  <span block font-mono text-xs>
+                    DevFuture
+                  </span>
+                </a-timeline-item>
+                <a-timeline-item label="2016-02 / 2019-01" label-position="same">
+                  Front-end Developer
+                  <span block font-mono text-xs>
+                    Peaksource
+                  </span>
+                </a-timeline-item>
+                <a-timeline-item label="2019-01 / 2021-05" label-position="same">
+                  Full-Stack Js/Ts Developer
+                  <span block font-mono text-xs>
+                    Sclable Business Solutions<span class="bg-zinc-4/30 px-0.3">GmbH</span>
+                  </span>
+                </a-timeline-item>
+                <a-timeline-item label="2021-05 / 2022-06" label-position="same">
+                  Full-Stack Js/Ts, AWS Developer
+                  <span block font-mono text-xs>
+                    Ticketchainer
+                  </span>
+                </a-timeline-item>
+                <a-timeline-item label="2022-06 / Current" label-position="same">
+                  <template #dot>
+                    <span class="h-1.5 w-1.5 rounded-full bg-blue-500 relative">
+                      <span
+                        class="absolute animate-ping inline-flex top--0.25 left--0.25 h-2 w-2 rounded-full bg-sky-400 opacity-75"
+                      />
+                    </span>
+                  </template>
+                  Full-Stack Js/Ts Developer
+                  <span block font-mono text-xs>
+                    SOFTEAM
+                  </span>
+                </a-timeline-item>
+              </a-timeline>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section shadow-inner>
+        <div class="container md:max-w-2xl mx-auto py-12 relative">
+          <div
+            class="absolute top--10 -left-10 w-100 h-100 bg-blue-3 rounded-full mix-blend-multiply filter blur-xl opacity-35 z--0 animate-blob"
+          />
+          <div
+            class="absolute top-0 -right-5 w-100 h-100 bg-teal-3 rounded-full mix-blend-multiply filter blur-xl opacity-35 z--0 animate-blob animation-delay-2000"
+          />
+          <div
+            class="absolute -bottom-8 left-32 w-100 h-100 bg-cyan-2 rounded-full mix-blend-multiply filter blur-xl opacity-35 z--0 animate-blob animation-delay-4000"
+          />
+          <UseElementVisibility v-slot="{ isVisible }">
+            <div :class="[isVisible ? 'animate__animated animate__fadeInUp opacity-100' : 'opacity-0']" class="bg-zinc-1/40 border-1px border-zinc-1/20 dark:bg-zinc-9/40 backdrop-blur px-4 py-8 rounded-2px">
+              <h3
+                class="my-1 mb-8 text-xl font-semibold flex items-center gap-4 before:h-px before:flex-1 before:bg-zinc-3/20  before:content-[''] after:h-px after:flex-1 after:bg-zinc-3/20  after:content-['']"
+              >
+                Technologies & Frameworks
+              </h3>
+              <ul class="flex space-x-4 text-4xl items-center justify-center overflow-auto [&>li]:grayscale hover:[&>li]:grayscale-0 hover:[&>li]:cursor-pointer">
+                <li class="transition-all">
+                  <i i-logos-vue />
+                </li>
+                <li class="">
+                  <i i-logos-nodejs />
+                </li>
+                <li class="">
+                  <i i-logos-nestjs />
+                </li>
+                <li class="">
+                  <i i-logos-typescript-icon />
+                </li>
+                <li class="">
+                  <i i-logos-graphql />
+                </li>
+                <li class="">
+                  <i i-logos-tailwindcss-icon />
+                </li>
+                <li class="">
+                  <i i-logos-aws-s3 />
+                </li>
+                <li class="">
+                  <i i-logos-aws-lambda />
+                </li>
+                <li class="">
+                  <i i-logos-aws-amplify />
+                </li>
+              </ul>
             </div>
           </UseElementVisibility>
         </div>
       </section>
       <section container-full mx-auto relative z-1 bg-white dark:bg-black>
         <div class="container mx-auto px-4">
-          <div p-5>
-            <a-timeline mode="alternate" label-position="relative">
-              <a-timeline-item label="2017-03-10" dot-color="#52C419">
-                The first milestone
-              </a-timeline-item>
-              <a-timeline-item
-                label="2018-05-12"
-                dot-color="#F5222D"
-                label-position="same"
-              >
-                The second milestone
-              </a-timeline-item>
-              <a-timeline-item label="2020-09-30" position="bottom">
-                The third milestone
-              </a-timeline-item>
-            </a-timeline>
-          </div>
           <article class="prose mx-auto lg:prose-xl">
             <h1 m-0>
               Garlic bread with cheese: What the science tells us
@@ -645,14 +838,14 @@ const { results } = useFuse(inputSkillsSearch, skills, {
                     Latest News
                   </h4>
                   <div class="recent-posts">
-                    <a v-for="post in [1, 2]" :key="post" href="#" class="media post mb-3 block">
+                    <a v-for="post in [1, 2]" :key="post" href="#" class="media post mb-2 block">
                       <div class="float-left mr-2">
                         <img class="media-object" alt="" src="/img/forest.jpg" style="width: 70px; height: 60px;">
                       </div>
                       <div class="media-body">
                         <h4 class="media-heading">Top aligned media</h4>
                         <p>Cras sit amet nibh libero, in gravida nulla.</p>
-                        <div class="date b-b border-zinc-5/50 text-right mt--1">
+                        <div class="date b-b border-zinc-5/50 text-right">
                           <span class="text-white bg-black dark:(text-black bg-zinc-1) p-.7  text-3/3">
                             January 29, 2015
                           </span>
@@ -767,7 +960,10 @@ const { results } = useFuse(inputSkillsSearch, skills, {
       </footer>
     </div>
   </div>
-  <a-button :class="[windowScrollY < 200 && 'translate-y-[calc(100%+50px)]']" type="primary" shape="circle" class="transition-all translate-y-0 fixed right-15 bottom-10 z-5" @click="wrapperY = 0">
+  <a-button
+    :class="[windowScrollY < 200 && 'translate-y-[calc(100%+50px)]']" type="primary" shape="circle"
+    class="transition-all translate-y-0 fixed right-15 bottom-10 z-5" @click="wrapperY = 0"
+  >
     <i i-carbon-arrow-up class="" />
   </a-button>
 </template>
@@ -830,20 +1026,26 @@ header.home-header {
 .icon-shadow {
   text-shadow: rgb(0, 153, 230) 1px 1px, rgb(0, 153, 231) 2px 2px, rgb(0, 154, 231) 3px 3px, rgb(0, 154, 232) 4px 4px, rgb(0, 154, 232) 5px 5px, rgb(0, 155, 233) 6px 6px, rgb(0, 155, 233) 7px 7px, rgb(0, 155, 234) 8px 8px, rgb(0, 156, 234) 9px 9px, rgb(0, 156, 235) 10px 10px, rgb(0, 156, 235) 11px 11px, rgb(0, 157, 236) 12px 12px, rgb(0, 157, 236) 13px 13px, rgb(0, 157, 237) 14px 14px, rgb(0, 158, 237) 15px 15px, rgb(0, 158, 238) 16px 16px, rgb(0, 158, 238) 17px 17px, rgb(0, 159, 239) 18px 18px, rgb(0, 159, 239) 19px 19px, rgb(0, 159, 240) 20px 20px, rgb(0, 160, 240) 21px 21px, rgb(0, 160, 241) 22px 22px, rgb(0, 160, 241) 23px 23px, rgb(0, 161, 242) 24px 24px, rgb(0, 161, 242) 25px 25px, rgb(0, 161, 243) 26px 26px, rgb(0, 162, 243) 27px 27px, rgb(0, 162, 244) 28px 28px, rgb(0, 162, 244) 29px 29px, rgb(0, 163, 245) 30px 30px, rgb(0, 163, 245) 31px 31px, rgb(0, 163, 246) 32px 32px, rgb(0, 164, 246) 33px 33px, rgb(0, 164, 247) 34px 34px, rgb(0, 164, 247) 35px 35px, rgb(0, 165, 248) 36px 36px, rgb(0, 165, 248) 37px 37px, rgb(0, 165, 249) 38px 38px, rgb(0, 166, 249) 39px 39px, rgb(0, 166, 250) 40px 40px, rgb(0, 166, 250) 41px 41px, rgb(0, 167, 251) 42px 42px, rgb(0, 167, 251) 43px 43px, rgb(0, 167, 252) 44px 44px, rgb(0, 168, 252) 45px 45px, rgb(0, 168, 253) 46px 46px, rgb(0, 168, 253) 47px 47px, rgb(0, 169, 254) 48px 48px, rgb(0, 169, 254) 49px 49px, rgb(0, 170, 255) 50px 50px;
 }
+
 footer .social-icon {
   @apply w-8 h-8 border-2px border-zinc-5/20 rounded-2px overflow-hidden text-3.5 flex items-center justify-center;
+
   &:hover {
-    @apply bg-white dark:bg-dark;
+    @apply bg-white dark: bg-dark;
+
     i {
       animation: toTopFromBottom 0.2s forwards;
     }
   }
 }
+
 .header-nav-mobile {
   >a {
     @apply block overflow-hidden min-w-full md:min-w-sm p-1 transition-all;
+
     &:hover {
       @apply bg-white/75 dark:bg-black/75 block;
+
       >span {
         @apply block;
         animation: toTopFromBottom 0.3s forwards;
@@ -851,6 +1053,7 @@ footer .social-icon {
     }
   }
 }
+
 @keyframes toTopFromBottom {
   49% {
     transform: translateY(-100%);
@@ -864,6 +1067,36 @@ footer .social-icon {
   51% {
     opacity: 1;
   }
+}
+.animate-blob {
+    animation: blob 7s cubic-bezier(0,0,.2,1) infinite;
+}
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+.animation-delay-4000 {
+  animation-delay: 4s;
+}
+@keyframes blob {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+  }
+
+  33% {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+
+  100% {
+    transform: tranlate(0px, 0px) scale(1);
+  }
+}
+
+:deep(.arco-timeline-item-dot-custom) {
+  background-color: transparent;
 }
 </style>
 
