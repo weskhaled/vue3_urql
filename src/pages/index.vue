@@ -1,74 +1,78 @@
 <script setup lang="ts">
 import { useFuse } from '@vueuse/integrations/useFuse'
 import { Swiper, SwiperSlide } from 'swiper/vue'
-import { vOnClickOutside } from '@vueuse/components'
+import Typed from 'typed.js'
+// import Isotope from 'isotope-layout'
+import { vIntersectionObserver, vOnClickOutside } from '@vueuse/components'
 import { FreeMode, Mousewheel, Scrollbar } from 'swiper'
+import { mdAndLarger } from '~/common/stores'
+import { useIsotope } from '~/composables/isotope'
 import 'swiper/css/scrollbar'
-// Import Swiper styles
-// import 'swiper/css'
-
-import { createApi } from 'unsplash-js'
 import TheWindow from '~/components/TheWindow.vue'
 
+const { Isotope } = await useIsotope()
 const windowHeight = useWindowSize().height
 const inputSkillsSearch = ref('')
 const { y: wrapperY } = useScroll(typeof window !== 'undefined' ? window : null, { behavior: 'smooth' })
 const { notification } = useNotification()
 const router = useRouter()
-const photos: Ref<any[]> = ref([])
+const sliders: Ref<any[]> = ref([
+  {
+    title: '1/2',
+    content: h('div', { class: 'text-left text-white max-w-xl ml-0' }, [h('h1', { class: 'font-bold text-2rem md:text-4rem leading-tight ![--animate-delay:0.1s] animate__animated animate__slideInDown' }, 'Hi, I’am Khaled. Proffesional Developer based on Paris 👋'), h('p', { class: 'text-4 ![--animate-delay:0.15s] animate__delay-2s animate__animated animate__backInUp' }, 'Expert customer support team is all around the globe, ready and excited to help.')]),
+    image: {
+      screen: '/img/slider-1.jpg',
+      thumb: '/img/slider-1.jpg',
+    },
+  },
+  {
+    title: '2/2',
+    content: h(TheWindow, { class: 'delay-0s animate__animated animate__slideInDown' }),
+    image: {
+      screen: 'https://images.unsplash.com/photo-1620121692029-d088224ddc74?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2800&q=80',
+      thumb: 'https://images.unsplash.com/photo-1620121692029-d088224ddc74?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=250&q=80',
+    },
+  },
+])
 const sourceTransition = ref(0)
+const gridProjectsRef = ref<HTMLElement | null>(null)
+const projectType = ref('*')
 
+let isotopeProjects: any
+
+onMounted(() => {
+  isotopeProjects = new Isotope(gridProjectsRef.value, {
+    itemSelector: '.element-item',
+    layoutMode: 'fitRows',
+  })
+})
+
+watch(projectType, (val) => {
+  isotopeProjects?.arrange({ filter: [val] })
+})
 const outputTransition = useTransition(sourceTransition, {
   duration: 200,
 })
-
-const unsplash = createApi({ accessKey: 'KnusTYrUWihWRDFXPuFh7CWbKy50hwk62obIIsLRH6c' })
-unsplash.search.getPhotos({
-  query: 'space',
-  page: 1,
-  perPage: 3,
-  orientation: 'landscape',
-  color: isDark.value ? 'black' : 'blue',
-}).then((result) => {
-  if (result.errors) {
-    // handle error here
-    return
+let typed: any
+function intersectionObserver([{ isIntersecting, target }]) {
+  if (isIntersecting) {
+    !typed
+      ? (typed = new Typed(target.getElementsByTagName('span')[target.getElementsByTagName('span').length - 1], {
+          strings: [target.getElementsByTagName('span')[0].innerHTML],
+          typeSpeed: 20,
+          backSpeed: 0,
+          startDelay: 10,
+          loop: false,
+        }))
+      : (typed.start())
+    typed?.reset()
   }
 
-  // extract total and results array from response
-  const { results } = result.response
-
-  // handle success here
-  const animations = ['animate__slideInDown', 'animate__bounce', 'animate__backInRight', 'animate__backInLeft', 'animate__fadeInUp']
-  photos.value = [
-    {
-      title: '1 / 2',
-      content: h('div', { class: 'text-left text-white max-w-xl ml-0' }, [h('h1', { class: 'font-bold text-2rem md:text-4rem leading-tight ![--animate-delay:0.1s] animate__animated animate__slideInDown' }, 'Hi, I’am Khaled. Proffesional Developer based on Paris 👋'), h('p', { class: 'text-1rem ![--animate-delay:0.15s] animate__delay-2s animate__animated animate__backInUp' }, 'Expert customer support team is all around the globe, ready and excited to help.')]),
-      image: {
-        screen: '/img/slider-1.jpg',
-        thumb: '/img/slider-1.jpg',
-      },
-    },
-    {
-      title: '2 / 2',
-      content: h(TheWindow, { class: 'delay-0s animate__animated animate__slideInDown' }),
-      image: {
-        screen: '/img/slider-2.jpg',
-        thumb: '/img/slider-2.jpg',
-      },
-    },
-    ...results.map((r, index) => ({
-      title: `${index + 1} / ${results.length}`,
-      content: index === 1 ? h(TheWindow, { class: `delay-0s animate__animated ${animations[index]}` }) : h('div', { class: 'text-left text-white max-w-xl ml-0' }, [h('h1', { class: `font-bold text-2rem md:text-4rem leading-tight delay-0.5s animate__animated ${animations[index]}` }, 'Hi, I’am Khaled. Proffesional Developer based on Paris 👋'), h('p', { class: 'text-1rem animate__delay-0.5s animate__animated animate__backInUp' }, 'Expert customer support team is all around the globe, ready and excited to help.')]),
-      image: {
-        full: r.urls.full,
-        raw: r.urls.raw,
-        screen: `${r.urls.raw}&w=900&h=700&fit=crop`,
-        thumb: `${r.urls.thumb}`,
-      },
-    })),
-  ]
-})
+  else {
+    typed?.reset()
+    typed?.stop()
+  }
+}
 
 const skills = ref(
   [
@@ -209,10 +213,10 @@ const { results } = useFuse(inputSkillsSearch, skills, {
 
 <template>
   <div bg-cover bg-fixed class="bg-[url(/img/bg-blur.jpg)] bg-opacity-50">
-    <div id="wrapper" class="arco-theme-2 relative container-full mx-auto shadow-xl">
+    <div id="wrapper" class="arco-theme-2 relative container-full mx-auto shadow-xl overflow-x-hidden">
       <header
-        v-on-click-outside="() => sourceTransition = 0" class="home-header relative"
-        :class="{ scrolled: (windowScrollY > 200) }"
+        v-on-click-outside="() => sourceTransition = 0" class="home-header relative overflow-hidden"
+        :class="{ 'scrolled': (windowScrollY > 200), 'overflow-auto': (outputTransition > 0) }"
       >
         <div class="header-container">
           <div class="header-left">
@@ -311,7 +315,7 @@ const { results } = useFuse(inputSkillsSearch, skills, {
         </div>
       </header>
       <section class="relative font-sans">
-        <HeroSlider :grab-cursor="true" class="h-[calc(100vh-8rem)] min-h-400px" :sliders="photos" />
+        <HeroSlider :grab-cursor="true" class="h-[calc(100vh-8rem)] min-h-400px" :sliders="sliders" />
       </section>
       <section class="relative">
         <div class="bg-white dark:bg-black">
@@ -324,7 +328,7 @@ const { results } = useFuse(inputSkillsSearch, skills, {
               >
                 <span i-carbon-arrow-down block text-white text-sm m-auto leading-8 class="icon-shadow" />
               </button>
-              <a-tabs size="large" default-active-key="2">
+              <a-tabs size="large" default-active-key="1">
                 <a-tab-pane key="1" title="Tech">
                   <div>
                     <a-input-search v-model="inputSkillsSearch" placeholder="Please enter something" allow-clear>
@@ -455,6 +459,9 @@ const { results } = useFuse(inputSkillsSearch, skills, {
       <section bg-white dark:bg-black relative z-1>
         <div class="container max-w-3xl mx-auto p-4 mx">
           <UseElementVisibility v-slot="{ isVisible }">
+            <div class="absolute left--1/30 top-2/10 translate-y--1/2">
+              <img alt="" :class="[mdAndLarger && isVisible ? 'animate__animated animate__fadeInLeft animate__delay-0s opacity-100' : 'animate__animated animate__fadeOutLeft']" class="" src="/img/coffee.png">
+            </div>
             <div flex items-center mb-3>
               <a-avatar
                 :size="32"
@@ -466,16 +473,26 @@ const { results } = useFuse(inputSkillsSearch, skills, {
                 >
               </a-avatar>
               <span
-                id="typed" ml-2 text-lg inline-block font-light
-                :class="[isVisible ? 'animate__animated animate__fadeInRight animate__delay-0s opacity-100' : 'opacity-0']"
+                id="typed-strings"
+                v-intersection-observer="intersectionObserver" ml-2 text-lg inline-block
+                font-light
               >
-                Here you will find my resume...
+                <span hidden>
+                  Here you will find my resume...
+                </span>
+                <span />
               </span>
+              <span id="typed" ml-2 text-lg inline-block font-light />
             </div>
           </UseElementVisibility>
           <div py-4>
-            <h3 class="text-lg font-semibold md:text-3xl/10 mb-3 font-script">
-              I'm Khaled, 33 years old Full-Stack JS/TS developer based in Paris.
+            <h3
+              class="text-lg font-400 md:text-3xl/10 mb-3"
+            >
+              <span>
+                I'm Khaled, 33 years old Full-Stack JS/TS developer based on Paris.
+              </span>
+              <span />
             </h3>
             <p class="text-xl/10 font-mono mb-2">
               Hard-working, designer and developer offering excellent work ethic, enthusiasm and adaptability with
@@ -488,51 +505,73 @@ const { results } = useFuse(inputSkillsSearch, skills, {
             </h3>
             <div max-w-lg mx-auto mb-20>
               <div mb-4>
-                <span text-xs block mb--3>HTML & CSS</span>
-                <a-progress
-                  :percent="0.95" :color="{
-                    '0%': 'rgb(var(--primary-6))',
-                    '100%': 'rgb(var(--success-6))',
-                  }"
-                />
+                <UseElementVisibility v-slot="{ isVisible }">
+                  <span text-xs block mb--3>HTML & CSS</span>
+                  <a-progress
+                    :percent="isVisible ? 0.95 : 0" :color="{
+                      '0%': 'rgb(var(--primary-6))',
+                      '100%': 'rgb(var(--success-6))',
+                    }"
+                  />
+                </UseElementVisibility>
               </div>
               <div mb-4>
-                <span text-xs block mb--3>NodeJs</span>
-                <a-progress
-                  :percent="0.8" :color="{
-                    '0%': 'rgb(var(--primary-6))',
-                    '100%': 'rgb(var(--success-6))',
-                  }"
-                />
+                <UseElementVisibility v-slot="{ isVisible }">
+                  <span text-xs block mb--3>NodeJs</span>
+                  <a-progress
+                    :percent="isVisible ? 0.8 : 0" :color="{
+                      '0%': 'rgb(var(--primary-6))',
+                      '100%': 'rgb(var(--success-6))',
+                    }"
+                  />
+                </UseElementVisibility>
               </div>
               <div mb-4>
-                <span text-xs block mb--3>VueJs</span>
-                <a-progress
-                  :percent="0.9" :color="{
-                    '0%': 'rgb(var(--primary-6))',
-                    '100%': 'rgb(var(--success-6))',
-                  }"
-                />
+                <UseElementVisibility v-slot="{ isVisible }">
+                  <span text-xs block mb--3>VueJs</span>
+                  <a-progress
+                    :percent="isVisible ? 0.9 : 0" :color="{
+                      '0%': 'rgb(var(--primary-6))',
+                      '100%': 'rgb(var(--success-6))',
+                    }"
+                  />
+                </UseElementVisibility>
               </div>
               <div mb-4>
-                <span text-xs block mb--3>Angular</span>
-                <a-progress
-                  :percent="0.85" :color="{
-                    '0%': 'rgb(var(--primary-6))',
-                    '100%': 'rgb(var(--success-6))',
-                  }"
-                />
+                <UseElementVisibility v-slot="{ isVisible }">
+                  <span text-xs block mb--3>Angular</span>
+                  <a-progress
+                    :percent="isVisible ? 0.85 : 0" :color="{
+                      '0%': 'rgb(var(--primary-6))',
+                      '100%': 'rgb(var(--success-6))',
+                    }"
+                  />
+                </UseElementVisibility>
               </div>
               <div mb-4>
-                <span text-xs block mb--3>Figma</span>
-                <a-progress
-                  :percent="0.75" :color="{
-                    '0%': 'rgb(var(--primary-6))',
-                    '100%': 'rgb(var(--success-6))',
-                  }"
-                />
+                <UseElementVisibility v-slot="{ isVisible }">
+                  <span text-xs block mb--3>Figma</span>
+                  <a-progress
+                    :percent="isVisible ? 0.75 : 0" :color="{
+                      '0%': 'rgb(var(--primary-6))',
+                      '100%': 'rgb(var(--success-6))',
+                    }"
+                  />
+                </UseElementVisibility>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+      <UseElementVisibility v-slot="{ isVisible }">
+        <section bg-white dark:bg-black relative z-1>
+          <div class="absolute left--1/10 top-1/2 translate-y--1/2">
+            <img alt="" :class="[mdAndLarger && isVisible ? 'animate__animated animate__fadeInLeft animate__delay-0s opacity-100' : 'animate__animated animate__fadeOutLeft']" class="" src="/img/docs.png">
+          </div>
+          <div class="absolute right--1/20 top-4/10 translate-y--1/2">
+            <img alt="" :class="[mdAndLarger && isVisible ? 'animate__animated animate__fadeInRight ![--animate-delay:0.25s] animate__delay-2s opacity-100' : 'animate__animated animate__fadeOutRight']" class="" src="/img/plant2.png">
+          </div>
+          <div class="container max-w-3xl mx-auto p-4 mx">
             <h3
               class="my-8 text-xl font-semibold flex items-center gap-4 before:h-px before:flex-1 before:bg-zinc-4/20  before:content-[''] after:h-px after:flex-1 after:bg-zinc-4/20  after:content-['']"
             >
@@ -592,18 +631,24 @@ const { results } = useFuse(inputSkillsSearch, skills, {
               </a-timeline>
             </div>
           </div>
-        </div>
-      </section>
-      <section shadow-inner>
-        <div class="container md:max-w-2xl mx-auto py-12 relative">
+        </section>
+      </UseElementVisibility>
+      <section shadow-inner relative overflow-hidden>
+        <div
+          class="absolute top-0 right-0 w-full h-full bg-[url(/img/tinypng.png)] bg-cover bg-fixed opacity-50 bg-opacity-50"
+        />
+        <div
+          class="absolute top-0 right-0 w-full h-full bg-[url(/img/grid.svg)] bg-repeat opacity-50 bg-fixed bg-opacity-50"
+        />
+        <div class="container md:max-w-2xl mx-auto py-24">
           <div
-            class="absolute top--10 -left-10 w-100 h-100 bg-blue-3 rounded-full mix-blend-multiply filter blur-xl opacity-35 z--0 animate-blob"
+            class="absolute top--10 -left-10 w-200 h-200 bg-blue-3 rounded-full mix-blend-multiply filter blur-xl opacity-35 z--0 animate-blob"
           />
           <div
-            class="absolute top-0 -right-5 w-100 h-100 bg-teal-3 rounded-full mix-blend-multiply filter blur-xl opacity-35 z--0 animate-blob animation-delay-2000"
+            class="absolute top-0 -right-5 w-200 h-200 bg-teal-3 rounded-full mix-blend-multiply filter blur-xl opacity-35 z--0 animate-blob animation-delay-2000"
           />
           <div
-            class="absolute -bottom-8 left-32 w-100 h-100 bg-cyan-2 rounded-full mix-blend-multiply filter blur-xl opacity-35 z--0 animate-blob animation-delay-4000"
+            class="absolute -bottom-8 left-32 w-200 h-200 bg-cyan-2 rounded-full mix-blend-multiply filter blur-xl opacity-35 z--0 animate-blob animation-delay-4000"
           />
           <UseElementVisibility v-slot="{ isVisible }">
             <div :class="[isVisible ? 'animate__animated animate__fadeInUp opacity-100' : 'opacity-0']" class="bg-zinc-1/40 border-1px border-zinc-1/20 dark:bg-zinc-9/40 backdrop-blur px-4 py-8 rounded-2px">
@@ -645,165 +690,157 @@ const { results } = useFuse(inputSkillsSearch, skills, {
           </UseElementVisibility>
         </div>
       </section>
-      <section container-full mx-auto relative z-1 bg-white dark:bg-black>
-        <div class="container mx-auto px-4">
-          <article class="prose mx-auto lg:prose-xl">
-            <h1 m-0>
-              Garlic bread with cheese: What the science tells us
-            </h1>
-            <p>
-              For years parents have espoused the health benefits of eating garlic bread with cheese to their
-              children, with the food earning such an iconic status in our culture that kids will often dress
-              up as warm, cheesy loaf for Halloween.
-            </p>
-            <p>
-              But a recent study shows that the celebrated appetizer may be linked to a series of rabies cases
-              springing up around the country.
-            </p>
-            <p>
-              For years parents have espoused the health benefits of eating garlic bread with cheese to their
-              children, with the food earning such an iconic status in our culture that kids will often dress
-              up as warm, cheesy loaf for Halloween.
-            </p>
-            <p>
-              But a recent study shows that the celebrated appetizer may be linked to a series of rabies cases
-              springing up around the country.
-            </p>
-            <p>
-              For years parents have espoused the health benefits of eating garlic bread with cheese to their
-              children, with the food earning such an iconic status in our culture that kids will often dress
-              up as warm, cheesy loaf for Halloween.
-            </p>
-            <p>
-              But a recent study shows that the celebrated appetizer may be linked to a series of rabies cases
-              springing up around the country.
-            </p>
-            <p>
-              For years parents have espoused the health benefits of eating garlic bread with cheese to their
-              children, with the food earning such an iconic status in our culture that kids will often dress
-              up as warm, cheesy loaf for Halloween.
-            </p>
-            <p>
-              But a recent study shows that the celebrated appetizer may be linked to a series of rabies cases
-              springing up around the country.
-            </p>
-            <p>
-              For years parents have espoused the health benefits of eating garlic bread with cheese to their
-              children, with the food earning such an iconic status in our culture that kids will often dress
-              up as warm, cheesy loaf for Halloween.
-            </p>
-            <p>
-              But a recent study shows that the celebrated appetizer may be linked to a series of rabies cases
-              springing up around the country.
-            </p>
-            <p>
-              For years parents have espoused the health benefits of eating garlic bread with cheese to their
-              children, with the food earning such an iconic status in our culture that kids will often dress
-              up as warm, cheesy loaf for Halloween.
-            </p>
-            <p>
-              But a recent study shows that the celebrated appetizer may be linked to a series of rabies cases
-              springing up around the country.
-            </p>
-            <!-- ... -->
-          </article>
+      <UseElementVisibility v-slot="{ isVisible }">
+        <section bg-white dark:bg-black relative z-1>
+          <div class="origin-center absolute left--2/12 top-1/2 translate-y--1/2">
+            <img alt="" :class="[mdAndLarger && isVisible ? 'animate__animated animate__fadeInLeft animate__delay-0s opacity-100' : 'animate__animated animate__fadeOutLeft']" class="w-5/6" src="/img/camera.png">
+          </div>
+          <div class="container max-w-3xl mx-auto p-4 mx">
+            <h3
+              class="my-8 text-xl font-semibold flex items-center gap-4 before:h-px before:flex-1 before:bg-zinc-4/20  before:content-[''] after:h-px after:flex-1 after:bg-zinc-4/20  after:content-['']"
+            >
+              Hobbies & Interests
+            </h3>
+            <div grid gap-4 grid-cols-1 md:grid-cols-2 mb-16>
+              <div class="relative group mx-auto max-w-md h-42 overflow-hidden rounded-5px border-2px border-zinc-6/20 dark:border-zinc-4/20 duration-0.4s transition-shadow shadow-sm hover:(shadow-lg) hover:cursor-pointer">
+                <div>
+                  <img src="https://images.unsplash.com/photo-1506157999258-a35364384ce9?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80" class="duration-0.4s transition-transform object-cover object-center group-hover:scale-115" alt="">
+                </div>
+                <div class="absolute inset-0 z-10 bg-gradient-to-t from-black  transition-opacity opacity-0 group-hover:opacity-100" />
+                <div class="absolute inset-x-0 bottom-0 z-20 p-4 transition-all translate-y-100% group-hover:translate-y--0%">
+                  <h3 class="text-lg font-semibold text-white">
+                    Music/Dance
+                  </h3>
+                </div>
+              </div>
+              <div class="relative group mx-auto max-w-md h-42 overflow-hidden rounded-5px border-2px border-zinc-6/20 dark:border-zinc-4/20 duration-0.4s transition-shadow shadow-sm hover:(shadow-lg) hover:cursor-pointer">
+                <div>
+                  <img src="https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80" class="duration-0.4s transition-transform object-cover object-center group-hover:scale-115" alt="">
+                </div>
+                <div class="absolute inset-0 z-10 bg-gradient-to-t from-black  transition-opacity opacity-0 group-hover:opacity-100" />
+                <div class="absolute inset-x-0 bottom-0 z-20 p-4 transition-all translate-y-100% group-hover:translate-y--0%">
+                  <h3 class="text-xl font-medium text-white">
+                    Travel
+                  </h3>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </UseElementVisibility>
+      <UseElementVisibility v-slot="{ isVisible }">
+        <section bg-white dark:bg-black relative z-1>
+          <div class="container max-w-3xl mx-auto p-4 mx">
+            <h3
+              class="my-8 text-xl font-semibold flex items-center gap-4 before:h-px before:flex-1 before:bg-zinc-4/20  before:content-[''] after:h-px after:flex-1 after:bg-zinc-4/20  after:content-['']"
+            >
+              Languages
+            </h3>
+            <div flex gap-3 justify-between my-12>
+              <a-progress
+                :color="{
+                  '0%': 'rgb(var(--primary-6))',
+                  '100%': 'rgb(var(--success-6))',
+                }"
+                type="circle"
+                class="w-36 h-36 ![&>.arco-progress-circle-wrapper]:w-full ![&>.arco-progress-circle-wrapper]:h-full"
+                size="large"
+                :percent="isVisible ? 0.75 : 0"
+              >
+                <template #text="{ percent }">
+                  <span class="text-3xl/10">
+                    <span>
+                      {{ percent * 100 }}<small text-13px>%</small>
+                    </span>
+                    <span block text-blue-5 dark:text-blue-5 text-lg font-semibold>Frensh</span>
+                  </span>
+                </template>
+              </a-progress>
+              <a-progress
+                :color="{
+                  '0%': 'rgb(var(--primary-6))',
+                  '100%': 'rgb(var(--success-6))',
+                }"
+                type="circle"
+                class="w-36 h-36 ![&>.arco-progress-circle-wrapper]:w-full ![&>.arco-progress-circle-wrapper]:h-full"
+                size="large"
+                :percent="isVisible ? 0.70 : 0"
+              >
+                <template #text="{ percent }">
+                  <span class="text-3xl/10">
+                    <span>
+                      {{ percent * 100 }}<small text-13px>%</small>
+                    </span>
+                    <span block text-blue-5 dark:text-blue-5 text-lg font-semibold>English</span>
+                  </span>
+                </template>
+              </a-progress>
+              <a-progress
+                :color="{
+                  '0%': 'rgb(var(--primary-6))',
+                  '100%': 'rgb(var(--success-6))',
+                }"
+                type="circle"
+                class="w-36 h-36 ![&>.arco-progress-circle-wrapper]:w-full ![&>.arco-progress-circle-wrapper]:h-full"
+                size="large"
+                :percent="isVisible ? 0.95 : 0"
+              >
+                <template #text="{ percent }">
+                  <span class="text-3xl/10">
+                    <span>
+                      {{ percent * 100 }}<small text-13px>%</small>
+                    </span>
+                    <span block text-blue-5 dark:text-blue-5 text-lg font-semibold>Arabic</span>
+                  </span>
+                </template>
+              </a-progress>
+            </div>
+          </div>
+        </section>
+      </UseElementVisibility>
+      <section class="relative z-1 transition-all duration-200 bg-zinc-1/60 dark:bg-dark-8/50 backdrop-blur-sm shadow-zinc-6/20 dark:shadow-zinc-5/20 shadow-[inset_0_8px_8px_-8px_var(--un-shadow-color),inset_0_-8px_8px_-8px_var(--un-shadow-color)]">
+        <div class="py-5">
+          <div class="container max-w-3xl mx-auto p-4 flex items-center gap-4 after:h-px after:flex-1 after:bg-zinc-4/20  after:content-['']">
+            <h3 class="md:text-xl font-semibold">
+              Projects
+            </h3>
+            <a-radio-group v-model="projectType" class="hidden md:block" type="button" size="small">
+              <a-radio value="*">
+                All
+              </a-radio>
+              <a-radio value=".web">
+                Web
+              </a-radio>
+              <a-radio value=".design">
+                Design
+              </a-radio>
+              <a-radio value=".api">
+                Api
+              </a-radio>
+            </a-radio-group>
+            <a-select v-model="projectType" class="md:hidden w-2/4">
+              <a-option value="*" label="All" />
+              <a-option value=".web" label="Web" />
+              <a-option value=".design" label="Design" />
+              <a-option value=".api" label="Api" />
+            </a-select>
+          </div>
+          <div py-5>
+            <div ref="gridProjectsRef" class="transition-all px-2">
+              <div v-for="(i, index) in ['web', 'api', 'web api', 'web design api', 'design', 'web', 'web', 'web', 'api']" :key="index" :class="[i]" class="element-item relative m-2 float-left group w-[calc(50%-1.5rem)] md:w-[calc(33.33%-1.35rem)] h-28 md:h-46 overflow-hidden rounded-5px border-2px border-zinc-6/20 dark:border-zinc-4/20 duration-0.4s transition-shadow shadow-sm hover:(shadow-lg) hover:cursor-pointer">
+                <div h-full>
+                  <img src="https://images.unsplash.com/photo-1506157999258-a35364384ce9?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=550&q=80" class="duration-0.4s transition-transform object-cover object-center group-hover:scale-115" alt="">
+                </div>
+                <div class="absolute inset-0 z-10 bg-gradient-to-t from-black  transition-opacity opacity-0 group-hover:opacity-100" />
+                <div class="absolute inset-x-0 bottom-0 z-20 p-4 transition-all translate-y-100% group-hover:translate-y--0%">
+                  <h3 class="md:text-lg font-semibold text-white">
+                    Music/Dance
+                  </h3>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="mx-auto max-w-lg">
-          <TheWindow class="shadow-md shadow-dark-50/10" />
-        </div>
-        <div class="relative font-sans">
-          <HeroSlider :grab-cursor="true" class="h-[calc(50vh)] min-h-500px" :sliders="photos" />
-        </div>
-      </section>
-      <section relative z-1 class="bg-white/5 dark:bg-zinc-9/30 backdrop-blur">
-        <p>
-          But a recent study shows that the celebrated appetizer may be linked to a series of rabies cases
-          springing up around the country.
-        </p>
-        <p>
-          For years parents have espoused the health benefits of eating garlic bread with cheese to their
-          children, with the food earning such an iconic status in our culture that kids will often dress
-          up as warm, cheesy loaf for Halloween.
-        </p>
-        <p>
-          But a recent study shows that the celebrated appetizer may be linked to a series of rabies cases
-          springing up around the country.
-        </p>
-        <p>
-          But a recent study shows that the celebrated appetizer may be linked to a series of rabies cases
-          springing up around the country.
-        </p>
-        <p>
-          But a recent study shows that the celebrated appetizer may be linked to a series of rabies cases
-          springing up around the country.
-        </p>
-        <p>
-          But a recent study shows that the celebrated appetizer may be linked to a series of rabies cases
-          springing up around the country.
-        </p>
-        <p>
-          For years parents have espoused the health benefits of eating garlic bread with cheese to their
-          children, with the food earning such an iconic status in our culture that kids will often dress
-          up as warm, cheesy loaf for Halloween.
-        </p>
-        <p>
-          But a recent study shows that the celebrated appetizer may be linked to a series of rabies cases
-          springing up around the country.
-        </p>
-        <p>
-          For years parents have espoused the health benefits of eating garlic bread with cheese to their
-          children, with the food earning such an iconic status in our culture that kids will often dress
-          up as warm, cheesy loaf for Halloween.
-        </p>
-        <p>
-          But a recent study shows that the celebrated appetizer may be linked to a series of rabies cases
-          springing up around the country.
-        </p>
-        <p>
-          For years parents have espoused the health benefits of eating garlic bread with cheese to their
-          children, with the food earning such an iconic status in our culture that kids will often dress
-          up as warm, cheesy loaf for Halloween.
-        </p>
-        <p>
-          But a recent study shows that the celebrated appetizer may be linked to a series of rabies cases
-          springing up around the country.
-        </p>
-        <p>
-          For years parents have espoused the health benefits of eating garlic bread with cheese to their
-          children, with the food earning such an iconic status in our culture that kids will often dress
-          up as warm, cheesy loaf for Halloween.
-        </p>
-        <p>
-          But a recent study shows that the celebrated appetizer may be linked to a series of rabies cases
-          springing up around the country.
-        </p>
-        <p>
-          For years parents have espoused the health benefits of eating garlic bread with cheese to their
-          children, with the food earning such an iconic status in our culture that kids will often dress
-          up as warm, cheesy loaf for Halloween.
-        </p>
-        <p>
-          But a recent study shows that the celebrated appetizer may be linked to a series of rabies cases
-          springing up around the country.
-        </p>
-        <p>
-          For years parents have espoused the health benefits of eating garlic bread with cheese to their
-          children, with the food earning such an iconic status in our culture that kids will often dress
-          up as warm, cheesy loaf for Halloween.
-        </p>
-        <p>
-          But a recent study shows that the celebrated appetizer may be linked to a series of rabies cases
-          springing up around the country.
-        </p>
-        <p>
-          For years parents have espoused the health benefits of eating garlic bread with cheese to their
-          children, with the food earning such an iconic status in our culture that kids will often dress
-          up as warm, cheesy loaf for Halloween.
-        </p>
-        <p>
-          But a recent study shows that the celebrated appetizer may be linked to a series of rabies cases
-          springing up around the country.
-        </p>
       </section>
       <footer block pb-0px>
         <div class="footer-container py-4 relative z-1 bg-light-2 dark:bg-dark-8">
@@ -869,7 +906,7 @@ const { results } = useFuse(inputSkillsSearch, skills, {
                     <div class="space10px" />
                     <div class="contact-info">
                       <i class="i-la-map-pin" /> France, Paris <br>
-                      <i class="i-la-phone" />+ (216) 22 35 68 13 <br>
+                      <i class="i-la-phone" />+(33) 07 51 30 09 15 <br>
                       <i class="i-la-envelope" /> <a href="mailto:weskhaled@gmail.com">weskhaled@gmail.com</a>
                     </div>
                     <!-- /.widget -->
@@ -1031,7 +1068,7 @@ footer .social-icon {
   @apply w-8 h-8 border-2px border-zinc-5/20 rounded-2px overflow-hidden text-3.5 flex items-center justify-center;
 
   &:hover {
-    @apply bg-white dark: bg-dark;
+    @apply bg-white dark:bg-dark;
 
     i {
       animation: toTopFromBottom 0.2s forwards;

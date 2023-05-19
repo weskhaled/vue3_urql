@@ -102,7 +102,7 @@ watch(windowScrollY, (val) => {
         />
         <div
           class="header-image opacity-70"
-          :style="{ ...sliderStyles.hederImage, 'background-image': `url(https://tailwindcss.com/_next/static/media/0-dark@tinypng.74768a0b.png)` }"
+          :style="{ ...sliderStyles.hederImage, 'background-image': `url('/img/tinypng.png')` }"
         />
 
         <div
@@ -110,7 +110,7 @@ watch(windowScrollY, (val) => {
           :style="{ ...sliderStyles.container }"
         >
           <div
-            v-if="index === activeSlideIndex" class="transition-opacity duration-0.5s opacity-0"
+            v-if="index === activeSlideIndex" class="transition-opacity duration-0.5s"
             :class="{ 'opacity-100': sliderContainerIsVisible, 'animate__animated': index === activeSlideIndex }"
           >
             <component :is="slide.content" />
