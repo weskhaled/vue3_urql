@@ -20,9 +20,16 @@ async function logout() {
       <a href="" class="" @click.prevent="router.push('/')">
         <span
           class="inline-block text-4/5 border-2px uppercase border-black dark:border-white font-semibold py-1 px-2"
-        ><span
-          class="font-light"
-        >WE</span>Brand</span>
+        >
+          <span class="hidden sm:inline-block">
+            <span class="font-light">WE
+            </span>Brand
+          </span>
+          <span class="inline-block sm:hidden">
+            <span class="font-light">W
+            </span>B
+          </span>
+        </span>
       </a>
     </div>
     <div class="grow-1 flex header-menu justify-end">
@@ -130,14 +137,16 @@ async function logout() {
           <a-button class="px-2" type="text">
             <span class="flex items-center">
               <span class="w-4 h-4 mr-1 inline-block leading-30px text-sm i-carbon-user-avatar" />
-              {{ `${currentUser?.nickname}` }}
+              <span hidden sm:inline-block>
+                {{ `${currentUser?.nickname}` }}
+              </span>
               <span class="w-3 h-3 ml-0.5 inline-block leading-30px text-sm i-carbon-chevron-down" />
             </span>
           </a-button>
           <template #content>
             <a-doption>
               <template #icon>
-                <span class="w-5 h-5 mr-1 inline-block leading-30px text-md i-carbon-user-avatar" />
+                <span class="w-5 h-5 inline-block leading-30px text-md i-carbon-user-avatar" />
               </template>
               <template #default>
                 Profile
@@ -145,7 +154,7 @@ async function logout() {
             </a-doption>
             <a-doption @click="logout()">
               <template #icon>
-                <span class="w-5 h-5 mr-1 inline-block leading-30px text-md i-carbon-logout" />
+                <span class="w-5 h-5 inline-block leading-30px text-md i-carbon-logout" />
               </template>
               <template #default>
                 Logout

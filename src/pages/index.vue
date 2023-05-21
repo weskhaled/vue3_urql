@@ -52,20 +52,21 @@ const mapOptions = {
   },
   zoom: 4,
 }
+const showMaps = ref(false)
 const mapRef = ref()
-const gmaps = ref()
+const gMaps = ref()
 
-let isotopeProjects: any
+const isotopeProjects: any = ref()
 
 onMounted(() => {
-  isotopeProjects = new Isotope(gridProjectsRef.value, {
+  isotopeProjects.value = new Isotope(gridProjectsRef.value, {
     itemSelector: '.element-item',
     layoutMode: 'fitRows',
   })
   loader
     .load()
     .then((google) => {
-      gmaps.value = new google.maps.Map(mapRef.value, mapOptions)
+      gMaps.value = new google.maps.Map(mapRef.value, mapOptions)
     })
     .catch((e) => {
     // do something
@@ -73,7 +74,7 @@ onMounted(() => {
 })
 
 watch(projectType, (val) => {
-  isotopeProjects?.arrange({ filter: [val] })
+  isotopeProjects.value?.arrange({ filter: [val] })
 })
 const outputTransition = useTransition(sourceTransition, {
   duration: 200,
@@ -878,7 +879,8 @@ const { results } = useFuse(inputSkillsSearch, skills, {
         </div>
       </section>
       <section relative>
-        <div absolute w-full h-full top-0 left-0 z-3 class="bg-gradient-to-b from-zinc-1 dark:from-zinc-8 from-0% via-zinc-1/85 dark:via-zinc-8/75 via-30% to-zinc-1/20 dark:to-zinc-8/30 to-100%">
+        <div absolute w-full h-full top-0 left-0 z-3 class="">
+          <div class="absolute w-full h-full top-0 left-0 z--1 bg-gradient-to-b from-zinc-1 dark:from-zinc-9 from-0% via-zinc-1/90 dark:via-zinc-9/90 via-30% to-zinc-1/0 dark:to-zinc-9/0 to-80%" />
           <div class="container max-w-4xl mx-auto px-4 py-6">
             <div flex items-center mb-5>
               <a-avatar
@@ -901,19 +903,20 @@ const { results } = useFuse(inputSkillsSearch, skills, {
               </span>
               <span ml-2 text-lg inline-block font-light />
             </div>
-            <div>
-              <a-switch type="line">
+            <div flex items-center>
+              <span>Where am I located?</span>
+              <a-switch v-model="showMaps" class="ml-2" type="line">
                 <template #checked-icon>
-                  <span i-carbon-information text-11px block m-auto />
+                  <span i-carbon-location-filled text-11px block m-auto />
                 </template>
                 <template #unchecked-icon>
-                  <span i-carbon-location-filled text-11px block m-auto />
+                  <span i-carbon-information text-11px block m-auto />
                 </template>
               </a-switch>
             </div>
-            <div>
+            <div :class="[showMaps ? 'animate__animated animate__fadeOutDown' : ('animate__animated animate__fadeInUp')]">
               <div
-                class="p-5 rounded-2px bg-white/80 dark:bg-zinc-9/70 backdrop-blur max-w-xl relative z-2 ml-auto m-auto border-zinc-5/10 border shadow-sm shadow-black/3"
+                class="mt-8 p-5 rounded-2px bg-white/95 dark:bg-zinc-9/95 backdrop-blur max-w-xl relative z-2 ml-auto m-auto border-zinc-5/10 border shadow-sm shadow-black/3"
               >
                 <button
                   class="w-10 h-10 justify-center content-center absolute flex top--6 left--6 bg-blue-6/90 hover:bg-blue-7/90 active:(bg-blue-7/80 border-blue-8) transition-all block z-2 border border-blue-8/20 backdrop-blur"
