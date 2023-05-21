@@ -93,8 +93,8 @@ function onClickMenuItem(key) {
     </a-menu>
     <!-- trigger -->
     <template #trigger="{ collapsed }">
-      <span v-if="collapsed" class="w-4 h-4 mr-2 inline-block leading-30px text-md i-line-md-menu-fold-right" />
-      <span v-else class="w-4 h-4 mr-2 inline-block leading-30px text-md i-line-md-menu-unfold-left" />
+      <span v-if="collapsed" class="w-5 h-5 inline-block leading-30px i-line-md-menu-fold-right" />
+      <span v-else class="w-5 h-5 inline-block leading-30px i-line-md-menu-unfold-left" />
     </template>
   </a-layout-sider>
 </template>
@@ -114,6 +114,6 @@ function onClickMenuItem(key) {
 }
 
 :deep(.arco-layout-sider-trigger) {
-  @apply !bg-slate-100 !dark:bg-gray-900;
+  @apply !bg-light-6 !dark:bg-dark-6;
 }
 </style>

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useFuse } from '@vueuse/integrations/useFuse'
 import { Swiper, SwiperSlide } from 'swiper/vue'
+import { Loader } from '@googlemaps/js-api-loader'
 import Typed from 'typed.js'
 // import Isotope from 'isotope-layout'
 import { vIntersectionObserver, vOnClickOutside } from '@vueuse/components'
@@ -9,6 +10,8 @@ import { mdAndLarger } from '~/common/stores'
 import { useIsotope } from '~/composables/isotope'
 import 'swiper/css/scrollbar'
 import TheWindow from '~/components/TheWindow.vue'
+
+const googleApiKey = import.meta.env.VITE_GOOGLE_API_KEY
 
 const { Isotope } = await useIsotope()
 const windowHeight = useWindowSize().height
@@ -37,6 +40,20 @@ const sliders: Ref<any[]> = ref([
 const sourceTransition = ref(0)
 const gridProjectsRef = ref<HTMLElement | null>(null)
 const projectType = ref('*')
+const loader = new Loader({
+  apiKey: `${googleApiKey}`,
+  version: 'weekly',
+  libraries: ['places'],
+})
+const mapOptions = {
+  center: {
+    lat: 0,
+    lng: 0,
+  },
+  zoom: 4,
+}
+const mapRef = ref()
+const gmaps = ref()
 
 let isotopeProjects: any
 
@@ -45,6 +62,14 @@ onMounted(() => {
     itemSelector: '.element-item',
     layoutMode: 'fitRows',
   })
+  loader
+    .load()
+    .then((google) => {
+      gmaps.value = new google.maps.Map(mapRef.value, mapOptions)
+    })
+    .catch((e) => {
+    // do something
+    })
 })
 
 watch(projectType, (val) => {
@@ -53,24 +78,27 @@ watch(projectType, (val) => {
 const outputTransition = useTransition(sourceTransition, {
   duration: 200,
 })
-let typed: any
-function intersectionObserver([{ isIntersecting, target }]) {
-  if (isIntersecting) {
-    !typed
-      ? (typed = new Typed(target.getElementsByTagName('span')[target.getElementsByTagName('span').length - 1], {
-          strings: [target.getElementsByTagName('span')[0].innerHTML],
-          typeSpeed: 20,
-          backSpeed: 0,
-          startDelay: 10,
-          loop: false,
-        }))
-      : (typed.start())
-    typed?.reset()
-  }
+const targetToTyped: Ref<any[]> = ref([])
 
+function intersectionObserver([{ isIntersecting, target }]) {
+  const findTarget = targetToTyped.value.find(item => item.target === target)
+  if (!findTarget.typed) {
+    findTarget.typed = new Typed(findTarget.target.getElementsByTagName('span')[findTarget.target.getElementsByTagName('span').length - 1], {
+      strings: [findTarget.target.getElementsByTagName('span')[0].innerHTML],
+      typeSpeed: 20,
+      backSpeed: 0,
+      startDelay: 10,
+      loop: false,
+    })
+    findTarget.typed.reset()
+    findTarget.typed.stop()
+  }
+  if (isIntersecting) {
+    findTarget.typed.start()
+  }
   else {
-    typed?.reset()
-    typed?.stop()
+    findTarget.typed.reset()
+    findTarget.typed.stop()
   }
 }
 
@@ -261,7 +289,7 @@ const { results } = useFuse(inputSkillsSearch, skills, {
               @click.stop="async () => sourceTransition = (sourceTransition === 100 ? 0 : 100)"
             >
               <template #icon>
-                <span i-line-md-grid-3 class="w-5 h-5 mx-1 block text-lg" />
+                <span :class="sourceTransition === 100 ? 'i-line-md-menu-to-close-transition' : 'i-line-md-grid-3'" class="w-5 h-5 mx-1 block text-lg" />
               </template>
             </a-button>
           </div>
@@ -338,11 +366,11 @@ const { results } = useFuse(inputSkillsSearch, skills, {
                             id: 'your_id',
                             title: 'Success',
                             content: 'Update success!',
-                            duration: -1,
+                            duration: 3000,
                             closable: true,
                           })"
                         >
-                          <i i-carbon-add block />
+                          <i i-carbon-reset block />
                         </a-button>
                       </template>
                     </a-input-search>
@@ -473,8 +501,9 @@ const { results } = useFuse(inputSkillsSearch, skills, {
                 >
               </a-avatar>
               <span
-                id="typed-strings"
-                v-intersection-observer="intersectionObserver" ml-2 text-lg inline-block
+                :ref="(target) => targetToTyped.push({ target })"
+                v-intersection-observer="intersectionObserver" ml-2 text-lg
+                inline-block
                 font-light
               >
                 <span hidden>
@@ -482,7 +511,7 @@ const { results } = useFuse(inputSkillsSearch, skills, {
                 </span>
                 <span />
               </span>
-              <span id="typed" ml-2 text-lg inline-block font-light />
+              <span ml-2 text-lg inline-block font-light />
             </div>
           </UseElementVisibility>
           <div py-4>
@@ -517,9 +546,9 @@ const { results } = useFuse(inputSkillsSearch, skills, {
               </div>
               <div mb-4>
                 <UseElementVisibility v-slot="{ isVisible }">
-                  <span text-xs block mb--3>NodeJs</span>
+                  <span text-xs block mb--3>VueJs</span>
                   <a-progress
-                    :percent="isVisible ? 0.8 : 0" :color="{
+                    :percent="isVisible ? 0.9 : 0" :color="{
                       '0%': 'rgb(var(--primary-6))',
                       '100%': 'rgb(var(--success-6))',
                     }"
@@ -528,9 +557,9 @@ const { results } = useFuse(inputSkillsSearch, skills, {
               </div>
               <div mb-4>
                 <UseElementVisibility v-slot="{ isVisible }">
-                  <span text-xs block mb--3>VueJs</span>
+                  <span text-xs block mb--3>NestJs</span>
                   <a-progress
-                    :percent="isVisible ? 0.9 : 0" :color="{
+                    :percent="isVisible ? 0.8 : 0" :color="{
                       '0%': 'rgb(var(--primary-6))',
                       '100%': 'rgb(var(--success-6))',
                     }"
@@ -653,39 +682,38 @@ const { results } = useFuse(inputSkillsSearch, skills, {
           <UseElementVisibility v-slot="{ isVisible }">
             <div :class="[isVisible ? 'animate__animated animate__fadeInUp opacity-100' : 'opacity-0']" class="bg-zinc-1/40 border-1px border-zinc-1/20 dark:bg-zinc-9/40 backdrop-blur px-4 py-8 rounded-2px">
               <h3
-                class="my-1 mb-8 text-xl font-semibold flex items-center gap-4 before:h-px before:flex-1 before:bg-zinc-3/20  before:content-[''] after:h-px after:flex-1 after:bg-zinc-3/20  after:content-['']"
+                class="my-1 mb-7 md:text-xl font-semibold flex items-center gap-4 before:h-px before:flex-1 before:bg-zinc-3/20  before:content-[''] after:h-px after:flex-1 after:bg-zinc-3/20  after:content-['']"
               >
                 Technologies & Frameworks
               </h3>
-              <ul class="flex space-x-4 text-4xl items-center justify-center overflow-auto [&>li]:grayscale hover:[&>li]:grayscale-0 hover:[&>li]:cursor-pointer">
-                <li class="transition-all">
-                  <i i-logos-vue />
-                </li>
-                <li class="">
-                  <i i-logos-nodejs />
-                </li>
-                <li class="">
-                  <i i-logos-nestjs />
-                </li>
-                <li class="">
-                  <i i-logos-typescript-icon />
-                </li>
-                <li class="">
-                  <i i-logos-graphql />
-                </li>
-                <li class="">
-                  <i i-logos-tailwindcss-icon />
-                </li>
-                <li class="">
-                  <i i-logos-aws-s3 />
-                </li>
-                <li class="">
-                  <i i-logos-aws-lambda />
-                </li>
-                <li class="">
-                  <i i-logos-aws-amplify />
-                </li>
-              </ul>
+              <div>
+                <Swiper
+                  class="pb-3" :slides-per-view="4" :space-between="10" direction="horizontal"
+                  :mousewheel="true" :free-mode="true" :grab-cursor="true" :scrollbar="{
+                    hide: true,
+                  }" :modules="[Scrollbar, Mousewheel, FreeMode]"
+                >
+                  <SwiperSlide
+                    v-for="(skill, index) in skills" :key="index"
+                    class="overflow-hidden cursor-pointer group relative backdrop-blur flex justify-center content-center bg-zinc-3/20 p-2 h-20 transition-all hover:(bg-zinc-4/40)"
+                  >
+                    <span
+                      :class="`${skill.logo}`" block m-auto p-1 w-12 h-12 transition-all duration-0.2s
+                      origin-top class="group-hover:(-translate-y-25% w-12 h-12)"
+                    />
+                    <span
+                      absolute bottom-0 w-full font-mono text-center transition-all leading-4 flex p-2
+                      justify-between items-center
+                      class="bg-white/80 dark:(bg-black/80 text-white) translate-y-full group-hover:translate-y-0"
+                    >
+                      <span>
+                        {{ skill.title }}
+                      </span>
+                      <a-progress class="hidden md:block" size="mini" :percent="skill.percent" />
+                    </span>
+                  </SwiperSlide>
+                </Swiper>
+              </div>
             </div>
           </UseElementVisibility>
         </div>
@@ -702,18 +730,18 @@ const { results } = useFuse(inputSkillsSearch, skills, {
               Hobbies & Interests
             </h3>
             <div grid gap-4 grid-cols-1 md:grid-cols-2 mb-16>
-              <div class="relative group mx-auto max-w-md h-42 overflow-hidden rounded-5px border-2px border-zinc-6/20 dark:border-zinc-4/20 duration-0.4s transition-shadow shadow-sm hover:(shadow-lg) hover:cursor-pointer">
+              <div class="relative group mx-auto max-w-md h-42 overflow-hidden rounded-2px border-2px border-zinc-6/20 dark:border-zinc-4/20 duration-0.4s transition-shadow shadow-sm hover:(shadow-lg) hover:cursor-pointer">
                 <div>
                   <img src="https://images.unsplash.com/photo-1506157999258-a35364384ce9?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80" class="duration-0.4s transition-transform object-cover object-center group-hover:scale-115" alt="">
                 </div>
-                <div class="absolute inset-0 z-10 bg-gradient-to-t from-black  transition-opacity opacity-0 group-hover:opacity-100" />
+                <div class="absolute inset-0 z-2 bg-gradient-to-t from-black  transition-opacity opacity-0 group-hover:opacity-100" />
                 <div class="absolute inset-x-0 bottom-0 z-20 p-4 transition-all translate-y-100% group-hover:translate-y--0%">
                   <h3 class="text-lg font-semibold text-white">
                     Music/Dance
                   </h3>
                 </div>
               </div>
-              <div class="relative group mx-auto max-w-md h-42 overflow-hidden rounded-5px border-2px border-zinc-6/20 dark:border-zinc-4/20 duration-0.4s transition-shadow shadow-sm hover:(shadow-lg) hover:cursor-pointer">
+              <div class="relative group mx-auto max-w-md h-42 overflow-hidden rounded-2px border-2px border-zinc-6/20 dark:border-zinc-4/20 duration-0.4s transition-shadow shadow-sm hover:(shadow-lg) hover:cursor-pointer">
                 <div>
                   <img src="https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80" class="duration-0.4s transition-transform object-cover object-center group-hover:scale-115" alt="">
                 </div>
@@ -743,54 +771,54 @@ const { results } = useFuse(inputSkillsSearch, skills, {
                   '100%': 'rgb(var(--success-6))',
                 }"
                 type="circle"
-                class="w-36 h-36 ![&>.arco-progress-circle-wrapper]:w-full ![&>.arco-progress-circle-wrapper]:h-full"
-                size="large"
-                :percent="isVisible ? 0.75 : 0"
-              >
-                <template #text="{ percent }">
-                  <span class="text-3xl/10">
-                    <span>
-                      {{ percent * 100 }}<small text-13px>%</small>
-                    </span>
-                    <span block text-blue-5 dark:text-blue-5 text-lg font-semibold>Frensh</span>
-                  </span>
-                </template>
-              </a-progress>
-              <a-progress
-                :color="{
-                  '0%': 'rgb(var(--primary-6))',
-                  '100%': 'rgb(var(--success-6))',
-                }"
-                type="circle"
-                class="w-36 h-36 ![&>.arco-progress-circle-wrapper]:w-full ![&>.arco-progress-circle-wrapper]:h-full"
-                size="large"
-                :percent="isVisible ? 0.70 : 0"
-              >
-                <template #text="{ percent }">
-                  <span class="text-3xl/10">
-                    <span>
-                      {{ percent * 100 }}<small text-13px>%</small>
-                    </span>
-                    <span block text-blue-5 dark:text-blue-5 text-lg font-semibold>English</span>
-                  </span>
-                </template>
-              </a-progress>
-              <a-progress
-                :color="{
-                  '0%': 'rgb(var(--primary-6))',
-                  '100%': 'rgb(var(--success-6))',
-                }"
-                type="circle"
-                class="w-36 h-36 ![&>.arco-progress-circle-wrapper]:w-full ![&>.arco-progress-circle-wrapper]:h-full"
+                class="w-24 h-24 md:(w-36 h-36) ![&>.arco-progress-circle-wrapper]:w-full ![&>.arco-progress-circle-wrapper]:h-full"
                 size="large"
                 :percent="isVisible ? 0.95 : 0"
               >
                 <template #text="{ percent }">
-                  <span class="text-3xl/10">
+                  <span class="text-3xl/8">
                     <span>
                       {{ percent * 100 }}<small text-13px>%</small>
                     </span>
-                    <span block text-blue-5 dark:text-blue-5 text-lg font-semibold>Arabic</span>
+                    <span block text-dark-5 dark:text-light-5 text-sm font-semibold>Arabic</span>
+                  </span>
+                </template>
+              </a-progress>
+              <a-progress
+                :color="{
+                  '0%': 'rgb(var(--primary-6))',
+                  '100%': 'rgb(var(--success-6))',
+                }"
+                type="circle"
+                class="w-24 h-24 md:(w-36 h-36) ![&>.arco-progress-circle-wrapper]:w-full ![&>.arco-progress-circle-wrapper]:h-full"
+                size="large"
+                :percent="isVisible ? 0.75 : 0"
+              >
+                <template #text="{ percent }">
+                  <span class="text-3xl/8">
+                    <span>
+                      {{ percent * 100 }}<small text-13px>%</small>
+                    </span>
+                    <span block text-dark-5 dark:text-light-5 text-sm font-semibold>Frensh</span>
+                  </span>
+                </template>
+              </a-progress>
+              <a-progress
+                :color="{
+                  '0%': 'rgb(var(--primary-6))',
+                  '100%': 'rgb(var(--success-6))',
+                }"
+                type="circle"
+                class="w-24 h-24 md:(w-36 h-36) ![&>.arco-progress-circle-wrapper]:w-full ![&>.arco-progress-circle-wrapper]:h-full"
+                size="large"
+                :percent="isVisible ? 0.70 : 0"
+              >
+                <template #text="{ percent }">
+                  <span class="text-3xl/8">
+                    <span>
+                      {{ percent * 100 }}<small text-13px>%</small>
+                    </span>
+                    <span block text-dark-5 dark:text-light-5 text-sm font-semibold>English</span>
                   </span>
                 </template>
               </a-progress>
@@ -809,38 +837,95 @@ const { results } = useFuse(inputSkillsSearch, skills, {
                 All
               </a-radio>
               <a-radio value=".web">
-                Web
+                Development
               </a-radio>
               <a-radio value=".design">
                 Design
               </a-radio>
-              <a-radio value=".api">
-                Api
+              <a-radio value=".other">
+                Other
               </a-radio>
             </a-radio-group>
             <a-select v-model="projectType" class="md:hidden w-2/4">
               <a-option value="*" label="All" />
-              <a-option value=".web" label="Web" />
-              <a-option value=".design" label="Design" />
-              <a-option value=".api" label="Api" />
+              <a-option value=".web" label="Web Development" />
+              <a-option value=".design" label="Web Design" />
+              <a-option value=".other" label="Other" />
             </a-select>
           </div>
           <div py-5>
             <div ref="gridProjectsRef" class="transition-all px-2">
-              <div v-for="(i, index) in ['web', 'api', 'web api', 'web design api', 'design', 'web', 'web', 'web', 'api']" :key="index" :class="[i]" class="element-item relative m-2 float-left group w-[calc(50%-1.5rem)] md:w-[calc(33.33%-1.35rem)] h-28 md:h-46 overflow-hidden rounded-5px border-2px border-zinc-6/20 dark:border-zinc-4/20 duration-0.4s transition-shadow shadow-sm hover:(shadow-lg) hover:cursor-pointer">
-                <div h-full>
-                  <img src="https://images.unsplash.com/photo-1506157999258-a35364384ce9?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=550&q=80" class="duration-0.4s transition-transform object-cover object-center group-hover:scale-115" alt="">
+              <div v-for="(i, index) in ['web', 'other', 'web other', 'web design other', 'design', 'web', 'web', 'web', 'other']" :key="index" :class="[i]" class="element-item relative m-2 group float-left w-[calc(50%-1.5rem)] md:w-[calc(33.33%-1.35rem)] h-32 md:h-48 overflow-hidden rounded-2px border-2px border-white dark:border-black duration-0.4s transition-shadow shadow-sm hover:(shadow-lg) hover:cursor-pointer">
+                <div class="ribbon absolute text-center shadow top-0 right-2 bg-white text-black dark:(bg-black text-light-4) flex flex-col items-center transition-all w-12 py-3 group-hover:py-1 z-5 before:content-[''] before:w-0 before:h-0 before:absolute before:left-0 before:bottom--4 before:b-b-transparent before:b-b-1rem before:b-l-1.5rem before:b-l-solid before:b-l-white dark:before:b-l-black after:content-[''] after:w-0 after:h-0 after:absolute after:right-0 after:bottom--4 after:b-b-transparent after:b-b-1rem after:b-r-1.5rem after:b-r-solid after:b-r-white dark:after:b-r-black">
+                  <div my-auto text-xs leading-5>
+                    <span block>15/02</span>
+                    <span block>2012</span>
+                  </div>
                 </div>
-                <div class="absolute inset-0 z-10 bg-gradient-to-t from-black  transition-opacity opacity-0 group-hover:opacity-100" />
+                <div class="imgs relative z-3 w-full h-full top-0 left-0">
+                  <img src="https://images.unsplash.com/photo-1634017759716-1784f7c57795?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=550&q=80" class="group-hover:opacity-0 absolute z-2 top-0 duration-0.4s transition-all object-cover object-center group-hover:scale-115" alt="">
+                  <img src="https://images.unsplash.com/photo-1604076913837-52ab5629fba9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=550&q=80" class="duration-0.4s absolute z-1 top-0 transition-all object-cover object-center group-hover:scale-115" alt="">
+                </div>
+                <div class="absolute inset-0 z-4 bg-gradient-to-t from-black  transition-opacity opacity-0 group-hover:opacity-100" />
                 <div class="absolute inset-x-0 bottom-0 z-20 p-4 transition-all translate-y-100% group-hover:translate-y--0%">
                   <h3 class="md:text-lg font-semibold text-white">
-                    Music/Dance
+                    {{ i }}
                   </h3>
                 </div>
               </div>
             </div>
           </div>
         </div>
+      </section>
+      <section relative>
+        <div absolute w-full h-full top-0 left-0 z-3 class="bg-gradient-to-b from-zinc-1 dark:from-zinc-8 from-0% via-zinc-1/85 dark:via-zinc-8/75 via-30% to-zinc-1/20 dark:to-zinc-8/30 to-100%">
+          <div class="container max-w-4xl mx-auto px-4 py-6">
+            <div flex items-center mb-5>
+              <a-avatar
+                :size="32"
+              >
+                <img
+                  alt="avatar"
+                  src="https://weskhaled.vercel.app/assets/img/photos/developer/avatar-sm.jpg"
+                >
+              </a-avatar>
+              <span
+                :ref="(target) => targetToTyped.push({ target })"
+                v-intersection-observer="intersectionObserver" ml-2 text-lg inline-block
+                font-light
+              >
+                <span hidden>
+                  Stay in touch with me!
+                </span>
+                <span />
+              </span>
+              <span ml-2 text-lg inline-block font-light />
+            </div>
+            <div>
+              <a-switch type="line">
+                <template #checked-icon>
+                  <span i-carbon-information text-11px block m-auto />
+                </template>
+                <template #unchecked-icon>
+                  <span i-carbon-location-filled text-11px block m-auto />
+                </template>
+              </a-switch>
+            </div>
+            <div>
+              <div
+                class="p-5 rounded-2px bg-white/80 dark:bg-zinc-9/70 backdrop-blur max-w-xl relative z-2 ml-auto m-auto border-zinc-5/10 border shadow-sm shadow-black/3"
+              >
+                <button
+                  class="w-10 h-10 justify-center content-center absolute flex top--6 left--6 bg-blue-6/90 hover:bg-blue-7/90 active:(bg-blue-7/80 border-blue-8) transition-all block z-2 border border-blue-8/20 backdrop-blur"
+                >
+                  <span i-carbon-email block text-white text-sm m-auto leading-8 class="icon-shadow" />
+                </button>
+                <div>test</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div ref="mapRef" class="h-70vh min-h-2xl w-full" />
       </section>
       <footer block pb-0px>
         <div class="footer-container py-4 relative z-1 bg-light-2 dark:bg-dark-8">
@@ -853,7 +938,7 @@ const { results } = useFuse(inputSkillsSearch, skills, {
                   >
                     TEXT WIDGET
                   </h4>
-                  <div class="textwidget">
+                  <div class="">
                     <span
                       class="inline-block text-4/5 border-2px uppercase border-black dark:border-white font-semibold py-1 px-2"
                     ><span
@@ -968,7 +1053,7 @@ const { results } = useFuse(inputSkillsSearch, skills, {
           <div class="container mx-auto p-3">
             <div class="grid grid-cols-1 md:grid-cols-2">
               <p class="text-center md:text-left leading-8">
-                Copyrights © 2023 All Rights Reserved by Young Inc.
+                Copyrights © 2023 All Rights Reserved by WesKhaled.
               </p>
               <div class="text-center md:text-left">
                 <div

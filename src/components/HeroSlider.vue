@@ -38,9 +38,12 @@ const sliderStyles: any = reactive({
     backgroundPosition: '50% 0',
   },
 })
+const sliderProgressPercent = useCssVar('--slider-progress-percent', sliderWrapperRef)
 const { height: sliderHeight, top: sliderTop } = useElementBounding(sliderWrapperRef)
 const sliderContainerIsVisible = useElementVisibility(sliderWrapperRef)
-
+watch(progressWidth, (val) => {
+  sliderProgressPercent.value = `${(37.6991 - (val * 37.6991)).toFixed(2)}`
+})
 function onSwiper(swiper: any) {
   sliderRef.value = swiper
 }
@@ -76,7 +79,7 @@ watch(windowScrollY, (val) => {
     :navigation="options.modules.includes('navigation')"
     :pagination="options.modules.includes('pagination') ? pagination : false" :modules="modules"
     class="hero-slider shadow-inner" :slides-per-view="1" :space-between="0"
-    :style="{ '--slider-progress-percent': 37.6991 - (progressWidth * 37.6991) }" @swiper="onSwiper"
+    @swiper="onSwiper"
     @slide-change="onSlideChange" @autoplay-time-left="(__s, __time, progress) => progressWidth = 1 - progress"
     @mouse-over="() => sliderRef?.autoplay.pause()" @mouse-out="() => sliderRef?.autoplay.resume()"
   >
@@ -84,10 +87,6 @@ watch(windowScrollY, (val) => {
       v-for="(slide, index) in sliders" :key="slide.id" class="bg-dark-900 flex h-full relative"
     >
       <header class="justify-center items-center flex w-full">
-        <div
-          class="header-image opacity-70"
-          :style="{ ...sliderStyles.hederImage, 'background-image': `url(https://tailwindcss.com/_next/static/media/docs-dark@tinypng.1bbe175e.png)` }"
-        />
         <div
           class="z-9 absolute top-0 right-0 w-full h-full"
           style="background-color: #e5e5f7;opacity: 0.2;background-image:  repeating-linear-gradient(45deg, #000000 25%, transparent 25%, transparent 75%, #000000 75%, #000000), repeating-linear-gradient(45deg, #000000 25%, #e5e5f7 25%, #e5e5f7 75%, #000000 75%, #000000);background-position: 0 0, 1px 1px;background-size: 2px 2px;"
@@ -164,7 +163,7 @@ watch(windowScrollY, (val) => {
   }
 
   .header-image {
-    @apply absolute w-full h-full -z-1 !bg-cover bg-position-['50px'] left-0 top-0;
+    @apply absolute w-full h-full z-0 !bg-cover bg-position-['50px'] left-0 top-0;
     background-position: 50% 0%;
   }
 

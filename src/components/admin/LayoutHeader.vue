@@ -17,7 +17,13 @@ async function logout() {
 <template>
   <div class="flex items-center justify-between px-2">
     <div class="grow-0 flex items-center">
-      <a href="" class="bg-dark-50 inline-block h-10 w-10 sm:w-35 " @click.prevent="router.push('/')" />
+      <a href="" class="" @click.prevent="router.push('/')">
+        <span
+          class="inline-block text-4/5 border-2px uppercase border-black dark:border-white font-semibold py-1 px-2"
+        ><span
+          class="font-light"
+        >WE</span>Brand</span>
+      </a>
     </div>
     <div class="grow-1 flex header-menu justify-end">
       <div>

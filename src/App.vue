@@ -5,8 +5,6 @@ import { userLang } from '~/common/stores'
 
 import { availableLocales, loadLanguageAsync } from '~/modules/i18n'
 
-const router = useRouter()
-
 // https://github.com/vueuse/head
 // you can use this to manipulate the document head in any components,
 // they will be rendered correctly in the html results with vite-ssg
@@ -17,7 +15,7 @@ useHead({
     { name: 'description', content: 'Opinionated Vite Starter Template' },
     {
       name: 'theme-color',
-      content: computed(() => isDark.value ? '#00aba9' : '#ffffff'),
+      content: computed(() => isDark.value ? '#000000' : '#ffffff'),
     },
   ],
   link: [
@@ -39,10 +37,6 @@ const localeProvider = computed(() => {
 watch(userLang, async (val) => {
   val && availableLocales.includes(val) && (await loadLanguageAsync(val))
 })
-// watchOnce(isAuthenticated, async (val, oldVal) => {
-//   if (!oldVal)
-//     return await router.push('/')
-// }, { immediate: true })
 </script>
 
 <template>
