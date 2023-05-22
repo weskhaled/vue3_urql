@@ -19,6 +19,12 @@ const inputSkillsSearch = ref('')
 const { y: wrapperY } = useScroll(typeof window !== 'undefined' ? window : null, { behavior: 'smooth' })
 const { notification } = useNotification()
 const router = useRouter()
+const formContact = reactive({
+  name: '',
+  message: '',
+  email: '',
+})
+
 const sliders: Ref<any[]> = ref([
   {
     title: '1/2',
@@ -47,10 +53,12 @@ const loader = new Loader({
 })
 const mapOptions = {
   center: {
-    lat: 0,
-    lng: 0,
+    lat: 48.9005423,
+    lng: 2.3527788,
   },
-  zoom: 4,
+  zoom: 12.5,
+  mapTypeControl: false,
+  streetViewControl: false,
 }
 const showMaps = ref(false)
 const mapRef = ref()
@@ -879,56 +887,86 @@ const { results } = useFuse(inputSkillsSearch, skills, {
         </div>
       </section>
       <section relative>
-        <div absolute w-full h-full top-0 left-0 z-3 class="">
-          <div class="absolute w-full h-full top-0 left-0 z--1 bg-gradient-to-b from-zinc-1 dark:from-zinc-9 from-0% via-zinc-1/90 dark:via-zinc-9/90 via-30% to-zinc-1/0 dark:to-zinc-9/0 to-80%" />
-          <div class="container max-w-4xl mx-auto px-4 py-6">
-            <div flex items-center mb-5>
-              <a-avatar
-                :size="32"
-              >
-                <img
-                  alt="avatar"
-                  src="https://weskhaled.vercel.app/assets/img/photos/developer/avatar-sm.jpg"
+        <div absolute w-full h-full top-0 left-0 class="">
+          <div class="absolute w-full top-0 left-0 z-2 duration-250 bg-gradient-to-b from-zinc-1 dark:from-zinc-9 from-0% via-zinc-1/90 dark:via-zinc-9/80 via-50% to-zinc-1/0 dark:to-dark-9/0 to-90% transition-all" :class="[showMaps ? 'h-30% pointer-events-none' : 'h-100%']" />
+          <div class="container max-w-4xl mx-auto px-4 py-6 relative z-3">
+            <div>
+              <div flex items-center mb-5>
+                <a-avatar
+                  :size="32"
                 >
-              </a-avatar>
-              <span
-                :ref="(target) => targetToTyped.push({ target })"
-                v-intersection-observer="intersectionObserver" ml-2 text-lg inline-block
-                font-light
-              >
-                <span hidden>
-                  Stay in touch with me!
+                  <img
+                    alt="avatar"
+                    src="https://weskhaled.vercel.app/assets/img/photos/developer/avatar-sm.jpg"
+                  >
+                </a-avatar>
+                <span
+                  :ref="(target) => targetToTyped.push({ target })"
+                  v-intersection-observer="intersectionObserver" ml-2 text-lg inline-block
+                  font-light
+                >
+                  <span hidden>
+                    Stay in touch with me!
+                  </span>
+                  <span />
                 </span>
-                <span />
-              </span>
-              <span ml-2 text-lg inline-block font-light />
+                <span ml-2 text-lg inline-block font-light />
+              </div>
+              <div flex items-center>
+                <span>Where am I located?</span>
+                <a-switch v-model="showMaps" class="ml-2" type="line" />
+              </div>
             </div>
-            <div flex items-center>
-              <span>Where am I located?</span>
-              <a-switch v-model="showMaps" class="ml-2" type="line">
-                <template #checked-icon>
-                  <span i-carbon-location-filled text-11px block m-auto />
-                </template>
-                <template #unchecked-icon>
-                  <span i-carbon-information text-11px block m-auto />
-                </template>
-              </a-switch>
-            </div>
-            <div :class="[showMaps ? 'animate__animated animate__fadeOutDown' : ('animate__animated animate__fadeInUp')]">
+            <div class="absolute top-[calc(100%)] w-full h-full duration-25 ![--animate-delay:0.25s] animate__delay-0s ![--animate-duration:0.45s]" :class="[showMaps ? 'animate__animated animate__fadeOutDown pointer-events-none invisible' : ('animate__animated animate__fadeInUp visible')]">
               <div
-                class="mt-8 p-5 rounded-2px bg-white/95 dark:bg-zinc-9/95 backdrop-blur max-w-xl relative z-2 ml-auto m-auto border-zinc-5/10 border shadow-sm shadow-black/3"
+                class="mt-8 p-5 px-9 rounded-2px bg-white/95 dark:bg-zinc-9/95 backdrop-blur max-w-xl relative z-2 ml-auto m-auto border-zinc-5/10 border shadow-sm shadow-black/3"
               >
                 <button
                   class="w-10 h-10 justify-center content-center absolute flex top--6 left--6 bg-blue-6/90 hover:bg-blue-7/90 active:(bg-blue-7/80 border-blue-8) transition-all block z-2 border border-blue-8/20 backdrop-blur"
                 >
                   <span i-carbon-email block text-white text-sm m-auto leading-8 class="icon-shadow" />
                 </button>
-                <div>test</div>
+                <div>
+                  <h3 class="text-lg mb-4 uppercase text-center">
+                    I am waiting for a message from you 😊
+                  </h3>
+                  <div>
+                    <a-form :model="formContact" auto-label-width @submit="handleSubmit">
+                      <a-form-item field="name" label="Hello! My name is:">
+                        <a-input
+                          v-model="formContact.name"
+                          placeholder="John Doe"
+                        />
+                      </a-form-item>
+                      <a-form-item field="message" label=" Here is my message:">
+                        <a-textarea
+                          v-model="formContact.message"
+                          placeholder="Hello"
+                          :auto-size="{
+                            minRows: 3,
+                            maxRows: 5,
+                          }"
+                        />
+                      </a-form-item>
+                      <a-form-item field="email" label="I will left you my email:">
+                        <a-input v-model="formContact.email" placeholder="xyz@abc.com" />
+                      </a-form-item>
+                      <a-form-item>
+                        <div flex w-full justify-end>
+                          <a-button type="primary" html-type="submit">
+                            Submit
+                            <span ml-2 i-carbon-arrow-right />
+                          </a-button>
+                        </div>
+                      </a-form-item>
+                    </a-form>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
-        <div ref="mapRef" class="h-70vh min-h-2xl w-full" />
+        <div ref="mapRef" class="h-70vh min-h-2xl w-full relative z-1" />
       </section>
       <footer block pb-0px>
         <div class="footer-container py-4 relative z-1 bg-light-2 dark:bg-dark-8">
