@@ -13,7 +13,6 @@ import TheWindow from '~/components/TheWindow.vue'
 
 const googleApiKey = import.meta.env.VITE_GOOGLE_API_KEY
 
-const { Isotope } = await useIsotope()
 const windowHeight = useWindowSize().height
 const inputSkillsSearch = ref('')
 const { y: wrapperY } = useScroll(typeof window !== 'undefined' ? window : null, { behavior: 'smooth' })
@@ -46,6 +45,10 @@ const sliders: Ref<any[]> = ref([
 const sourceTransition = ref(0)
 const gridProjectsRef = ref<HTMLElement | null>(null)
 const projectType = ref('*')
+const { isotope: isotopeProjects } = useIsotope(gridProjectsRef, {
+  itemSelector: '.element-item',
+  layoutMode: 'fitRows',
+})
 const loader = new Loader({
   apiKey: `${googleApiKey}`,
   version: 'weekly',
@@ -64,13 +67,7 @@ const showMaps = ref(false)
 const mapRef = ref()
 const gMaps = ref()
 
-const isotopeProjects: any = ref()
-
 onMounted(() => {
-  isotopeProjects.value = new Isotope(gridProjectsRef.value, {
-    itemSelector: '.element-item',
-    layoutMode: 'fitRows',
-  })
   loader
     .load()
     .then((google) => {
@@ -246,6 +243,13 @@ const { results } = useFuse(inputSkillsSearch, skills, {
   },
   matchAllWhenSearchEmpty: true,
 })
+function scrollTo(id: string) {
+  window?.scrollTo({
+    top: document.getElementById(id).offsetTop - (mdAndLarger.value ? 56 : 0),
+    behavior: 'smooth',
+  })
+  sourceTransition.value = 0
+}
 </script>
 
 <template>
@@ -313,27 +317,30 @@ const { results } = useFuse(inputSkillsSearch, skills, {
             class="header-nav-mobile overflow-y-auto m-auto h-full w-full flex items-center justify-center flex-col text-center my-auto gap-4 md:text-3xl/10 text-xl font-semibold p-1"
           >
             <a
-              href=""
+              href="javascript:;"
               :class="[outputTransition === 100 ? 'animate__animated animate__fadeInLeft animate__delay-1s opacity-100' : '![--animate-delay:0.1s] animate__delay-1s duration-0.1s animate__animated animate__fadeOutUp opacity-0']"
               class="![--animate-delay:0.1s]"
+              @click.prevent="scrollTo('resume')"
             >
               <span>
-                Portfolio
+                Resume
               </span>
             </a>
             <a
-              href=""
+              href="javascript:;"
               :class="[outputTransition === 100 ? 'animate__animated animate__fadeInLeft animate__delay-1s opacity-100' : '![--animate-delay:0.15s] animate__delay-1s duration-0.1s animate__animated animate__fadeOutUp opacity-0']"
               class="![--animate-delay:0.15s]"
+              @click.prevent="scrollTo('projects')"
             >
               <span>
-                Blog
+                Projects
               </span>
             </a>
             <a
-              href=""
+              href="javascript:;"
               :class="[outputTransition === 100 ? 'animate__animated animate__fadeInLeft animate__delay-1s opacity-100' : '![--animate-delay:0.2s] animate__delay-1s duration-0.1s animate__animated animate__fadeOutUp opacity-0']"
               class="![--animate-delay:0.2s]"
+              @click.prevent="scrollTo('contact')"
             >
               <span>
                 Contact
@@ -362,6 +369,7 @@ const { results } = useFuse(inputSkillsSearch, skills, {
             >
               <button
                 class="w-10 h-10 justify-center content-center absolute flex top--6 left--6 bg-blue-6/90 hover:bg-blue-7/90 active:(bg-blue-7/80 border-blue-8) transition-all block z-2 border border-blue-8/20 backdrop-blur"
+                @click.prevent="scrollTo('resume')"
               >
                 <span i-carbon-arrow-down block text-white text-sm m-auto leading-8 class="icon-shadow" />
               </button>
@@ -493,7 +501,7 @@ const { results } = useFuse(inputSkillsSearch, skills, {
           </div>
         </div>
       </section>
-      <section bg-white dark:bg-black relative z-1>
+      <section id="resume" bg-white dark:bg-black relative z-1>
         <div class="container max-w-3xl mx-auto p-4 mx">
           <UseElementVisibility v-slot="{ isVisible }">
             <div class="absolute left--1/30 top-2/10 translate-y--1/2">
@@ -835,7 +843,7 @@ const { results } = useFuse(inputSkillsSearch, skills, {
           </div>
         </section>
       </UseElementVisibility>
-      <section class="relative z-1 transition-all duration-200 bg-zinc-1/60 dark:bg-dark-8/50 backdrop-blur-sm shadow-zinc-6/20 dark:shadow-zinc-5/20 shadow-[inset_0_8px_8px_-8px_var(--un-shadow-color),inset_0_-8px_8px_-8px_var(--un-shadow-color)]">
+      <section id="projects" class="relative z-1 transition-all duration-200 bg-zinc-1/60 dark:bg-dark-8/50 backdrop-blur-sm shadow-zinc-6/20 dark:shadow-zinc-5/20 shadow-[inset_0_8px_8px_-8px_var(--un-shadow-color),inset_0_-8px_8px_-8px_var(--un-shadow-color)]">
         <div class="py-5">
           <div class="container max-w-3xl mx-auto p-4 flex items-center gap-4 after:h-px after:flex-1 after:bg-zinc-4/20  after:content-['']">
             <h3 class="md:text-xl font-semibold">
@@ -886,7 +894,7 @@ const { results } = useFuse(inputSkillsSearch, skills, {
           </div>
         </div>
       </section>
-      <section relative>
+      <section id="contact" relative>
         <div absolute w-full h-full top-0 left-0 class="">
           <div class="absolute w-full top-0 left-0 z-2 duration-250 bg-gradient-to-b from-zinc-1 dark:from-zinc-9 from-0% via-zinc-1/90 dark:via-zinc-9/80 via-50% to-zinc-1/0 dark:to-dark-9/0 to-90% transition-all" :class="[showMaps ? 'h-30% pointer-events-none' : 'h-100%']" />
           <div class="container max-w-4xl mx-auto px-4 py-6 relative z-3">
@@ -917,21 +925,16 @@ const { results } = useFuse(inputSkillsSearch, skills, {
                 <a-switch v-model="showMaps" class="ml-2" type="line" />
               </div>
             </div>
-            <div class="absolute top-[calc(100%)] w-full h-full duration-25 ![--animate-delay:0.25s] animate__delay-0s ![--animate-duration:0.45s]" :class="[showMaps ? 'animate__animated animate__fadeOutDown pointer-events-none invisible' : ('animate__animated animate__fadeInUp visible')]">
+            <div class="absolute top-[calc(100%)] w-[calc(100%-2rem)] h-full duration-25 ![--animate-delay:0.25s] animate__delay-0s ![--animate-duration:0.45s]" :class="[showMaps ? 'animate__animated animate__fadeOutDown pointer-events-none invisible' : ('animate__animated animate__fadeInUp visible')]">
               <div
-                class="mt-8 p-5 px-9 rounded-2px bg-white/95 dark:bg-zinc-9/95 backdrop-blur max-w-xl relative z-2 ml-auto m-auto border-zinc-5/10 border shadow-sm shadow-black/3"
+                class="mt-5 md:max-w-2xl p-4 px-5 mx-auto rounded-2px bg-white/95 dark:bg-zinc-9/95 backdrop-blur relative z-2 ml-auto m-auto border-zinc-5/10 border shadow-sm shadow-black/3"
               >
-                <button
-                  class="w-10 h-10 justify-center content-center absolute flex top--6 left--6 bg-blue-6/90 hover:bg-blue-7/90 active:(bg-blue-7/80 border-blue-8) transition-all block z-2 border border-blue-8/20 backdrop-blur"
-                >
-                  <span i-carbon-email block text-white text-sm m-auto leading-8 class="icon-shadow" />
-                </button>
                 <div>
-                  <h3 class="text-lg mb-4 uppercase text-center">
-                    I am waiting for a message from you 😊
+                  <h3 class="text-lg md:text-xl mb-5 mt-3 font-mono text-center">
+                    I'am waiting for a message from you 😊
                   </h3>
                   <div>
-                    <a-form :model="formContact" auto-label-width @submit="handleSubmit">
+                    <a-form :layout="mdAndLarger ? 'horizontal' : 'vertical'" :model="formContact" auto-label-width @submit="handleSubmit">
                       <a-form-item field="name" label="Hello! My name is:">
                         <a-input
                           v-model="formContact.name"
@@ -955,7 +958,7 @@ const { results } = useFuse(inputSkillsSearch, skills, {
                         <div flex w-full justify-end>
                           <a-button type="primary" html-type="submit">
                             Submit
-                            <span ml-2 i-carbon-arrow-right />
+                            <span ml-1 i-carbon-arrow-right />
                           </a-button>
                         </div>
                       </a-form-item>
@@ -966,7 +969,7 @@ const { results } = useFuse(inputSkillsSearch, skills, {
             </div>
           </div>
         </div>
-        <div ref="mapRef" class="h-70vh min-h-2xl w-full relative z-1" />
+        <div ref="mapRef" class="h-80vh min-h-2xl w-full relative z-1" />
       </section>
       <footer block pb-0px>
         <div class="footer-container py-4 relative z-1 bg-light-2 dark:bg-dark-8">

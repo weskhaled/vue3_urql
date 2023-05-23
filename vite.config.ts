@@ -215,7 +215,7 @@ export default ({ mode }) => {
 
     ssr: {
       // TODO: workaround until they support native ESM
-      noExternal: ['workbox-window', /vue-i18n/, '@arco-design/web-vue', 'scroll-into-view-if-needed', '@googlemaps/js-api-loader'],
+      noExternal: ['workbox-window', /vue-i18n/, '@arco-design/web-vue', 'scroll-into-view-if-needed', 'isotope-layout', '@googlemaps/js-api-loader'],
     },
     server: {
       hmr: {
