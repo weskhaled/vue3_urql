@@ -31,7 +31,7 @@ error.value && (message.error('Error', `${error.value}`))
 </script>
 
 <template>
-  <a-layout class="layout-demo h-full font-sans relative !arco-theme-1">
+  <a-layout class="h-screen font-sans relative !arco-theme-1">
     <a-layout-header class="shadow z-99 bg-light-50 dark:bg-dark-900">
       <AdminLayoutHeader />
     </a-layout-header>

@@ -25,7 +25,7 @@ function onClickMenuItem(key) {
   <a-layout-sider
     v-on-click-outside="() => smAndSmaller && (sideCollapsed = true)"
     :theme="isDark ? 'dark' : 'light'" :width="230" collapsible :default-collapsed="sideCollapsed"
-    :collapsed="sideCollapsed" class="!absolute !sm:relative z-98"
+    :collapsed="sideCollapsed" class="!absolute !sm:relative z-98 [--color-menu-dark-bg:rgba(0,0,0,1)]"
     @collapse="onCollapse"
   >
     <a-menu
@@ -93,8 +93,8 @@ function onClickMenuItem(key) {
     </a-menu>
     <!-- trigger -->
     <template #trigger="{ collapsed }">
-      <span v-if="collapsed" class="w-5 h-5 inline-block leading-30px i-line-md-menu-fold-right" />
-      <span v-else class="w-5 h-5 inline-block leading-30px i-line-md-menu-unfold-left" />
+      <span v-if="collapsed" class="w-4 h-4 inline-block leading-30px i-line-md-menu-fold-right" />
+      <span v-else class="w-4 h-4 inline-block leading-30px i-line-md-menu-unfold-left" />
     </template>
   </a-layout-sider>
 </template>

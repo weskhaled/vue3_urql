@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useDateFormat } from '@vueuse/core'
 import { useFuse } from '@vueuse/integrations/useFuse'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import { Loader } from '@googlemaps/js-api-loader'
@@ -18,6 +19,8 @@ const inputSkillsSearch = ref('')
 const { y: wrapperY } = useScroll(typeof window !== 'undefined' ? window : null, { behavior: 'smooth' })
 const { notification } = useNotification()
 const router = useRouter()
+
+const formContactRef = ref()
 const formContact = reactive({
   name: '',
   message: '',
@@ -43,6 +46,74 @@ const sliders: Ref<any[]> = ref([
   },
 ])
 const sourceTransition = ref(0)
+const projects = ref([
+  {
+    title: 'First Design',
+    date: useDateFormat('2013-02-24', 'DD/MM YYYY'),
+    tags: ['web'],
+    link: '',
+    image:
+      {
+        src: '/img/projects/project-1.jpg',
+        srcHover: '/img/projects/project-1-hover.jpg',
+      },
+  },
+  {
+    title: 'Welcome to Tunisia',
+    date: useDateFormat('2018-01-03', 'DD/MM YYYY'),
+    tags: ['design'],
+    link: '',
+    image:
+      {
+        src: '/img/projects/project-2.jpg',
+        srcHover: '/img/projects/project-2-hover.jpg',
+      },
+  },
+  {
+    title: 'Build MY',
+    date: useDateFormat('2018-05-24', 'DD/MM YYYY'),
+    tags: ['design'],
+    link: '',
+    image:
+      {
+        src: '/img/projects/project-3.jpg',
+        srcHover: '/img/projects/project-3-hover.jpg',
+      },
+  },
+  {
+    title: 'Palais d\'optique',
+    date: useDateFormat('2020-08-07', 'DD/MM YYYY'),
+    tags: ['design'],
+    link: '',
+    image:
+      {
+        src: '/img/projects/project-4.jpg',
+        srcHover: '/img/projects/project-4-hover.jpg',
+      },
+  },
+  {
+    title: 'Aero Day',
+    date: useDateFormat('2020-08-07', 'DD/MM YYYY'),
+    tags: ['design', 'other'],
+    link: '',
+    image:
+      {
+        src: '/img/projects/project-5.jpg',
+        srcHover: '/img/projects/project-5-hover.jpg',
+      },
+  },
+  {
+    title: 'YouNGX',
+    date: useDateFormat('2020-08-07', 'DD/MM YYYY'),
+    tags: ['web'],
+    link: '',
+    image:
+      {
+        src: '/img/projects/project-6.jpg',
+        srcHover: '/img/projects/project-6-hover.jpg',
+      },
+  },
+])
 const gridProjectsRef = ref<HTMLElement | null>(null)
 const projectType = ref('*')
 const { isotope: isotopeProjects } = useIsotope(gridProjectsRef, {
@@ -246,7 +317,7 @@ const { results } = useFuse(inputSkillsSearch, skills, {
 
 function scrollTo(id: string) {
   window?.scrollTo({
-    top: document.getElementById(id).offsetTop - (mdAndLarger.value ? 56 : 0),
+    top: document.getElementById(id).offsetTop - (mdAndLarger.value ? 56 : (sourceTransition.value !== 0 ? ((windowHeight.value * 0.7) - 50) : 50)),
     behavior: 'smooth',
   })
   sourceTransition.value = 0
@@ -258,7 +329,7 @@ function submitContact({ values, errors }) {
 
 <template>
   <div bg-cover bg-fixed class="bg-[url(/img/bg-blur.jpg)] bg-opacity-50">
-    <div id="wrapper" class="arco-theme-2 relative container mx-auto shadow-xl overflow-x-hidden">
+    <div id="wrapper" class="arco-theme-2 relative 2xl:container mx-auto shadow-xl overflow-x-hidden">
       <header
         v-on-click-outside="() => sourceTransition = 0" class="home-header relative overflow-hidden"
         :class="{ 'scrolled': (windowScrollY > 200), 'overflow-auto': (outputTransition > 0) }"
@@ -416,7 +487,7 @@ function submitContact({ values, errors }) {
                           justify-between items-center
                           class="bg-white/80 dark:(bg-black/80 text-white) translate-y-full group-hover:translate-y-0"
                         >
-                          <span>
+                          <span truncate>
                             {{ skill.item.title }}
                           </span>
                           <a-progress class="hidden md:block" size="mini" :percent="skill.item.percent" />
@@ -685,10 +756,13 @@ function submitContact({ values, errors }) {
       </UseElementVisibility>
       <section shadow-inner relative overflow-hidden>
         <div
+          class="absolute top-0 right-0 w-full h-full bg-[url(https://assets-global.website-files.com/5e593fb060cf87bbaf75dd20/5edfd5f715dbd3b457894bab_template-page-background.png)] bg-cover bg-fixed opacity-20"
+        />
+        <div
           class="absolute top-0 right-0 w-full h-full bg-[url(/img/tinypng.png)] bg-cover bg-fixed opacity-50 bg-opacity-50"
         />
         <div
-          class="absolute top-0 right-0 w-full h-full bg-[url(/img/grid.svg)] bg-repeat opacity-50 bg-fixed bg-opacity-50"
+          class="absolute top-0 right-0 w-full h-full bg-[url(/img/grid.svg)] bg-repeat opacity-90 bg-fixed"
         />
         <div class="container md:max-w-2xl mx-auto py-24">
           <div
@@ -727,7 +801,7 @@ function submitContact({ values, errors }) {
                       justify-between items-center
                       class="bg-white/80 dark:(bg-black/80 text-white) translate-y-full group-hover:translate-y-0"
                     >
-                      <span>
+                      <span truncate>
                         {{ skill.title }}
                       </span>
                       <a-progress class="hidden md:block" size="mini" :percent="skill.percent" />
@@ -876,21 +950,20 @@ function submitContact({ values, errors }) {
           </div>
           <div py-5>
             <div ref="gridProjectsRef" class="transition-all px-2">
-              <div v-for="(i, index) in ['web', 'other', 'web other', 'web design other', 'design', 'web', 'web', 'web', 'other']" :key="index" :class="[i]" class="element-item relative m-2 group float-left w-[calc(50%-1.5rem)] md:w-[calc(33.33%-1.35rem)] h-32 md:h-48 overflow-hidden rounded-2px border-2px border-white dark:border-black duration-0.4s transition-shadow shadow-sm hover:(shadow-lg) hover:cursor-pointer">
-                <div class="ribbon absolute text-center shadow top-0 right-2 bg-white text-black dark:(bg-black text-light-4) flex flex-col items-center transition-all w-12 py-3 group-hover:py-1 z-5 before:content-[''] before:w-0 before:h-0 before:absolute before:left-0 before:bottom--4 before:b-b-transparent before:b-b-1rem before:b-l-1.5rem before:b-l-solid before:b-l-white dark:before:b-l-black after:content-[''] after:w-0 after:h-0 after:absolute after:right-0 after:bottom--4 after:b-b-transparent after:b-b-1rem after:b-r-1.5rem after:b-r-solid after:b-r-white dark:after:b-r-black">
+              <div v-for="(project, index) in projects" :key="index" :class="[project.tags]" class="element-item relative m-2 group float-left w-[calc(50%-1.5rem)] md:w-[calc(33.33%-1.35rem)] h-31 md:h-43 lg:h-60 overflow-hidden rounded-2px border-2px border-white dark:border-black duration-0.4s transition-shadow shadow-sm hover:(shadow-lg) hover:cursor-pointer">
+                <div class="ribbon absolute text-center top-0 right-2 bg-white text-black dark:(bg-black text-light-4) flex flex-col items-center transition-all w-10 py-2 group-hover:py-1 z-5 before:content-[''] before:w-0 before:h-0 before:absolute before:left-0 before:bottom--4 before:b-b-transparent before:b-b-1rem before:b-l-1.5rem before:b-l-solid before:b-l-white dark:before:b-l-black after:content-[''] after:w-0 after:h-0 after:absolute after:right-0 after:bottom--4 after:b-b-transparent after:b-b-1rem after:b-r-1.5rem after:b-r-solid after:b-r-white dark:after:b-r-black">
                   <div my-auto text-xs leading-5>
-                    <span block>15/02</span>
-                    <span block>2012</span>
+                    <span block>{{ project.date }}</span>
                   </div>
                 </div>
                 <div class="imgs relative z-3 w-full h-full top-0 left-0">
-                  <img src="https://images.unsplash.com/photo-1634017759716-1784f7c57795?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=550&q=80" class="group-hover:opacity-0 absolute z-2 top-0 duration-0.4s transition-all object-cover object-center group-hover:scale-115" alt="">
-                  <img src="https://images.unsplash.com/photo-1604076913837-52ab5629fba9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=550&q=80" class="duration-0.4s absolute z-1 top-0 transition-all object-cover object-center group-hover:scale-115" alt="">
+                  <img :src="project.image.src" class="group-hover:opacity-0 absolute z-2 top-0 duration-0.4s transition-all object-cover object-center group-hover:scale-115" alt="">
+                  <img :src="project.image.srcHover" class="duration-0.4s absolute z-1 top-0 transition-all object-cover object-center group-hover:scale-115" alt="">
                 </div>
                 <div class="absolute inset-0 z-4 bg-gradient-to-t from-black  transition-opacity opacity-0 group-hover:opacity-100" />
                 <div class="absolute inset-x-0 bottom-0 z-20 p-4 transition-all translate-y-100% group-hover:translate-y--0%">
                   <h3 class="md:text-lg font-semibold text-white">
-                    {{ i }}
+                    {{ project.title }}
                   </h3>
                 </div>
               </div>
@@ -934,11 +1007,11 @@ function submitContact({ values, errors }) {
                 class="mt-5 md:max-w-2xl p-4 px-5 mx-auto rounded-2px bg-white/95 dark:bg-zinc-9/95 backdrop-blur relative z-2 ml-auto m-auto border-zinc-5/10 border shadow-sm shadow-black/3"
               >
                 <div>
-                  <h3 class="text-lg md:text-xl mb-5 mt-3 font-mono text-center">
+                  <h3 class="text-lg md:text-xl mb-8 mt-3 font-mono text-center">
                     I'am waiting for a message from you 😊
                   </h3>
                   <div>
-                    <a-form :layout="mdAndLarger ? 'horizontal' : 'vertical'" :model="formContact" auto-label-width @submit="submitContact">
+                    <a-form ref="formContactRef" :layout="mdAndLarger ? 'horizontal' : 'vertical'" :model="formContact" auto-label-width @submit="submitContact">
                       <a-form-item
                         :rules="[{ required: true, message: 'name is required' }]"
                         :validate-trigger="['input']" field="name" label="Hello! My name is:"
@@ -969,10 +1042,13 @@ function submitContact({ values, errors }) {
                       </a-form-item>
                       <a-form-item>
                         <div flex w-full justify-end>
+                          <a-button mr-3 @click="formContactRef.resetFields()">
+                            Reset
+                          </a-button>
                           <a-button type="primary" html-type="submit" class="group">
                             Submit
-                            <span w-full h-full flex items-center justify-center rounded-1px class="ml-2 -mr-[calc(1rem-1px)] px-2 bg-blue-9/20">
-                              <span i-carbon-arrow-right />
+                            <span w-full h-full flex items-center justify-center rounded-r-2px class="ml-2 -mr-[calc(1rem-1px)] px-2 bg-blue-9/20">
+                              <span class="transition-all group-hover:translate-x-25%" i-carbon-arrow-right />
                             </span>
                           </a-button>
                         </div>
@@ -987,7 +1063,7 @@ function submitContact({ values, errors }) {
         <div ref="mapRef" class="h-80vh min-h-2xl w-full relative z-1" />
       </section>
       <footer block pb-0px>
-        <div class="footer-container py-4 relative z-1 bg-light-2 dark:bg-dark-8">
+        <div class="footer-container py-6 relative z-1 bg-light-2 dark:bg-dark-8">
           <div class="container px-4 mx-auto">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div class="">
