@@ -243,6 +243,7 @@ const { results } = useFuse(inputSkillsSearch, skills, {
   },
   matchAllWhenSearchEmpty: true,
 })
+
 function scrollTo(id: string) {
   window?.scrollTo({
     top: document.getElementById(id).offsetTop - (mdAndLarger.value ? 56 : 0),
@@ -250,11 +251,14 @@ function scrollTo(id: string) {
   })
   sourceTransition.value = 0
 }
+function submitContact({ values, errors }) {
+  // console.log('values:', values, '\nerrors:', errors)
+}
 </script>
 
 <template>
   <div bg-cover bg-fixed class="bg-[url(/img/bg-blur.jpg)] bg-opacity-50">
-    <div id="wrapper" class="arco-theme-2 relative container-full mx-auto shadow-xl overflow-x-hidden">
+    <div id="wrapper" class="arco-theme-2 relative container mx-auto shadow-xl overflow-x-hidden">
       <header
         v-on-click-outside="() => sourceTransition = 0" class="home-header relative overflow-hidden"
         :class="{ 'scrolled': (windowScrollY > 200), 'overflow-auto': (outputTransition > 0) }"
@@ -309,7 +313,7 @@ function scrollTo(id: string) {
         </div>
 
         <div
-          class="flex transition-height top-20 w-full items-center justify-center bg-light-1/80 dark:bg-zinc-9/70 overflow-hidden"
+          class="flex h-0 transition-height top-20 w-full items-center justify-center bg-light-1/80 dark:bg-zinc-9/70 overflow-hidden"
           :class="{ 'b-t b-zinc-5/20': outputTransition > 0 }"
           :style="{ height: `${((windowHeight - (windowHeight > 500 ? 200 : 0)) * outputTransition) * 0.01}px` }"
         >
@@ -934,14 +938,20 @@ function scrollTo(id: string) {
                     I'am waiting for a message from you 😊
                   </h3>
                   <div>
-                    <a-form :layout="mdAndLarger ? 'horizontal' : 'vertical'" :model="formContact" auto-label-width @submit="handleSubmit">
-                      <a-form-item field="name" label="Hello! My name is:">
+                    <a-form :layout="mdAndLarger ? 'horizontal' : 'vertical'" :model="formContact" auto-label-width @submit="submitContact">
+                      <a-form-item
+                        :rules="[{ required: true, message: 'name is required' }]"
+                        :validate-trigger="['input']" field="name" label="Hello! My name is:"
+                      >
                         <a-input
                           v-model="formContact.name"
                           placeholder="John Doe"
                         />
                       </a-form-item>
-                      <a-form-item field="message" label=" Here is my message:">
+                      <a-form-item
+                        :rules="[{ required: true, message: 'message is required' }, { minLength: 5, message: 'must be greater than 5 characters' }]"
+                        :validate-trigger="['change', 'input']" field="message" label=" Here is my message:"
+                      >
                         <a-textarea
                           v-model="formContact.message"
                           placeholder="Hello"
@@ -951,14 +961,19 @@ function scrollTo(id: string) {
                           }"
                         />
                       </a-form-item>
-                      <a-form-item field="email" label="I will left you my email:">
+                      <a-form-item
+                        :rules="[{ required: true, message: 'email is required' }, { type: 'email', message: 'must be a valid e-mail' }]"
+                        :validate-trigger="['change', 'input']" field="email" label="I will left you my email:"
+                      >
                         <a-input v-model="formContact.email" placeholder="xyz@abc.com" />
                       </a-form-item>
                       <a-form-item>
                         <div flex w-full justify-end>
-                          <a-button type="primary" html-type="submit">
+                          <a-button type="primary" html-type="submit" class="group">
                             Submit
-                            <span ml-1 i-carbon-arrow-right />
+                            <span w-full h-full flex items-center justify-center rounded-1px class="ml-2 -mr-[calc(1rem-1px)] px-2 bg-blue-9/20">
+                              <span i-carbon-arrow-right />
+                            </span>
                           </a-button>
                         </div>
                       </a-form-item>
