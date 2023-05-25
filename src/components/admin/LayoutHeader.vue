@@ -15,18 +15,20 @@ async function logout() {
 </script>
 
 <template>
-  <div class="flex items-center justify-between px-2">
+  <div class="flex items-center justify-between px-2 h-14.5 border-b border-zinc-2 dark:border-zinc-9">
     <div class="grow-0 flex items-center">
       <a href="" class="" @click.prevent="router.push('/')">
         <span
-          class="inline-block text-4/5 border-2px uppercase border-black dark:border-white font-semibold py-1 px-2"
+          class="tracking-tight inline-block text-4/5 border-2px uppercase border-black dark:border-white font-semibold py-1 px-2"
         >
           <span class="hidden sm:inline-block">
-            <span class="font-light">WE
-            </span>Brand
+            <span class="font-light mr--1.3">
+              WE
+            </span>
+            Brand
           </span>
           <span class="inline-block sm:hidden">
-            <span class="font-light">W
+            <span class="font-light mr--1">W
             </span>B
           </span>
         </span>
@@ -36,7 +38,8 @@ async function logout() {
       <div>
         <a-menu
           mode="horizontal"
-          theme="light"
+          :theme="isDark ? 'dark' : 'light'"
+          class="!bg-transparent"
         >
           <a-sub-menu key="0">
             <template #icon>
@@ -58,23 +61,6 @@ async function logout() {
               Menu 4
             </a-menu-item>
           </a-sub-menu>
-          <a-sub-menu key="1">
-            <template #icon>
-              <IconBug />
-            </template>
-            <template #title>
-              Navigation 2
-            </template>
-            <a-menu-item key="1_0">
-              Menu 1
-            </a-menu-item>
-            <a-menu-item key="1_1">
-              Menu 2
-            </a-menu-item>
-            <a-menu-item key="1_2">
-              Menu 3
-            </a-menu-item>
-          </a-sub-menu>
           <a-sub-menu key="2">
             <template #icon>
               <IconBulb />
@@ -84,9 +70,6 @@ async function logout() {
             </template>
             <a-menu-item key="2_0">
               Menu 1
-            </a-menu-item>
-            <a-menu-item key="2_1">
-              Menu 2
             </a-menu-item>
             <a-sub-menu key="2_2" title="Navigation 4">
               <a-menu-item key="2_2_0">

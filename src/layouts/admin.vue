@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { gql, useQuery } from '@urql/vue'
 import { UseDraggable as Draggable } from '@vueuse/components'
-import { currentUser, isAuthenticated } from '~/common/stores'
+import { currentUser, isAuthenticated, sideFixed, smAndSmaller } from '~/common/stores'
 
 // const { t } = useI18n()
 const router = useRouter()
@@ -32,12 +32,12 @@ error.value && (message.error('Error', `${error.value}`))
 
 <template>
   <a-layout class="h-screen font-sans relative !arco-theme-1">
-    <a-layout-header class="shadow z-99 bg-light-50 dark:bg-dark-900">
+    <a-layout-header class="z-99 bg-white dark:bg-black">
       <AdminLayoutHeader />
     </a-layout-header>
     <a-layout>
       <AdminLayoutSider />
-      <a-layout class="max-h-[calc(100vh-58px)] overscroll-y-auto !ml-12 !sm:ml-0">
+      <a-layout class="max-h-[calc(100vh-59px)] overscroll-y-auto ml-0" :class="[sideFixed ? (smAndSmaller ? '!ml-12' : '') : '!ml-12']">
         <a-layout-content class="">
           <RouterView />
         </a-layout-content>
@@ -90,10 +90,5 @@ error.value && (message.error('Error', `${error.value}`))
 .button-trigger {
   @apply absolute cursor-pointer rounded-full z-100 items-center justify-center fixed text-sm flex h-40px w-40px text-zinc-100 bg-blue-600 shadow-md;
   transition: all 0.1s;
-}
-/* .arco-trigger-popup {
-  @apply !ml-20px;
-} */
-:deep(.body) {
 }
 </style>

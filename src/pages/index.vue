@@ -21,6 +21,8 @@ const { notification } = useNotification()
 const router = useRouter()
 
 const formContactRef = ref()
+const visibleImagePreview = ref(false)
+const currentImagePreview = ref(1)
 const formContact = reactive({
   name: '',
   message: '',
@@ -54,6 +56,7 @@ const projects = ref([
     link: '',
     image:
       {
+        full: '/img/projects/firstdesigne.jpg',
         src: '/img/projects/project-1.jpg',
         srcHover: '/img/projects/project-1-hover.jpg',
       },
@@ -65,6 +68,7 @@ const projects = ref([
     link: '',
     image:
       {
+        full: '/img/projects/welcometotunisia.jpg',
         src: '/img/projects/project-2.jpg',
         srcHover: '/img/projects/project-2-hover.jpg',
       },
@@ -76,6 +80,7 @@ const projects = ref([
     link: '',
     image:
       {
+        full: '/img/projects/BuildMy.jpg',
         src: '/img/projects/project-3.jpg',
         srcHover: '/img/projects/project-3-hover.jpg',
       },
@@ -87,6 +92,7 @@ const projects = ref([
     link: '',
     image:
       {
+        full: '/img/projects/palaisdoptique.jpg',
         src: '/img/projects/project-4.jpg',
         srcHover: '/img/projects/project-4-hover.jpg',
       },
@@ -98,6 +104,7 @@ const projects = ref([
     link: '',
     image:
       {
+        full: '/img/projects/aeroday.jpg',
         src: '/img/projects/project-5.jpg',
         srcHover: '/img/projects/project-5-hover.jpg',
       },
@@ -109,6 +116,7 @@ const projects = ref([
     link: '',
     image:
       {
+        full: '/img/projects/project-6.jpg',
         src: '/img/projects/project-6.jpg',
         srcHover: '/img/projects/project-6-hover.jpg',
       },
@@ -950,7 +958,7 @@ function submitContact({ values, errors }) {
           </div>
           <div py-5>
             <div ref="gridProjectsRef" class="transition-all px-2">
-              <div v-for="(project, index) in projects" :key="index" :class="[project.tags]" class="element-item relative m-2 group float-left w-[calc(50%-1.5rem)] md:w-[calc(33.33%-1.35rem)] h-31 md:h-43 lg:h-60 overflow-hidden rounded-2px border-2px border-white dark:border-black duration-0.4s transition-shadow shadow-sm hover:(shadow-lg) hover:cursor-pointer">
+              <div v-for="(project, index) in projects" :key="index" :class="[project.tags]" class="element-item relative m-2 group float-left w-[calc(50%-1.5rem)] md:w-[calc(33.33%-1.35rem)] h-31 md:h-43 lg:h-60 overflow-hidden rounded-2px border-2px border-white dark:border-black duration-0.4s transition-shadow shadow-sm hover:(shadow-lg)">
                 <div class="ribbon absolute text-center top-0 right-2 bg-white text-black dark:(bg-black text-light-4) flex flex-col items-center transition-all w-10 py-2 group-hover:py-1 z-5 before:content-[''] before:w-0 before:h-0 before:absolute before:left-0 before:bottom--4 before:b-b-transparent before:b-b-1rem before:b-l-1.5rem before:b-l-solid before:b-l-white dark:before:b-l-black after:content-[''] after:w-0 after:h-0 after:absolute after:right-0 after:bottom--4 after:b-b-transparent after:b-b-1rem after:b-r-1.5rem after:b-r-solid after:b-r-white dark:after:b-r-black">
                   <div my-auto text-xs leading-5>
                     <span block>{{ project.date }}</span>
@@ -961,10 +969,13 @@ function submitContact({ values, errors }) {
                   <img :src="project.image.srcHover" class="duration-0.4s absolute z-1 top-0 transition-all object-cover object-center group-hover:scale-115" alt="">
                 </div>
                 <div class="absolute inset-0 z-4 bg-gradient-to-t from-black  transition-opacity opacity-0 group-hover:opacity-100" />
-                <div class="absolute inset-x-0 bottom-0 z-20 p-4 transition-all translate-y-100% group-hover:translate-y--0%">
-                  <h3 class="md:text-lg font-semibold text-white">
+                <div class="absolute inset-x-0 bottom-0 z-20 p-4 transition-all translate-y-100% group-hover:translate-y--0% flex items-center justify-between">
+                  <h3 class="md:text-lg font-semibold text-white inline-block">
                     {{ project.title }}
                   </h3>
+                  <a-button size="mini" class="ml-1" @click="() => (visibleImagePreview = true, currentImagePreview = index)">
+                    <span i-carbon-view />
+                  </a-button>
                 </div>
               </div>
             </div>
@@ -1223,6 +1234,12 @@ function submitContact({ values, errors }) {
   >
     <i i-carbon-arrow-up class="" />
   </a-button>
+  <a-image-preview-group
+    v-model:visible="visibleImagePreview"
+    v-model:current="currentImagePreview"
+    infinite
+    :src-list="projects.map(i => i.image.full)"
+  />
 </template>
 
 <style lang="less" scoped>
