@@ -15,6 +15,7 @@ import TheWindow from '~/components/TheWindow.vue'
 const googleApiKey = import.meta.env.VITE_GOOGLE_API_KEY
 
 const windowHeight = useWindowSize().height
+const isMounted = useMounted()
 const inputSkillsSearch = ref('')
 const { y: wrapperY } = useScroll(typeof window !== 'undefined' ? window : null, { behavior: 'smooth' })
 const { notification } = useNotification()
@@ -1235,6 +1236,7 @@ function submitContact({ values, errors }) {
     <i i-carbon-arrow-up class="" />
   </a-button>
   <a-image-preview-group
+    v-if="isMounted"
     v-model:visible="visibleImagePreview"
     v-model:current="currentImagePreview"
     infinite

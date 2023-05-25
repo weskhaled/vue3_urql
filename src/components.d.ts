@@ -62,7 +62,6 @@ declare module '@vue/runtime-core' {
     IconDragArrow: typeof import('@arco-design/web-vue/es/icon')['IconDragArrow']
     IconHome: typeof import('@arco-design/web-vue/es/icon')['IconHome']
     IconMessage: typeof import('@arco-design/web-vue/es/icon')['IconMessage']
-    IconPlus: typeof import('@arco-design/web-vue/es/icon')['IconPlus']
     README: typeof import('./components/README.md')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

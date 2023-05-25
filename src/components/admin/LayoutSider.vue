@@ -35,8 +35,8 @@ function onClickMenuItem(key) {
   >
     <div class="h-12 bg-zinc-1 dark:bg-dark-9 flex items-center justify-end border-b-1px border-zinc-5/10 dark:border-zinc-5/10 relative z-2">
       <div grow-1 pl-2 flex items-center justify-between>
-        <a-button type="outline" size="mini" class="hidden mr-1">
-          Primary
+        <a-button type="outline" size="mini" class="mr-1">
+          add new
         </a-button>
         <a-button shape="circle" type="text" size="mini" class="mr-1" @click="() => visibleDrawer = !visibleDrawer">
           <span :class="[visibleDrawer ? 'i-carbon-chevron-up' : 'i-carbon-chevron-down']" />
