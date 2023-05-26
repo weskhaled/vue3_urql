@@ -3,9 +3,14 @@ import { gql, useQuery, useSubscription } from '@urql/vue'
 import { IconSearch } from '@arco-design/web-vue/es/icon'
 import { mdAndLarger, smAndSmaller } from '~/common/stores'
 
-defineOptions({
-  name: 'IndexPage',
-})
+// definePage({
+//   name: 'adminIndex',
+//   path: '/admin',
+//   // alias: ['/admin'],
+//   meta: {
+//     layout: 'admin',
+//   },
+// })
 
 const { t } = useI18n()
 // const user = useUserStore()
@@ -199,4 +204,13 @@ if (error.value) {
 meta:
   layout: admin
   requiresAuth: true
+  adminSidebar:
+    parentTitle: Dashboard
+    title: RealTime
+    link: /admin/
+    order: 0
+    parentIcon: i-carbon-dashboard
+    icon: i-carbon-screen
+    childOf: null
+    hidden: false
 </route>
