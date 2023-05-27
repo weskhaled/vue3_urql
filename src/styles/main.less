@@ -20,7 +20,7 @@ html.dark {
 }
 
 #nprogress .bar {
-  background: rgb(24, 15, 195);
+  background: rgb(0, 140, 255);
   opacity: 0.75;
   position: fixed;
   z-index: 1031;
@@ -46,6 +46,20 @@ form {
 }
 .arco-notification {
   @apply p-3;
+}
+.arco-trigger-menu-item.admin-sider-menu {
+  &>span {
+    @apply flex items-center;
+    &>span:first-child {
+      @apply mr-1;
+    }
+  }
+}
+.arco-tooltip-content{
+  @apply flex items-center;
+  &>span:first-child {
+    @apply mr-1;
+  }
 }
 // button.arco-switch {
 //   @apply !bg-zinc-4/50;

@@ -15,6 +15,7 @@ const visibleDrawer = ref(false)
 
 function onCollapse(val, type) {
   sideCollapsed.value = val
+  !val && (visibleDrawer.value = false)
 }
 
 async function onClickMenuItem(key) {
@@ -35,8 +36,7 @@ onMounted(() => {
     v-on-click-outside="() => smAndSmaller && ((sideCollapsed = true) && (visibleDrawer = false))"
     hide-trigger
     :theme="isDark ? 'dark' : 'light'" :width="sideFixed ? 240 : 260" collapsible :default-collapsed="sideCollapsed"
-    :collapsed="sideCollapsed" :class="[sideFixed ? (smAndSmaller ? '!absolute' : '!relative') : '!absolute']" class="z-98 [--color-menu-dark-bg:rgba(0,0,0,1)] border-r-1px border-light-7 dark:border-dark-6 "
-    @collapse="onCollapse"
+    :collapsed="sideCollapsed" :class="[sideFixed ? (smAndSmaller ? '!absolute' : '!relative') : '!absolute']" class="z-98 [--color-menu-dark-bg:rgba(0,0,0,1)] border-r border-light-7 dark:border-dark-6 !shadow-sm [&>.arco-layout-sider-children]:overflow-hidden"
     @mouseenter="() => !smAndSmaller && (sideCollapsed = false)"
     @mouseleave="() => !sideFixed && ((sideCollapsed = true) && (visibleDrawer = false))"
   >
@@ -55,7 +55,7 @@ onMounted(() => {
             <span :class="[!sideFixed ? 'i-carbon-radio-button' : 'i-carbon-radio-button-checked']" />
           </template>
         </a-button>
-        <a-button class="block md:hidden" size="small" type="text" @click="() => sideCollapsed = !sideCollapsed">
+        <a-button class="block md:hidden" size="small" type="text" @click="() => (sideCollapsed = !sideCollapsed, (sideCollapsed && (visibleDrawer = false)))">
           <template #icon>
             <span :class="[!sideCollapsed ? 'i-carbon-side-panel-close-filled' : 'i-carbon-side-panel-open-filled']" />
           </template>
@@ -77,8 +77,8 @@ onMounted(() => {
             <span>{{ parent.parentTitle }}</span>
           </template>
           <template v-if="parent.children">
-            <component :is="MenuItem" v-for="child in parent.children" :key="child.path">
-              <span class>
+            <component :is="MenuItem" v-for="child in parent.children" :key="child.path" class="admin-sider-menu">
+              <span>
                 <span :class="child.icon" class="inline-block arco-icon" />
                 <span>{{ child.title }}</span>
               </span>
@@ -99,6 +99,7 @@ onMounted(() => {
     placement="top"
     :header="false"
     :footer="false"
+    :unmount-on-close="true"
     class="[&>.arco-drawer>.arco-drawer-body]:p-0 dark:[--color-bg-3:rgba(0,0,0,1)]"
     @cancel="() => visibleDrawer = false"
   >
@@ -149,9 +150,5 @@ onMounted(() => {
 
 :deep(.arco-layout-sider-children) {
   height: unset !important;
-}
-
-:deep(.arco-layout-sider-trigger) {
-  @apply !bg-light-6 !dark:bg-dark-6;
 }
 </style>
