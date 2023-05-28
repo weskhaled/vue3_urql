@@ -45,7 +45,7 @@ const sliders: Ref<any[]> = ref([
     <HeroSlider :grab-cursor="true" :options="{ modules: ['pagination'], autoplay: { delay: 30000 } }" class="h-80 min-h-400px" :sliders="sliders" />
   </div>
   <div container mx-auto>
-    <main class="py-5 px-4">
+    <main class="py-5 px-5">
       <div class="mx-auto grid grid-cols-1 lg:gap-x-20 lg:grid-cols-2">
         <div class="relative p-3 col-start-1 row-start-1 flex flex-col-reverse rounded-lg bg-gradient-to-t from-black/75 via-black/0 sm:bg-none sm:row-start-2 sm:p-0 lg:row-start-1">
           <h1 class="mt-1 text-lg font-semibold text-white sm:text-slate-900 md:text-2xl dark:sm:text-white">
@@ -89,8 +89,8 @@ const sliders: Ref<any[]> = ref([
         </p>
       </div>
     </main>
-    <div h-80 bg-light-5 />
   </div>
+  <div h-180 class="bg-cover mix-blend-multiply dark:mix-blend-lighten dark:bg-top-center dark:rotate-180 bg-top-center bg-[url(https://images.unsplash.com/photo-1470016342826-876ea880d0be?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80)] dark:bg-[url(https://images.unsplash.com/photo-1485673634125-0f3ae8fd3209?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80)]" />
 </template>
 
 <route lang="yaml">

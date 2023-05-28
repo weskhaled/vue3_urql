@@ -37,11 +37,11 @@ error.value && (message.error('Error', `${error.value}`))
       <a-layout-header class="z-99 bg-white dark:bg-black fixed w-full">
         <AdminLayoutHeader />
       </a-layout-header>
-      <a-layout class="ml-0 !mt-14.5 transition-margin" :class="[sideFixed ? (smAndSmaller ? '!ml-12' : '!ml-60') : '!ml-12']">
-        <a-layout-content>
+      <a-layout class="flex flex-col min-h-[calc(100vh-3.625rem)] ml-0 !mt-14.5 transition-margin" :class="[sideFixed ? (smAndSmaller ? '!ml-12' : '!ml-60') : '!ml-12']">
+        <a-layout-content class="grow-1">
           <RouterView />
         </a-layout-content>
-        <a-layout-footer>
+        <a-layout-footer class="grow-0">
           <AdminLayoutFooter />
         </a-layout-footer>
       </a-layout>

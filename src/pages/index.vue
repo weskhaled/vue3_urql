@@ -326,7 +326,7 @@ const { results } = useFuse(inputSkillsSearch, skills, {
 
 function scrollTo(id: string) {
   window?.scrollTo({
-    top: document.getElementById(id).offsetTop - (mdAndLarger.value ? 56 : (sourceTransition.value !== 0 ? ((windowHeight.value * 0.7) - 50) : 50)),
+    top: document?.getElementById(id).offsetTop - (mdAndLarger.value ? 58 : (sourceTransition.value !== 0 ? ((windowHeight.value * 0.7) - 58) : 58)),
     behavior: 'smooth',
   })
   sourceTransition.value = 0

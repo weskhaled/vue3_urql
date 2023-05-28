@@ -9,10 +9,10 @@ import { availableLocales, loadLanguageAsync } from '~/modules/i18n'
 // you can use this to manipulate the document head in any components,
 // they will be rendered correctly in the html results with vite-ssg
 useHead({
-  title: 'Vitesse',
+  title: 'Weskhaled',
   meta: [
     // { name: 'viewport', content: 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' },
-    { name: 'description', content: 'Opinionated Vite Starter Template' },
+    { name: 'description', content: 'Weskhaled Portfolio' },
     {
       name: 'theme-color',
       content: computed(() => isDark.value ? '#000000' : '#ffffff'),

@@ -133,8 +133,8 @@ export default ({ mode }) => {
         registerType: 'autoUpdate',
         includeAssets: ['favicon.svg', 'safari-pinned-tab.svg'],
         manifest: {
-          name: 'Vitesse',
-          short_name: 'Vitesse',
+          name: 'Weskhaled',
+          short_name: 'Weskhaled',
           theme_color: '#ffffff',
           icons: [
             {

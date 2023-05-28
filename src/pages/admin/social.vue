@@ -26,7 +26,7 @@
 </script>
 
 <template>
-  <div>
+  <div flex-1 h-full grow-1>
     test social page
   </div>
 </template>
