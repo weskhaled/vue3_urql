@@ -903,7 +903,7 @@ function submitContact({ values, errors }) {
                     <span>
                       {{ percent * 100 }}<small text-13px>%</small>
                     </span>
-                    <span block text-dark-5 dark:text-light-5 text-sm font-semibold>Frensh</span>
+                    <span block text-dark-5 dark:text-light-5 text-sm font-semibold>French</span>
                   </span>
                 </template>
               </a-progress>

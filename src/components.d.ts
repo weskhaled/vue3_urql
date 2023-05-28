@@ -10,6 +10,7 @@ export {}
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     AAvatar: typeof import('@arco-design/web-vue')['Avatar']
+    ABadge: typeof import('@arco-design/web-vue')['Badge']
     ABreadcrumb: typeof import('@arco-design/web-vue')['Breadcrumb']
     ABreadcrumbItem: typeof import('@arco-design/web-vue')['BreadcrumbItem']
     AButton: typeof import('@arco-design/web-vue')['Button']
@@ -22,6 +23,7 @@ declare module '@vue/runtime-core' {
     ADoption: typeof import('@arco-design/web-vue')['Doption']
     ADrawer: typeof import('@arco-design/web-vue')['Drawer']
     ADropdown: typeof import('@arco-design/web-vue')['Dropdown']
+    AEmpty: typeof import('@arco-design/web-vue')['Empty']
     AForm: typeof import('@arco-design/web-vue')['Form']
     AFormItem: typeof import('@arco-design/web-vue')['FormItem']
     AImagePreviewGroup: typeof import('@arco-design/web-vue')['ImagePreviewGroup']
@@ -41,7 +43,6 @@ declare module '@vue/runtime-core' {
     ARadioGroup: typeof import('@arco-design/web-vue')['RadioGroup']
     ASelect: typeof import('@arco-design/web-vue')['Select']
     ASpace: typeof import('@arco-design/web-vue')['Space']
-    ASubMenu: typeof import('@arco-design/web-vue')['SubMenu']
     ASwitch: typeof import('@arco-design/web-vue')['Switch']
     ATable: typeof import('@arco-design/web-vue')['Table']
     ATabPane: typeof import('@arco-design/web-vue')['TabPane']
@@ -54,7 +55,6 @@ declare module '@vue/runtime-core' {
     ATrigger: typeof import('@arco-design/web-vue')['Trigger']
     CommonCodeMirror: typeof import('./components/common/CodeMirror.vue')['default']
     HeroSlider: typeof import('./components/HeroSlider.vue')['default']
-    IconApps: typeof import('@arco-design/web-vue/es/icon')['IconApps']
     IconBug: typeof import('@arco-design/web-vue/es/icon')['IconBug']
     IconBulb: typeof import('@arco-design/web-vue/es/icon')['IconBulb']
     IconClose: typeof import('@arco-design/web-vue/es/icon')['IconClose']

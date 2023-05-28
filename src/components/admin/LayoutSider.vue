@@ -3,7 +3,7 @@ import { vOnClickOutside } from '@vueuse/components'
 import { MenuItem, SubMenu } from '@arco-design/web-vue'
 import { isDark } from '~/composables/dark'
 // import '@arco-design/web-vue/es/menu-item/style/css.js'
-import { menuItems, sideCollapsed, sideFixed, smAndSmaller } from '~/common/stores'
+import { mdAndLarger, menuItems, sideCollapsed, sideFixed, smAndSmaller } from '~/common/stores'
 import generatedRoutes from '~pages'
 
 // const { t } = useI18n()
@@ -36,30 +36,45 @@ onMounted(() => {
     v-on-click-outside="() => smAndSmaller && ((sideCollapsed = true) && (visibleDrawer = false))"
     hide-trigger
     :theme="isDark ? 'dark' : 'light'" :width="sideFixed ? 240 : 260" collapsible :default-collapsed="sideCollapsed"
-    :collapsed="sideCollapsed" :class="[sideFixed ? (smAndSmaller ? '!absolute' : '!relative') : '!absolute']" class="z-98 [--color-menu-dark-bg:rgba(0,0,0,1)] border-r border-light-7 dark:border-dark-6 !shadow-sm [&>.arco-layout-sider-children]:overflow-hidden"
+    :collapsed="sideCollapsed" :class="[sideFixed ? (smAndSmaller ? '!fixed' : '!fixed') : '!fixed']" class="z-100 !duration-450 [--color-menu-light-bg:#fafafa] [--color-menu-dark-bg:#010101] border-r border-light-7 dark:border-dark-6 !shadow-sm [&>.arco-layout-sider-children]:overflow-hidden"
     @mouseenter="() => !smAndSmaller && (sideCollapsed = false)"
     @mouseleave="() => !sideFixed && ((sideCollapsed = true) && (visibleDrawer = false))"
   >
-    <div class="h-12 bg-zinc-1 dark:bg-dark-9 flex items-center justify-end border-b-1px border-zinc-5/10 dark:border-zinc-5/10 relative z-2">
-      <div grow-1 pl-2 flex items-center justify-between>
-        <a-button type="outline" size="mini" class="mr-1">
-          add new
-        </a-button>
-        <a-button shape="circle" type="text" size="mini" class="mr-1" @click="() => visibleDrawer = !visibleDrawer">
-          <span :class="[visibleDrawer ? 'i-carbon-chevron-up' : 'i-carbon-chevron-down']" />
-        </a-button>
-      </div>
-      <div min-w-12 flex items-center justify-center>
-        <a-button shape="circle" class="hidden md:block" size="small" type="text" @click="() => sideFixed = !sideFixed">
-          <template #icon>
-            <span :class="[!sideFixed ? 'i-carbon-radio-button' : 'i-carbon-radio-button-checked']" />
-          </template>
-        </a-button>
-        <a-button class="block md:hidden" size="small" type="text" @click="() => (sideCollapsed = !sideCollapsed, (sideCollapsed && (visibleDrawer = false)))">
-          <template #icon>
-            <span :class="[!sideCollapsed ? 'i-carbon-side-panel-close-filled' : 'i-carbon-side-panel-open-filled']" />
-          </template>
-        </a-button>
+    <div class="h-14.5 bg-zinc-1 relative dark:bg-dark-9 flex items-center justify-end border-b-1px border-zinc-5/10 dark:border-zinc-5/10 relative z-2">
+      <div flex px-2.5 flex-1 justify-between :class="sideCollapsed && mdAndLarger && 'duration-300 translate-x--12'">
+        <div flex items-center>
+          <a href="" :class="sideCollapsed ? 'invisible opacity-0' : 'delay-100 visible opacity-100'" class="transition-opacity duration-300 inline-block grow-1 mr-auto" @click.prevent="router.push('/')">
+            <span
+              class="tracking-tight inline-block text-4/5 border-2px uppercase border-black dark:border-white font-semibold py-1 px-2"
+            >
+              <span class="hidden sm:inline-block">
+                <span class="font-light mr--1.3">
+                  WE
+                </span>
+                Brand
+              </span>
+              <span class="inline-block sm:hidden">
+                <span class="font-light mr--1">W
+                </span>B
+              </span>
+            </span>
+          </a>
+        </div>
+        <div flex items-center justify-center>
+          <a-button shape="circle" type="text" size="mini" class="mr-1" @click="() => visibleDrawer = !visibleDrawer">
+            <span :class="[visibleDrawer ? 'i-carbon-chevron-up' : 'i-carbon-chevron-down']" />
+          </a-button>
+          <a-button shape="circle" class="hidden md:block" size="small" type="text" @click="() => sideFixed = !sideFixed">
+            <template #icon>
+              <span :class="[!sideFixed ? 'i-carbon-radio-button' : 'i-carbon-radio-button-checked']" />
+            </template>
+          </a-button>
+          <a-button class="block md:hidden" size="small" type="text" @click="() => (sideCollapsed = !sideCollapsed, (sideCollapsed && (visibleDrawer = false)))">
+            <template #icon>
+              <span :class="[!sideCollapsed ? 'i-carbon-side-panel-close-filled' : 'i-carbon-side-panel-open-filled']" />
+            </template>
+          </a-button>
+        </div>
       </div>
     </div>
     <div id="parentNode" relative z-1>
@@ -141,7 +156,7 @@ onMounted(() => {
 <style scoped lang="less">
 .menu-side-nav {
   // @apply [--color-menu-light-bg:black];
-  height: calc(100vh - 106px);
+  height: calc(100vh - 3.625rem);
 }
 
 .arco-layout-sider-has-trigger {

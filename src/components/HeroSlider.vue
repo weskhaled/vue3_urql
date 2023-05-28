@@ -8,12 +8,12 @@ import 'swiper/css'
 
 export interface Props {
   sliders?: any[]
-  options?: { modules: any[]; autoplay: any }
+  options?: { modules?: any[]; autoplay?: any }
 }
 
 const props = withDefaults(defineProps<Props>(), {
   sliders: () => [],
-  options: () => ({ modules: ['pagination'], autoplay: { delay: 250000, disableOnInteraction: false, pauseOnMouseEnter: true } }),
+  options: () => ({ modules: ['pagination'], autoplay: { delay: 25000, disableOnInteraction: false, pauseOnMouseEnter: true } }),
 })
 // const { modelValue } = defineModels<{
 //   modelValue: string
@@ -22,8 +22,8 @@ const breakpoints = useBreakpoints(breakpointsTailwind)
 const mdAndLarger = breakpoints.greater('sm')
 const modules = computed(() => {
   const swiperModules = [Autoplay]
-  props.options.modules.includes('navigation') && (swiperModules.push(Navigation))
-  props.options.modules.includes('pagination') && (swiperModules.push(Pagination))
+  props.options?.modules?.includes('navigation') && (swiperModules.push(Navigation))
+  props.options?.modules?.includes('pagination') && (swiperModules.push(Pagination))
   return swiperModules
 })
 const sliderRef = ref()

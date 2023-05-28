@@ -31,14 +31,14 @@ error.value && (message.error('Error', `${error.value}`))
 </script>
 
 <template>
-  <a-layout class="h-screen font-sans relative !arco-theme-1">
-    <a-layout-header class="z-99 bg-white dark:bg-black">
-      <AdminLayoutHeader />
-    </a-layout-header>
+  <a-layout class="font-sans relative !arco-theme-1">
+    <AdminLayoutSider />
     <a-layout>
-      <AdminLayoutSider />
-      <a-layout class="max-h-[calc(100vh-59px)] overscroll-y-auto ml-0" :class="[sideFixed ? (smAndSmaller ? '!ml-12' : '') : '!ml-12']">
-        <a-layout-content class="">
+      <a-layout-header class="z-99 bg-white dark:bg-black fixed w-full">
+        <AdminLayoutHeader />
+      </a-layout-header>
+      <a-layout class="ml-0 !mt-14.5 transition-margin" :class="[sideFixed ? (smAndSmaller ? '!ml-12' : '!ml-60') : '!ml-12']">
+        <a-layout-content>
           <RouterView />
         </a-layout-content>
         <a-layout-footer>
@@ -50,7 +50,7 @@ error.value && (message.error('Error', `${error.value}`))
     <a-trigger v-model:popupVisible="popupVisible" :trigger="['click', 'hover']" position="top">
       <Draggable
         storage-key="vueuse-draggable" storage-type="session"
-        class="fixed h-42px w-40px" :initial-value="{ x: windowWidth - 150, y: windowHeight - 150 }" :prevent-default="true"
+        class="fixed h-42px w-40px z-105" :initial-value="{ x: windowWidth - 150, y: windowHeight - 150 }" :prevent-default="true"
         :handle="handle"
       >
         <div ref="handle">
@@ -88,7 +88,7 @@ error.value && (message.error('Error', `${error.value}`))
 
 <style lang="less" scoped>
 .button-trigger {
-  @apply absolute cursor-pointer rounded-full z-100 items-center justify-center fixed text-sm flex h-40px w-40px text-zinc-100 bg-blue-600 shadow-md;
+  @apply absolute cursor-pointer rounded-full z-101 items-center justify-center fixed text-sm flex h-40px w-40px text-zinc-100 bg-blue-600 shadow-md;
   transition: all 0.1s;
 }
 </style>

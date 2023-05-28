@@ -160,7 +160,7 @@ if (error.value) {
 <template>
   <Suspense>
     <!-- component with nested async dependencies -->
-    <div class="p-2 bg-gray-100 dark:bg-zinc-900 min-h-full flex flex-col">
+    <div class="p-2 min-h-full flex flex-col">
       <div class="mb-2 bg-white dark:bg-dark-950 shadow shadow-gray-200 dark:shadow-gray-900">
         <a-breadcrumb class="p-2">
           <a-breadcrumb-item>Home</a-breadcrumb-item>
@@ -177,7 +177,7 @@ if (error.value) {
         <div class="mt-1">
           <a-table
             size="medium" :scrollbar="false" :columns="columns"
-            :scroll="{ x: smAndSmaller ? (windowWidth + 200) : '100%', y: 500 }" :data="allPlaces" :loading="fetching"
+            :scroll="{ x: smAndSmaller ? (windowWidth + 200) : '100%', y: 900 }" :data="allPlaces" :loading="fetching"
             :pagination="{ total, pageSize, showPageSize: true, pageSizeOptions: [5, 10, 20] }"
             @page-size-change="(val) => { pageSize = val; variables.input.pagination.size = val }" @change="handleChange"
           >
