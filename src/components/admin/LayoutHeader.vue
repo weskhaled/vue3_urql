@@ -15,7 +15,7 @@ async function logout() {
 </script>
 
 <template>
-  <div class="flex items-center justify-between px-2 h-14.5 border-b border-zinc-2 dark:border-zinc-9 ml-12">
+  <div class="flex items-center justify-between px-2 h-14.5 border-b border-zinc-3/30 dark:border-zinc-6/30 ml-12">
     <div class="grow-0 flex items-center transition-width duration-300" :class="[sideFixed ? 'w-[calc(11.5rem-1px)]' : 'w-55']">
       <a href="" class="" @click.prevent="router.push('/')">
         <span
@@ -35,10 +35,10 @@ async function logout() {
       </a>
     </div>
     <div class="hidden md:flex items-center border-zinc-4/20 border-x px-2">
-      <a-badge :count="9" dot :offset="[-21, 5]" class="[&>.arco-badge-custom-dot]:overflow-visible">
+      <a-badge :count="9" dot :offset="[-22, 5]" class="[&>.arco-badge-custom-dot]:overflow-visible">
         <template #content>
-          <span class="block h-1.5 w-1.5 pointer-events-none rounded-full bg-red-500 relative shadow-[0_0_0_2px_var(--color-bg-2)]">
-            <span class="block absolute animate-ping inline-flex top--0.25 left--0.25 h-2 w-2 rounded-full bg-red-400 opacity-75" />
+          <span class="block h-1.5 w-1.5 pointer-events-none rounded-full bg-green-500 relative shadow-[0_0_0_1px_var(--color-bg-2)]">
+            <span class="block absolute animate-ping inline-flex top--0.25 left--0.25 h-2 w-2 rounded-full bg-green-400 opacity-75" />
           </span>
         </template>
         <a-trigger trigger="click" show-arrow :popup-translate="[130, 5]" class="!fixed !top-12 [&_.arco-trigger-arrow]:bg-zinc-4/20">
@@ -50,8 +50,10 @@ async function logout() {
           <template #content>
             <div class="bg-white dark:bg-dark-9 min-w-75 rounded-2px shadow border-1px border-zinc-4/20">
               <div flex items-center justify-between p-2 class="border-b border-zinc-4/20 bg-zinc-4/5">
-                <h3>Notifications</h3>
-                <a-button size="mini" type="text">
+                <h3 class="text-3">
+                  Notifications
+                </h3>
+                <a-button class="text-3" size="mini" type="text">
                   Read All
                 </a-button>
               </div>
@@ -77,7 +79,7 @@ async function logout() {
       <div class="hidden md:flex items-center px-2">
         <a-button class="px-2 hover:[--color-fill-2:transparent]" size="medium" type="text">
           <span i-carbon-search class="mr-1" />
-          <span>
+          <span text-xs>
             Type anywhere to <span font-semibold> Search</span>
           </span>
         </a-button>

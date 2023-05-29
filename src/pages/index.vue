@@ -33,7 +33,7 @@ const formContact = reactive({
 const sliders: Ref<any[]> = ref([
   {
     title: '1/2',
-    content: h('div', { class: 'text-left text-white max-w-xl ml-0' }, [h('h1', { class: 'font-bold text-2rem md:text-4rem leading-tight ![--animate-delay:0.1s] animate__animated animate__slideInDown' }, 'Hi, I’am Khaled. Proffesional Developer based on Paris 👋'), h('p', { class: 'text-4 ![--animate-delay:0.15s] animate__delay-2s animate__animated animate__backInUp' }, 'Expert customer support team is all around the globe, ready and excited to help.')]),
+    content: h('div', { class: 'text-left max-w-3xl ml-0' }, [h('h1', { class: 'font-bold text-2rem md:text-4rem leading-tight ![--animate-delay:0.1s] animate__animated animate__slideInDown' }, 'Hi, I’am Khaled. Proffesional Developer based on Paris 👋'), h('p', { class: 'text-4 ![--animate-delay:0.15s] animate__delay-2s animate__animated animate__backInUp' }, 'Expert customer support team is all around the globe, ready and excited to help.')]),
     image: {
       screen: '/img/slider-1.jpg',
       thumb: '/img/slider-1.jpg',
@@ -365,7 +365,7 @@ function submitContact({ values, errors }) {
           <div class="header-center" />
           <div
             class="header-right"
-            :class="(windowScrollY > 200) ? '[--primary-6:0,0,0] md:dark:[--primary-6:255,255,255]' : '[--primary-6:0,0,0] md:[--primary-6:255,255,255] dark:[--primary-6:255,255,255]'"
+            :class="(windowScrollY > 200) ? '[--primary-6:0,0,0] md:dark:[--primary-6:255,255,255]' : '[--primary-6:0,0,0] md:[--primary-6:0,0,0] dark:[--primary-6:255,255,255]'"
           >
             <a-button class="!hover:bg-zinc-6/30" type="text" size="large" @click.stop="router.push('/auth/login')">
               <template #icon>
@@ -1260,22 +1260,22 @@ header.home-header {
 
       nav.header-nav {
         >a {
-          @apply mx-2 md:mx-4 transition-color text-zinc-9 md:text-zinc-200 hover:(text-light-500) dark:text-zinc-1;
+          @apply mx-2 md:mx-4 transition-color text-zinc-9 md:text-zinc-2 hover:(text-light-5) dark:text-zinc-1;
         }
       }
     }
 
     .header-left {
-      @apply flex justify-center text-zinc-9 md:text-light-700 dark:text-light-700;
+      @apply flex justify-center text-zinc-9 md:text-dark-7 dark:text-light-700;
     }
 
     .header-right {
-      @apply flex justify-center text-zinc-9 md:text-light-700 dark:text-light-700;
+      @apply flex justify-center text-zinc-9 md:text-dark-7 dark:text-light-700;
     }
   }
 
   &.scrolled {
-    @apply md:bg-light-900/50 dark:bg-dark-900/80 shadow-sm shadow-dark-50/5 backdrop-blur;
+    @apply bg-light-900/50 dark:bg-dark-900/80 shadow-sm shadow-dark-50/5 backdrop-blur;
 
     .header-container {
       @apply py-2;
@@ -1289,11 +1289,11 @@ header.home-header {
       }
 
       .header-left {
-        @apply text-dark-700 dark:text-zinc-3;
+        @apply text-dark-7 dark:text-zinc-3;
       }
 
       .header-right {
-        @apply md:text-dark-700 dark:text-zinc-3;
+        @apply md:text-dark-7 dark:text-zinc-3;
       }
     }
   }

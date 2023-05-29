@@ -1,6 +1,8 @@
 <script setup lang="ts">
 // import { mdAndLarger, smAndSmaller } from '~/common/stores'
+import { Loader } from '@googlemaps/js-api-loader'
 
+const googleApiKey = import.meta.env.VITE_GOOGLE_API_KEY
 // definePage({
 //   name: 'adminSocial',
 //   path: '/admin/social',
@@ -17,32 +19,60 @@
 //   },
 // })
 // const { t } = useI18n()
-// const { message } = useMessage()
+const { message } = useMessage()
 // const { width: windowWidth } = useWindowSize()
 // const router = useRouter()
 const sliders: Ref<any[]> = ref([
   {
     title: '1/2',
-    content: h('div', { class: 'text-left text-white max-w-xl px-2' }, [h('h1', { class: 'font-bold text-2rem md:text-3rem leading-tight ![--animate-delay:0.1s] animate__animated animate__slideInDown' }, 'Hi, I’am Khaled. Proffesional Developer based on Paris 👋'), h('p', { class: 'text-4 ![--animate-delay:0.15s] animate__delay-2s animate__animated animate__backInUp' }, 'Expert customer support team is all around the globe, ready and excited to help.')]),
+    content: h('div', { class: 'text-left max-w-3xl pt-14.5 mt-6' }, [h('p', { class: 'text-4 ![--animate-delay:0.15s] animate__delay-1s animate__animated animate__fadeInUp' }, 'This is just a cover'), h('h1', { class: 'mb-2 font-bold text-2rem md:text-3rem leading-tight ![--animate-delay:0.1s] animate__delay-2s animate__animated animate__slideInUp' }, 'Welcome to the Admin')]),
     image: {
-      screen: '/img/slider-1.jpg',
-      thumb: '/img/slider-1.jpg',
-    },
-  },
-  {
-    title: '2/2',
-    content: h('div', { class: 'text-left text-white max-w-xl px-2' }, [h('h1', { class: 'font-bold text-2rem md:text-3rem leading-tight ![--animate-delay:0.1s] animate__animated animate__slideInDown' }, 'Hi, I’am Khaled. Proffesional Developer based on Paris 👋'), h('p', { class: 'text-4 ![--animate-delay:0.15s] animate__delay-2s animate__animated animate__backInUp' }, 'Expert customer support team is all around the globe, ready and excited to help.')]),
-    image: {
-      screen: '/img/slider-2.jpg',
-      thumb: '/img/slider-2.jpg',
+      screen: 'https://images.unsplash.com/photo-1645747103867-0669a7eff310?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80',
+      screenDark: 'https://images.unsplash.com/photo-1649778457108-4e9a88b5d726?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80',
+      thumb: '',
     },
   },
 ])
+
+const loader = new Loader({
+  apiKey: `${googleApiKey}`,
+  version: 'weekly',
+  libraries: ['places'],
+})
+function mapOptions(google) {
+  return {
+    // center: {
+    //   lat: 48.9005423,
+    //   lng: 2.3527788,
+    // },
+    zoom: 12.5,
+    mapTypeControl: false,
+    streetViewControl: false,
+    center: new google.maps.LatLng(48.9005423, 2.3527788),
+    mapTypeId: google.maps.MapTypeId.ROADMAP,
+  }
+}
+const showMaps = ref(false)
+const googleMapsApi = ref()
+const mapRef = ref()
+const gMaps = ref()
+
+onMounted(() => {
+  loader
+    .load()
+    .then((google) => {
+      googleMapsApi.value = google
+      gMaps.value = new google.maps.Map(mapRef.value, mapOptions(google))
+    })
+    .catch((e) => {
+      message.error(e.message)
+    })
+})
 </script>
 
 <template>
-  <div>
-    <HeroSlider :grab-cursor="true" :options="{ modules: ['pagination'], autoplay: { delay: 30000 } }" class="h-80 min-h-400px" :sliders="sliders" />
+  <div mt--14.5>
+    <HeroSlider :grab-cursor="true" :options="{ modules: [], autoplay: false, containerClass: ['mt-auto !px-5'] }" class="h-auto" :sliders="sliders" />
   </div>
   <div container mx-auto>
     <main class="py-5 px-5">
@@ -64,7 +94,7 @@ const sliders: Ref<any[]> = ref([
           <dt class="sr-only">
             Reviews
           </dt>
-          <dd class="text-indigo-600 flex items-center dark:text-indigo-400 mr-3">
+          <dd class="text-blue-600 flex items-center dark:text-blue-400 mr-3">
             <span i-carbon-star-filled />
             <span>4.89 <span class="text-slate-400 font-normal">(128)</span></span>
           </dd>
@@ -90,7 +120,33 @@ const sliders: Ref<any[]> = ref([
       </div>
     </main>
   </div>
-  <div h-180 class="bg-cover mix-blend-multiply dark:mix-blend-lighten dark:bg-top-center dark:rotate-180 bg-top-center bg-[url(https://images.unsplash.com/photo-1470016342826-876ea880d0be?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80)] dark:bg-[url(https://images.unsplash.com/photo-1485673634125-0f3ae8fd3209?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80)]" />
+  <section class="h-[calc(100vh-10rem)] relative">
+    <div class="absolute top-0 w-full h-full z-2 pointer-events-none shadow-zinc-6/40 dark:shadow-zinc-1/40 shadow-[inset_0_8px_8px_-8px_var(--un-shadow-color),inset_0_-8px_8px_-8px_var(--un-shadow-color)]" />
+    <div id="maps" ref="mapRef" class="h-full z-1" />
+  </section>
+  <div relative h-180 flex items-center>
+    <div container px-4 mx-auto relative z-1 text-center>
+      <div class="relative inline-block px-6 py-4 bg-zinc-9/1 dark:bg-zinc-1/1 backdrop-blur backdrop-filter border border-zinc-4/20">
+        <div
+          class="opacity-20 absolute inset-0 w-full h-full bg-cover bg-fixed bg-center bg-no-repeat bg-[url(https://images.unsplash.com/photo-1604076913837-52ab5629fba9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2731&q=80)]"
+        />
+        <button
+          class="w-10 h-10 justify-center content-center absolute flex top--6 left--6 bg-blue-6/90 hover:bg-blue-7/90 active:(bg-blue-7/80 border-blue-8) transition-all block z-2 border border-blue-8/20 backdrop-blur"
+        >
+          <span i-carbon-ibm-watson-machine-learning block text-white text-sm m-auto leading-8 class="icon-shadow" />
+        </button>
+        <h2
+          class="md:text-8xl/30 inline font-extrabold capitalize fill-transparent bg-gradient-to-r from-slate-7 dark:from-slate-1 to-purple-4 dark:to-purple-1 bg-clip-text"
+          style="-webkit-text-fill-color: transparent;"
+        >
+          think big <span font-thin>
+            start small!
+          </span>
+        </h2>
+      </div>
+    </div>
+    <div class="h-full pointer-events-none w-full absolute top-0 bg-black right-0 bg-cover mix-blend-multiply dark:mix-blend-lighten dark:bg-top-center opacity-85 dark:rotate-180 bg-top-center bg-[url(https://images.unsplash.com/photo-1470016342826-876ea880d0be?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80)] dark:bg-[url(https://images.unsplash.com/photo-1485673634125-0f3ae8fd3209?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80)]" />
+  </div>
 </template>
 
 <route lang="yaml">

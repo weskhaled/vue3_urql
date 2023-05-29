@@ -3,17 +3,18 @@ import { breakpointsTailwind, useBreakpoints } from '@vueuse/core'
 import { Autoplay, Navigation, Pagination } from 'swiper'
 // Import Swiper Vue.js components
 import { Swiper, SwiperSlide } from 'swiper/vue'
+import { isDark } from '~/composables/dark'
 // Import Swiper styles
 import 'swiper/css'
 
 export interface Props {
   sliders?: any[]
-  options?: { modules?: any[]; autoplay?: any }
+  options?: { modules?: any[]; autoplay?: any; containerClass?: string[] }
 }
 
 const props = withDefaults(defineProps<Props>(), {
   sliders: () => [],
-  options: () => ({ modules: ['pagination'], autoplay: { delay: 25000, disableOnInteraction: false, pauseOnMouseEnter: true } }),
+  options: () => ({ modules: ['pagination'], autoplay: { delay: 25000, disableOnInteraction: false, pauseOnMouseEnter: true }, containerClass: [] }),
 })
 // const { modelValue } = defineModels<{
 //   modelValue: string
@@ -65,7 +66,7 @@ watch(windowScrollY, (val) => {
   if (mdAndLarger.value) {
     if (sliderContainerIsVisible.value) {
       const percentInView = sliderHeight.value + val + sliderTop.value - (val + sliderHeight.value)
-      sliderStyles.container.top = `${1 - percentInView * 0.2}px`
+      sliderStyles.container.top = `${1 - percentInView * 0.25}px`
       sliderStyles.container.opacity = `${((percentInView * 0.1) + 100)}%`
       sliderStyles.hederImage.backgroundPosition = `50% ${percentInView / 25}%`
     }
@@ -76,20 +77,21 @@ watch(windowScrollY, (val) => {
 <template>
   <Swiper
     ref="sliderWrapperRef" :autoplay="options?.autoplay || false"
-    :navigation="options.modules.includes('navigation')"
-    :pagination="options.modules.includes('pagination') ? pagination : false" :modules="modules"
-    class="hero-slider shadow-inner" :slides-per-view="1" :space-between="0"
+    :navigation="sliders.length > 1 && options?.modules?.includes('navigation')"
+    :pagination="sliders.length > 1 && options?.modules?.includes('pagination') ? pagination : false" :modules="modules"
+    class="hero-slider bg-white dark:bg-black" :slides-per-view="1" :space-between="0"
+    :auto-height="false"
     @swiper="onSwiper"
     @slide-change="onSlideChange" @autoplay-time-left="(__s, __time, progress) => progressWidth = 1 - progress"
     @mouse-over="() => sliderRef?.autoplay.pause()" @mouse-out="() => sliderRef?.autoplay.resume()"
   >
     <SwiperSlide
-      v-for="(slide, index) in sliders" :key="slide.id" class="bg-dark-900 flex h-full relative"
+      v-for="(slide, index) in sliders" :key="slide.id" class="flex h-full relative"
     >
       <header class="justify-center items-center flex w-full">
         <div
-          class="z-9 absolute top-0 right-0 w-full h-full"
-          style="background-color: #e5e5f7;opacity: 0.2;background-image:  repeating-linear-gradient(45deg, #000000 25%, transparent 25%, transparent 75%, #000000 75%, #000000), repeating-linear-gradient(45deg, #000000 25%, #e5e5f7 25%, #e5e5f7 75%, #000000 75%, #000000);background-position: 0 0, 1px 1px;background-size: 2px 2px;"
+          class="z-9 absolute top-0 right-0 w-full h-full bg-black opacity-10 bg-[length:2px_2px]"
+          style="background-image: repeating-linear-gradient(45deg, black 25%, transparent 25%, transparent 75%, black 75%, black), repeating-linear-gradient(45deg, black 25%, white 25%, white 75%, black 75%, black);background-position: 0 0, 1px 1px"
         />
         <div
           class="z-9 absolute top-0 right-0 w-full h-full opacity-20"
@@ -97,7 +99,7 @@ watch(windowScrollY, (val) => {
         />
         <div
           class="header-image opacity-70"
-          :style="{ ...sliderStyles.hederImage, 'background-image': `url(${slide.image.screen})` }"
+          :style="{ ...sliderStyles.hederImage, 'background-image': `url(${isDark ? (slide.image.screenDark || slide.image.screen) : slide.image.screen})` }"
         />
         <div
           class="header-image opacity-70"
@@ -105,7 +107,8 @@ watch(windowScrollY, (val) => {
         />
 
         <div
-          class="container mx-auto relative w-full z-10 relative transition-opacity duration-0s px-8 md:px-6 py-3 top-0"
+          class="container mx-auto relative w-full z-10 relative transition-opacity transition-top-50 duration-0s px-8 top-0"
+          :class="options.containerClass"
           :style="{ ...sliderStyles.container }"
         >
           <div
@@ -117,40 +120,41 @@ watch(windowScrollY, (val) => {
         </div>
       </header>
     </SwiperSlide>
-
-    <div class="swiper-progressBar">
-      <div class="swiper-bar" :style="{ width: `${progressWidth * 100}%` }" />
-    </div>
-    <nav class="nav-slit">
-      <a class="prev" href="javascript:;" @click="activeSlideIndex < 1 ? sliderRef.slideTo(sliders.length) : sliderRef.slidePrev()">
-        <span class="icon-wrap">
-          <i class="icon i-carbon-chevron-left" />
-        </span>
-        <div class="">
-          <h3 id="title-prev">{{ activeSlideIndex < 1 ? sliders[sliders.length - 1]?.title : sliders[activeSlideIndex
-            - 1]?.title }}</h3>
-          <img
-            id="thumb-prev"
-            :src="activeSlideIndex < 1 ? sliders[sliders.length - 1]?.image.thumb : sliders[activeSlideIndex - 1]?.image.thumb"
-            alt="Previous thumb"
-          >
-        </div>
-      </a>
-      <a class="next" href="javascript:;" @click="activeSlideIndex + 1 >= sliders.length ? sliderRef.slideTo(0) : sliderRef.slideNext()">
-        <span class="icon-wrap">
-          <i class="icon i-carbon-chevron-right" />
-        </span>
-        <div class="">
-          <h3 id="title-next">{{ activeSlideIndex + 1 >= sliders.length ? sliders[0]?.title : sliders[activeSlideIndex
-            + 1]?.title }}</h3>
-          <img
-            id="thumb-next"
-            :src="activeSlideIndex + 1 >= sliders.length ? sliders[0]?.image.thumb : sliders[activeSlideIndex + 1]?.image.thumb"
-            alt="Next thumb"
-          >
-        </div>
-      </a>
-    </nav>
+    <template v-if="sliders.length > 1">
+      <div class="swiper-progressBar">
+        <div class="swiper-bar" :style="{ width: `${progressWidth * 100}%` }" />
+      </div>
+      <nav class="nav-slit">
+        <a class="prev" href="javascript:;" @click="activeSlideIndex < 1 ? sliderRef.slideTo(sliders.length) : sliderRef.slidePrev()">
+          <span class="icon-wrap">
+            <i class="icon i-carbon-chevron-left" />
+          </span>
+          <div class="">
+            <h3 id="title-prev">{{ activeSlideIndex < 1 ? sliders[sliders.length - 1]?.title : sliders[activeSlideIndex
+              - 1]?.title }}</h3>
+            <img
+              id="thumb-prev"
+              :src="activeSlideIndex < 1 ? sliders[sliders.length - 1]?.image.thumb : sliders[activeSlideIndex - 1]?.image.thumb"
+              alt="Previous thumb"
+            >
+          </div>
+        </a>
+        <a class="next" href="javascript:;" @click="activeSlideIndex + 1 >= sliders.length ? sliderRef.slideTo(0) : sliderRef.slideNext()">
+          <span class="icon-wrap">
+            <i class="icon i-carbon-chevron-right" />
+          </span>
+          <div class="">
+            <h3 id="title-next">{{ activeSlideIndex + 1 >= sliders.length ? sliders[0]?.title : sliders[activeSlideIndex
+              + 1]?.title }}</h3>
+            <img
+              id="thumb-next"
+              :src="activeSlideIndex + 1 >= sliders.length ? sliders[0]?.image.thumb : sliders[activeSlideIndex + 1]?.image.thumb"
+              alt="Next thumb"
+            >
+          </div>
+        </a>
+      </nav>
+    </template>
   </Swiper>
 </template>
 
