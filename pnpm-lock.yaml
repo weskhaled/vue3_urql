@@ -70,6 +70,9 @@ dependencies:
   isotope-layout:
     specifier: ^3.0.6
     version: 3.0.6
+  js-captcha:
+    specifier: ^1.3.0
+    version: 1.3.0
   nprogress:
     specifier: ^0.2.0
     version: 0.2.0
@@ -7566,6 +7569,11 @@ packages:
       glob: 8.0.3
       nopt: 6.0.0
     dev: true
+
+  /js-captcha@1.3.0:
+    resolution: {integrity: sha512-9WFXHKfaU1BIfGjm93MTZt1DDx2M5oJ/fwBvrQEjXgiuz4Mkh0K8ScKNHTj3u9lu3PImmaSiFB/3Xw/z+pUulQ==}
+    requiresBuild: true
+    dev: false
 
   /js-sdsl@4.1.4:
     resolution: {integrity: sha512-Y2/yD55y5jteOAmY50JbUZYwk3CP3wnLPEZnlR1w9oKhITrBEtAxwuWKebFf8hMrPMgbYwFoWK/lH2sBkErELw==}

@@ -4,7 +4,7 @@ import { useFuse } from '@vueuse/integrations/useFuse'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import { Loader } from '@googlemaps/js-api-loader'
 import Typed from 'typed.js'
-// import Isotope from 'isotope-layout'
+import JCaptcha from 'js-captcha'
 import { vIntersectionObserver, vOnClickOutside } from '@vueuse/components'
 import { FreeMode, Mousewheel, Scrollbar } from 'swiper'
 import { mdAndLarger } from '~/common/stores'
@@ -20,6 +20,7 @@ const inputSkillsSearch = ref('')
 const { y: wrapperY } = useScroll(typeof window !== 'undefined' ? window : null, { behavior: 'smooth' })
 const { notification } = useNotification()
 const router = useRouter()
+const { message } = useMessage()
 
 const formContactRef = ref()
 const visibleImagePreview = ref(false)
@@ -143,6 +144,7 @@ const mapOptions = {
   mapTypeControl: false,
   streetViewControl: false,
 }
+const myCaptcha = ref()
 const showMaps = ref(false)
 const mapRef = ref()
 const gMaps = ref()
@@ -153,9 +155,34 @@ onMounted(() => {
     .then((google) => {
       gMaps.value = new google.maps.Map(mapRef.value, mapOptions)
     })
-    .catch((e) => {
-    // do something
-    })
+    .catch((e) => {})
+
+  myCaptcha.value = new JCaptcha({
+    el: '.jCaptcha',
+    canvasClass: 'jCaptchaCanvas',
+    canvasStyle: {
+      // required properties for captcha stylings:
+      width: 100,
+      height: 15,
+      textBaseline: 'top',
+      font: '15px Arial',
+      textAlign: 'left',
+      fillStyle: '#ddd',
+    },
+    // set callback function for success and error messages:
+    callback: (response, $captchaInputElement, numberOfTries) => {
+      if (response === 'success')
+        message.success('success')
+
+      if (response === 'error') {
+        message.error('error')
+
+        if (numberOfTries === 3) {
+          // maximum attempts handle, e.g. disable form
+        }
+      }
+    },
+  })
 })
 
 watch(projectType, (val) => {
@@ -333,6 +360,7 @@ function scrollTo(id: string) {
 }
 function submitContact({ values, errors }) {
   // console.log('values:', values, '\nerrors:', errors)
+  myCaptcha.value.validate()
 }
 </script>
 
@@ -1051,6 +1079,11 @@ function submitContact({ values, errors }) {
                         :validate-trigger="['change', 'input']" field="email" label="I will left you my email:"
                       >
                         <a-input v-model="formContact.email" placeholder="xyz@abc.com" />
+                      </a-form-item>
+                      <a-form-item label="captcha:" :rules="[{ required: true, message: 'captcha is required' }, { type: 'number', message: 'must be a valid number' }]">
+                        <div class="[&>.jCaptchaCanvas]:w-85px [&>.jCaptchaCanvas]:mt-0.65 flex items-center bg-black pl-4 w-full">
+                          <input class="jCaptcha flex-1 border-none rounded-0 px-2 py-2 bg-zinc-2 dark:bg-zinc-8 dark:text-light-2 text-black focus:ring-0 focus-visible:ring-0 focus-visible:outline-0 active:ring-0" type="text" placeholder="Type in result please">
+                        </div>
                       </a-form-item>
                       <a-form-item>
                         <div flex w-full justify-end>
