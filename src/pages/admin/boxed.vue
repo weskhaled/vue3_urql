@@ -50,6 +50,7 @@ function mapOptions(google) {
     streetViewControl: false,
     center: new google.maps.LatLng(48.9005423, 2.3527788),
     mapTypeId: google.maps.MapTypeId.ROADMAP,
+    fullscreenControl: false,
   }
 }
 const showMaps = ref(false)
@@ -120,7 +121,7 @@ onMounted(() => {
       </div>
     </main>
   </div>
-  <section class="h-[calc(100vh-10rem)] relative">
+  <section class="h-[calc(100vh-10rem)] relative overflow-hidden">
     <div class="absolute top-0 w-full h-full z-2 pointer-events-none shadow-zinc-6/40 dark:shadow-zinc-1/40 shadow-[inset_0_8px_8px_-8px_var(--un-shadow-color),inset_0_-8px_8px_-8px_var(--un-shadow-color)]" />
     <div id="maps" ref="mapRef" class="h-full z-1" />
   </section>
@@ -128,7 +129,7 @@ onMounted(() => {
     <div container px-4 mx-auto relative z-1 text-center>
       <div class="relative inline-block px-6 py-4 bg-zinc-9/1 dark:bg-zinc-1/1 backdrop-blur backdrop-filter border border-zinc-4/20">
         <div
-          class="opacity-20 absolute inset-0 w-full h-full bg-cover bg-fixed bg-center bg-no-repeat bg-[url(https://images.unsplash.com/photo-1604076913837-52ab5629fba9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2731&q=80)]"
+          class="opacity-5 grayscale absolute inset-0 w-full h-full bg-cover bg-fixed bg-center bg-no-repeat bg-[url(/img/slider-3.avif)]"
         />
         <button
           class="w-10 h-10 justify-center content-center absolute flex top--6 left--6 bg-blue-6/90 hover:bg-blue-7/90 active:(bg-blue-7/80 border-blue-8) transition-all block z-2 border border-blue-8/20 backdrop-blur"
@@ -136,7 +137,7 @@ onMounted(() => {
           <span i-carbon-ibm-watson-machine-learning block text-white text-sm m-auto leading-8 class="icon-shadow" />
         </button>
         <h2
-          class="md:text-8xl/30 inline font-extrabold capitalize fill-transparent bg-gradient-to-r from-slate-7 dark:from-slate-1 to-purple-4 dark:to-purple-1 bg-clip-text"
+          class="text-2xl/10 md:text-8xl/30 inline font-extrabold capitalize fill-transparent bg-gradient-to-r from-slate-7 dark:from-slate-1 to-purple-4 dark:to-purple-1 bg-clip-text"
           style="-webkit-text-fill-color: transparent;"
         >
           think big <span font-thin>

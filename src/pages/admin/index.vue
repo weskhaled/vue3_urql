@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { gql, useQuery, useSubscription } from '@urql/vue'
 import { IconSearch } from '@arco-design/web-vue/es/icon'
+// import { promiseTimeout } from '@vueuse/core'
 import { mdAndLarger, smAndSmaller } from '~/common/stores'
 
 // definePage({
@@ -13,11 +14,8 @@ import { mdAndLarger, smAndSmaller } from '~/common/stores'
 // })
 
 const { t } = useI18n()
-// const user = useUserStore()
 const { message } = useMessage()
 const { width: windowWidth } = useWindowSize()
-
-// const name = $ref(user.savedName)
 // const router = useRouter()
 
 const pageSize: any = ref(5)
@@ -49,25 +47,23 @@ const getAddress = gql`
   query getAddress{
     getAddress
   }`
-const { data: dataAddress } = await useQuery({ query: getAddress })
-const allAddress = computed(() => dataAddress?.value?.getAddress || [])
 
 const getManyPlacesGql = gql`
-query GetManyPlaces($input: GetManyInput) {
-  getManyPlaces(input: $input) {
-    count
-    data {
-      id
-      name
-      address
-      user {
+  query GetManyPlaces($input: GetManyInput) {
+    getManyPlaces(input: $input) {
+      count
+      data {
         id
-        nickname
+        name
+        address
+        user {
+          id
+          nickname
+        }
       }
     }
-  }
-}`
-const columns = [
+  }`
+const columns = ref([
   {
     title: 'Name',
     dataIndex: 'name',
@@ -89,14 +85,18 @@ const columns = [
       sortDirections: ['ascend', 'descend'],
     },
     filterable: {
-      filters: allAddress.value.map(a => ({ text: a, value: a })),
+      filters: [],
     },
   },
   {
     title: 'Nickname',
     dataIndex: 'user.nickname',
   },
-]
+])
+useQuery({ query: getAddress }).executeQuery().then((res) => {
+  const columnFilterable = columns.value.find(c => c.dataIndex === 'address')?.filterable
+  columnFilterable && res.data?.value && (columnFilterable.filters = res.data?.value?.getAddress?.map(a => ({ text: a, value: a })))
+})
 useSubscription({ query: subscriptionListenForNewPlaceGql }, (__messages = [], response) => {
   if (response) {
     message.info({
@@ -144,7 +144,7 @@ function handleChange(__data, extra, __currentDataSource) {
     delete variables.input.where.address
   }
 }
-const { data, error, fetching } = await useQuery({ query: getManyPlacesGql, variables })
+const { data, error, fetching } = useQuery({ query: getManyPlacesGql, variables })
 const allPlaces = computed(() => data?.value?.getManyPlaces?.data || [])
 const total = computed(() => data?.value?.getManyPlaces?.count || 0)
 if (error.value) {
@@ -155,60 +155,50 @@ if (error.value) {
     duration: 2000,
   })
 }
+// await promiseTimeout(1200000)
 </script>
 
 <template>
-  <Suspense>
-    <!-- component with nested async dependencies -->
-    <div class="p-2 min-h-full flex flex-col">
-      <div class="mb-2 bg-white dark:bg-dark-950 shadow shadow-gray-200 dark:shadow-gray-900">
-        <a-breadcrumb class="p-2">
-          <a-breadcrumb-item>Home</a-breadcrumb-item>
-          <a-breadcrumb-item>List</a-breadcrumb-item>
-          <a-breadcrumb-item>App</a-breadcrumb-item>
-        </a-breadcrumb>
-      </div>
-      <div class="bg-white dark:bg-dark-950 p-2 min-h-full flex-1 shadow shadow-gray-200 dark:shadow-gray-900">
-        <p>
-          <em text-sm opacity-75>{{ t('intro.desc') }}</em>
-        </p>
-        <a-date-picker style="width: 200px;" />
+  <div class="p-2 min-h-full flex flex-col">
+    <div class="mb-2 bg-white dark:bg-dark-950 shadow shadow-gray-200 dark:shadow-gray-900">
+      <a-breadcrumb class="p-2">
+        <a-breadcrumb-item>Home</a-breadcrumb-item>
+        <a-breadcrumb-item>List</a-breadcrumb-item>
+        <a-breadcrumb-item>App</a-breadcrumb-item>
+      </a-breadcrumb>
+    </div>
+    <div class="bg-white dark:bg-dark-950 p-2 min-h-full flex-1 shadow shadow-gray-200 dark:shadow-gray-900">
+      <p>
+        <em text-sm opacity-75>{{ t('intro.desc') }}</em>
+      </p>
+      <a-date-picker style="width: 200px;" />
 
-        <div class="mt-1">
-          <a-table
-            size="medium" :scrollbar="false" :columns="columns"
-            :scroll="{ x: smAndSmaller ? (windowWidth + 200) : '100%', y: 900 }" :data="allPlaces" :loading="fetching"
-            :pagination="{ total, pageSize, showPageSize: true, pageSizeOptions: [5, 10, 20] }"
-            @page-size-change="(val) => { pageSize = val; variables.input.pagination.size = val }" @change="handleChange"
-          >
-            <template #name-filter="{ filterValue, setFilterValue, handleFilterConfirm, handleFilterReset }">
-              <div class="custom-filter bg-white dark:bg-zinc-900 p-2 shadow border dark:border-zinc-950">
-                <a-space direction="vertical">
-                  <a-input size="small" :model-value="filterValue[0]" @input="(value) => setFilterValue([value])" />
-                  <div class="custom-filter-footer flex justify-between">
-                    <a-button size="mini" type="primary" @click="handleFilterConfirm">
-                      Confirm
-                    </a-button>
-                    <a-button size="mini" @click="handleFilterReset">
-                      Reset
-                    </a-button>
-                  </div>
-                </a-space>
-              </div>
-            </template>
-          </a-table>
-        </div>
+      <div class="mt-1">
+        <a-table
+          size="medium" :scrollbar="false" :columns="columns"
+          :scroll="{ x: smAndSmaller ? (windowWidth + 200) : '100%', y: 900 }" :data="allPlaces" :loading="fetching"
+          :pagination="{ total, pageSize, showPageSize: true, pageSizeOptions: [5, 10, 20] }"
+          @page-size-change="(val) => { pageSize = val; variables.input.pagination.size = val }" @change="handleChange"
+        >
+          <template #name-filter="{ filterValue, setFilterValue, handleFilterConfirm, handleFilterReset }">
+            <div class="custom-filter bg-white dark:bg-zinc-900 p-2 shadow border dark:border-zinc-950">
+              <a-space direction="vertical">
+                <a-input size="small" :model-value="filterValue[0]" @input="(value) => setFilterValue([value])" />
+                <div class="custom-filter-footer flex justify-between">
+                  <a-button size="mini" type="primary" @click="handleFilterConfirm">
+                    Confirm
+                  </a-button>
+                  <a-button size="mini" @click="handleFilterReset">
+                    Reset
+                  </a-button>
+                </div>
+              </a-space>
+            </div>
+          </template>
+        </a-table>
       </div>
     </div>
-    <template #fallback>
-      <span class="flex justify-center content-center h-screen">
-        <span class="m-auto">
-          <span class="mx-auto my-2 block w-8 h-8 i-line-md-loading-twotone-loop" />
-          Loading...
-        </span>
-      </span>
-    </template>
-  </Suspense>
+  </div>
 </template>
 
 <route lang="yaml">

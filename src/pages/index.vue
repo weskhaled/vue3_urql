@@ -34,7 +34,7 @@ const formContact = reactive({
 const sliders: Ref<any[]> = ref([
   {
     title: '1/2',
-    content: h('div', { class: 'text-left max-w-3xl ml-0' }, [h('h1', { class: 'font-bold text-2rem md:text-4rem leading-tight ![--animate-delay:0.1s] animate__animated animate__slideInDown' }, 'Hi, I’am Khaled. Proffesional Developer based on Paris 👋'), h('p', { class: 'text-4 ![--animate-delay:0.15s] animate__delay-2s animate__animated animate__backInUp' }, 'Expert customer support team is all around the globe, ready and excited to help.')]),
+    content: h('div', { class: 'text-left max-w-3xl ml-0' }, [h('h1', { class: 'font-bold text-2rem md:text-4rem leading-tight ![--animate-delay:0.1s] animate__animated animate__slideInDown' }, 'Hi, I’am Khaled. Full-Stack Js Developer based in Paris 👋'), h('p', { class: 'text-4 ![--animate-delay:0.15s] animate__delay-2s animate__animated animate__backInUp' }, 'Expert customer support team is all around the globe, ready and excited to help.')]),
     image: {
       screen: '/img/slider-1.jpg',
       thumb: '/img/slider-1.jpg',
@@ -160,26 +160,33 @@ onMounted(() => {
   myCaptcha.value = new JCaptcha({
     el: '.jCaptcha',
     canvasClass: 'jCaptchaCanvas',
+    requiredValue: '',
+    focusOnError: false,
+    resetOnError: true,
+    clearOnSubmit: false,
     canvasStyle: {
       // required properties for captcha stylings:
-      width: 100,
-      height: 15,
+      width: 70,
+      height: 18,
       textBaseline: 'top',
-      font: '15px Arial',
+      font: '18px Arial',
       textAlign: 'left',
       fillStyle: '#ddd',
     },
     // set callback function for success and error messages:
-    callback: (response, $captchaInputElement, numberOfTries) => {
-      if (response === 'success')
-        message.success('success')
+    callback: async (response, $captchaInputElement) => {
+      const closestParent = $captchaInputElement.parentNode.closest('.arco-form-item-wrapper-col')
+
+      if (response === 'success') {
+        closestParent.classList.remove('has-error')
+        const formErrors = await formContactRef.value.validate()
+        if (!formErrors)
+          message.success('success')
+      }
 
       if (response === 'error') {
+        closestParent.classList.add('has-error')
         message.error('error')
-
-        if (numberOfTries === 3) {
-          // maximum attempts handle, e.g. disable form
-        }
       }
     },
   })
@@ -359,7 +366,6 @@ function scrollTo(id: string) {
   sourceTransition.value = 0
 }
 function submitContact({ values, errors }) {
-  // console.log('values:', values, '\nerrors:', errors)
   myCaptcha.value.validate()
 }
 </script>
@@ -395,9 +401,9 @@ function submitContact({ values, errors }) {
             class="header-right"
             :class="(windowScrollY > 200) ? '[--primary-6:0,0,0] md:dark:[--primary-6:255,255,255]' : '[--primary-6:0,0,0] md:[--primary-6:0,0,0] dark:[--primary-6:255,255,255]'"
           >
-            <a-button class="!hover:bg-zinc-6/30" type="text" size="large" @click.stop="router.push('/auth/login')">
+            <a-button class="!hover:bg-zinc-6/30" type="text" size="large" @click.stop="async() => await router.push('/admin')">
               <template #icon>
-                <span class="w-5 h-5 mx-1 block text-lg i-line-md-account" />
+                <span class="w-5 h-5 mx-1 block text-lg i-carbon-user-avatar-filled-alt" />
               </template>
             </a-button>
 
@@ -411,7 +417,7 @@ function submitContact({ values, errors }) {
 
             <a-button
               class="!hover:bg-zinc-6/30 ml-2" type="text" size="large"
-              @click.stop="async () => sourceTransition = (sourceTransition === 100 ? 0 : 100)"
+              @click.stop="() => sourceTransition = (sourceTransition === 100 ? 0 : 100)"
             >
               <template #icon>
                 <span :class="sourceTransition === 100 ? 'i-line-md-menu-to-close-transition' : 'i-line-md-grid-3'" class="w-5 h-5 mx-1 block text-lg" />
@@ -461,7 +467,7 @@ function submitContact({ values, errors }) {
             <a
               href="javascript:;"
               :class="[outputTransition === 100 ? 'animate__animated animate__fadeInLeft animate__delay-1s opacity-100' : '![--animate-delay:0.25s] animate__delay-1s duration-0.1s animate__animated animate__fadeOutUp opacity-0']"
-              class="![--animate-delay:0.25s]" @click.prevent="router.push('/auth/login')"
+              class="![--animate-delay:0.25s]" @click.prevent="async() => await router.push('/admin')"
             >
               <span>
                 Admin
@@ -1080,14 +1086,19 @@ function submitContact({ values, errors }) {
                       >
                         <a-input v-model="formContact.email" placeholder="xyz@abc.com" />
                       </a-form-item>
-                      <a-form-item label="captcha:" :rules="[{ required: true, message: 'captcha is required' }, { type: 'number', message: 'must be a valid number' }]">
-                        <div class="[&>.jCaptchaCanvas]:w-85px [&>.jCaptchaCanvas]:mt-0.65 flex items-center bg-black pl-4 w-full">
-                          <input class="jCaptcha flex-1 border-none rounded-0 px-2 py-2 bg-zinc-2 dark:bg-zinc-8 dark:text-light-2 text-black focus:ring-0 focus-visible:ring-0 focus-visible:outline-0 active:ring-0" type="text" placeholder="Type in result please">
+                      <a-form-item label="captcha:" :rules="[{ required: true }]">
+                        <div class="arco-col arco-form-item-wrapper-col [&.has-error>.arco-form-item-message]:block">
+                          <div class="w-full [&>.jCaptchaCanvas]:w-85px [&>.jCaptchaCanvas]:mt-0.65 flex items-center bg-black/80 rounded-2px pl-4 w-full">
+                            <input class="jCaptcha flex-1 rounded-0 px-2 py-1.2 bg-zinc-2 dark:bg-zinc-1/20 dark:text-light-2 text-black focus:ring-0 focus-visible:ring-0 focus-visible:outline-0 active:ring-0 border-solid border border-transparent focus:border-l-transparent focus:border-blue-5 rounded-r-2px" type="text" placeholder="Type in result please">
+                          </div>
+                          <div role="alert" class="hidden arco-form-item-message">
+                            captcha is not correct
+                          </div>
                         </div>
                       </a-form-item>
                       <a-form-item>
                         <div flex w-full justify-end>
-                          <a-button mr-3 @click="formContactRef.resetFields()">
+                          <a-button mr-3 @click="(formContactRef.resetFields(), myCaptcha.reset())">
                             Reset
                           </a-button>
                           <a-button type="primary" html-type="submit" class="group">

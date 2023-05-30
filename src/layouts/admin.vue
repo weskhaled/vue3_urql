@@ -38,9 +38,21 @@ error.value && (message.error('Error', `${error.value}`))
         <AdminLayoutHeader />
       </a-layout-header>
       <a-layout class="flex flex-col min-h-[calc(100vh-3.625rem)] ml-0 !mt-14.5 transition-margin" :class="[sideFixed ? (smAndSmaller ? '!ml-12' : '!ml-60') : '!ml-12']">
-        <a-layout-content class="grow-1">
-          <RouterView />
-        </a-layout-content>
+        <Suspense>
+          <a-layout-content class="grow-1">
+            <RouterView />
+          </a-layout-content>
+          <template #fallback>
+            <div class="p-4 grow-1">
+              <a-skeleton :animation="true">
+                <a-space direction="vertical" :style="{ width: '100%' }" size="large">
+                  <a-skeleton-line :rows="5" />
+                  <a-skeleton-shape />
+                </a-space>
+              </a-skeleton>
+            </div>
+          </template>
+        </Suspense>
         <a-layout-footer class="grow-0">
           <AdminLayoutFooter />
         </a-layout-footer>

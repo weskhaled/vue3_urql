@@ -5,6 +5,7 @@ import { currentUser, refreshToken, sideFixed, token, userLang } from '~/common/
 // const { t } = useI18n()
 const router = useRouter()
 const { message } = useMessage()
+const { isFullscreen, enter, exit, toggle: toggleFullscreen } = useFullscreen()
 
 async function logout() {
   token.value = null
@@ -69,17 +70,17 @@ async function logout() {
           <span i-carbon-link />
         </template>
       </a-button>
-      <a-button shape="circle" class="" size="small" type="text">
+      <a-button shape="circle" class="" size="small" type="text" @click.stop="async() => await toggleFullscreen()">
         <template #icon>
-          <span i-carbon-grid />
+          <span :class="[isFullscreen ? 'i-carbon-screen' : 'i-carbon-center-to-fit']" />
         </template>
       </a-button>
     </div>
-    <div class="grow-1 flex header-menu justify-between">
+    <div class="grow-1 flex header-menu justify-end md:justify-between">
       <div class="hidden md:flex items-center px-2">
         <a-button class="px-2 hover:[--color-fill-2:transparent]" size="medium" type="text">
-          <span i-carbon-search class="mr-1" />
-          <span text-xs>
+          <span i-carbon-search class="" />
+          <span hidden lg:block lg:ml-1 text-xs>
             Type anywhere to <span font-semibold> Search</span>
           </span>
         </a-button>
