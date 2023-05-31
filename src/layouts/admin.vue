@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { gql, useQuery } from '@urql/vue'
 import { UseDraggable as Draggable } from '@vueuse/components'
-import { currentUser, isAuthenticated, sideFixed, smAndSmaller } from '~/common/stores'
+import { currentUser, isAuthenticated, layoutBoxed, sideFixed, smAndSmaller } from '~/common/stores'
 
 // const { t } = useI18n()
 const router = useRouter()
@@ -31,71 +31,73 @@ error.value && (message.error('Error', `${error.value}`))
 </script>
 
 <template>
-  <a-layout class="font-sans relative !arco-theme-1">
-    <AdminLayoutSider />
-    <a-layout>
-      <a-layout-header class="z-99 backdrop-blur backdrop-filter bg-white/65 dark:bg-black/65 fixed w-full">
-        <AdminLayoutHeader />
-      </a-layout-header>
-      <a-layout class="flex flex-col min-h-[calc(100vh-3.625rem)] ml-0 !mt-14.5 transition-margin" :class="[sideFixed ? (smAndSmaller ? '!md:ml-12' : '!md:ml-60') : '!md:ml-12']">
-        <Suspense>
-          <a-layout-content class="grow-1">
-            <RouterView />
-          </a-layout-content>
-          <template #fallback>
-            <div class="p-4 grow-1">
-              <a-skeleton :animation="true">
-                <a-space direction="vertical" :style="{ width: '100%' }" size="large">
-                  <a-skeleton-line :rows="5" />
-                  <a-skeleton-shape />
-                </a-space>
-              </a-skeleton>
-            </div>
-          </template>
-        </Suspense>
-        <a-layout-footer class="grow-0">
-          <AdminLayoutFooter />
-        </a-layout-footer>
+  <div class="shadow-slate-2/25 dark:shadow-slate-8/25 shadow-md bg-white dark:bg-black 5xl:container mx-auto transition-width" :class="[layoutBoxed ? 'md:container' : 'w-full']">
+    <a-layout class="font-sans relative !arco-theme-1">
+      <AdminLayoutSider />
+      <a-layout>
+        <a-layout-header class="z-99 backdrop-blur backdrop-filter bg-white/65 dark:bg-black/65 fixed 5xl:container mx-auto w-full" :class="[layoutBoxed ? 'md:container' : 'w-full']">
+          <AdminLayoutHeader />
+        </a-layout-header>
+        <a-layout class="flex flex-col min-h-[calc(100vh-3.625rem)] ml-0 !mt-14.5 transition-margin" :class="[sideFixed ? (smAndSmaller ? '!md:ml-12' : '!md:ml-60') : '!md:ml-12']">
+          <Suspense>
+            <a-layout-content class="grow-1">
+              <RouterView />
+            </a-layout-content>
+            <template #fallback>
+              <div class="p-4 grow-1">
+                <a-skeleton :animation="true">
+                  <a-space direction="vertical" :style="{ width: '100%' }" size="large">
+                    <a-skeleton-line :rows="5" />
+                    <a-skeleton-shape />
+                  </a-space>
+                </a-skeleton>
+              </div>
+            </template>
+          </Suspense>
+          <a-layout-footer class="grow-0">
+            <AdminLayoutFooter />
+          </a-layout-footer>
+        </a-layout>
       </a-layout>
-    </a-layout>
 
-    <a-trigger v-model:popupVisible="popupVisible" :trigger="['click', 'hover']" position="top" class="!dark:[--color-fill-2:black]">
-      <Draggable
-        storage-key="vueuse-draggable" storage-type="session"
-        class="fixed h-42px w-40px z-105" :initial-value="{ x: windowWidth - 150, y: windowHeight - 150 }" :prevent-default="true"
-        :handle="handle"
-      >
-        <div ref="handle">
-          <span class="text-10px cursor-grab active:cursor-grabbing absolute z-102 top--5px left--5px w-5 h-5 rounded-full text-light-50 flex items-center justify-center bg-blue-700">
-            <IconDragArrow />
-          </span>
-        </div>
-        <div :class="`button-trigger ${popupVisible ? 'button-trigger-active' : ''}`">
-          <span v-if="popupVisible" i-carbon-close />
-          <span v-else i-carbon-overflow-menu-vertical />
-        </div>
-      </Draggable>
-      <template #content>
-        <a-menu
-          :style="{ marginBottom: '-2px' }" mode="popButton" :tooltip-props="{ mini: true, position: 'left' }"
-          show-collapse-button
+      <a-trigger v-model:popupVisible="popupVisible" :trigger="['click', 'hover']" position="top" class="!dark:[--color-fill-2:black]">
+        <Draggable
+          storage-key="vueuse-draggable" storage-type="session"
+          class="fixed h-42px w-40px z-105" :initial-value="{ x: windowWidth - 150, y: windowHeight - 150 }" :prevent-default="true"
+          :handle="handle"
         >
-          <a-menu-item key="1">
-            <template #icon>
-              <IconBug />
-            </template>
-            Bugs
-          </a-menu-item>
-          <a-menu-item key="2">
-            <template #icon>
-              <IconBulb />
-            </template>
-            Ideas
-          </a-menu-item>
-        </a-menu>
-      </template>
-    </a-trigger>
-  </a-layout>
+          <div ref="handle">
+            <span class="text-10px cursor-grab active:cursor-grabbing absolute z-102 top--5px left--5px w-5 h-5 rounded-full text-light-50 flex items-center justify-center bg-blue-700">
+              <IconDragArrow />
+            </span>
+          </div>
+          <div :class="`button-trigger ${popupVisible ? 'button-trigger-active' : ''}`">
+            <span v-if="popupVisible" i-carbon-close />
+            <span v-else i-carbon-overflow-menu-vertical />
+          </div>
+        </Draggable>
+        <template #content>
+          <a-menu
+            :style="{ marginBottom: '-2px' }" mode="popButton" :tooltip-props="{ mini: true, position: 'left' }"
+            show-collapse-button
+          >
+            <a-menu-item key="1">
+              <template #icon>
+                <IconBug />
+              </template>
+              Bugs
+            </a-menu-item>
+            <a-menu-item key="2">
+              <template #icon>
+                <IconBulb />
+              </template>
+              Ideas
+            </a-menu-item>
+          </a-menu>
+        </template>
+      </a-trigger>
+    </a-layout>
+  </div>
 </template>
 
 <style lang="less" scoped>

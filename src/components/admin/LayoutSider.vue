@@ -3,7 +3,7 @@ import { vOnClickOutside } from '@vueuse/components'
 import { MenuItem, SubMenu } from '@arco-design/web-vue'
 import { isDark } from '~/composables/dark'
 // import '@arco-design/web-vue/es/menu-item/style/css.js'
-import { mdAndLarger, mdAndSmaller, menuItems, sideCollapsed, sideFixed, sideHidden, smAndSmaller } from '~/common/stores'
+import { layoutBoxed, mdAndLarger, mdAndSmaller, menuItems, sideCollapsed, sideFixed, sideHidden, smAndSmaller } from '~/common/stores'
 import generatedRoutes from '~pages'
 
 // const { t } = useI18n()
@@ -31,7 +31,7 @@ onMounted(() => {
 })
 watch(mdAndSmaller, (val) => {
   val && (sideCollapsed.value = false)
-})
+}, { immediate: true })
 </script>
 
 <template>
@@ -40,7 +40,7 @@ watch(mdAndSmaller, (val) => {
     hide-trigger
     :theme="isDark ? 'dark' : 'light'" :width="sideFixed ? 240 : 260" collapsible :default-collapsed="sideCollapsed"
     :collapsed="sideCollapsed" :class="[sideFixed ? (smAndSmaller ? '!fixed' : '!fixed') : '!fixed', sideHidden ? 'translate-x--100%' : 'translate-x-0']"
-    class="z-100 !transition-all !md:translate-x-0 !duration-320 [--color-menu-light-bg:#fafafa] [--color-menu-dark-bg:#010101] border-r border-zinc-3/30 dark:border-dark-2/65 !shadow-sm [&>.arco-layout-sider-children]:overflow-hidden"
+    class="z-101 !transition-transform-250 !md:transition-width-150 !md:translate-x-0 [--color-menu-light-bg:rgba(255,255,255,1)] [--color-menu-dark-bg:rgba(0,0,0,1)] border-r border-slate-3/30 dark:border-slate-6/30 !shadow-sm [&>.arco-layout-sider-children]:overflow-hidden"
     @mouseenter="() => mdAndLarger && (sideCollapsed = false)"
     @mouseleave="() => mdAndLarger && !sideFixed && ((sideCollapsed = true) && (visibleDrawer = false))"
   >
@@ -81,7 +81,7 @@ watch(mdAndSmaller, (val) => {
         </div>
       </div>
     </div>
-    <div id="parentNode" relative z-1>
+    <div id="parentNode" relative z-1 backdrop-blur>
       <a-menu
         :default-open-keys="openKeySider"
         :default-selected-keys="selectedKeysSider"
@@ -125,10 +125,16 @@ watch(mdAndSmaller, (val) => {
     <div p-2>
       <div class="grid grid-flow-col grid-rows-2 grid-cols-3 gap-1">
         <div>
-          <div class="h-full flex items-center min-h-18 justify-center bg-slate">
-            <a-button size="mini" type="primary" shape="circle">
-              <icon-plus />
-            </a-button>
+          <div class="h-full flex items-center flex-col text-center min-h-18 justify-center bg-slate-5/10">
+            <span leading-4 text-xs mb-2>Boxed layout</span>
+            <a-switch v-model:model-value="layoutBoxed" checked-color="rgb(var(--primary-6))" unchecked-color="rgb(var(--primary-6))" size="small">
+              <template #checked-icon>
+                <icon-check />
+              </template>
+              <template #unchecked-icon>
+                <icon-close />
+              </template>
+            </a-switch>
           </div>
         </div>
         <div class="col-start-2">
@@ -155,6 +161,7 @@ watch(mdAndSmaller, (val) => {
       </div>
     </div>
   </a-drawer>
+  <div class="fixed block md:hidden w-screen h-screen top-0 z-100 bg-black/70 transition-all" :class="[sideHidden ? 'invisible opacity-0 pointer-events-none' : 'visible opacity-100']" />
 </template>
 
 <style scoped lang="less">

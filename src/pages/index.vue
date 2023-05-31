@@ -470,7 +470,7 @@ function submitContact({ values, errors }) {
               class="![--animate-delay:0.25s]" @click.prevent="async() => await router.push('/auth/login')"
             >
               <span>
-                Login
+                {{ isAuthenticated ? 'Admin' : 'Login' }}
               </span>
             </a>
           </nav>
@@ -1116,7 +1116,7 @@ function submitContact({ values, errors }) {
             </div>
           </div>
         </div>
-        <div ref="mapRef" class="h-80vh min-h-2xl w-full relative z-1" />
+        <div ref="mapRef" class="h-100vh min-h-2xl w-full relative z-1" />
       </section>
       <footer block pb-0px>
         <div class="footer-container py-6 relative z-1 bg-light-2 dark:bg-dark-8">

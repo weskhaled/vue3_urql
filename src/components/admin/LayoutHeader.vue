@@ -16,7 +16,7 @@ async function logout() {
 </script>
 
 <template>
-  <div class="flex items-center justify-between px-2 h-14.5 border-b border-zinc-3/30 dark:border-zinc-6/30 md:ml-12 [--primary-6:var(--gray-9)]">
+  <div class="flex items-center justify-between px-2 h-14.5 border-b border-zinc-3/30 dark:border-zinc-6/30 md:ml-12">
     <div class="grow-0 flex items-center transition-width duration-300" :class="[sideFixed ? 'w-[calc(11.5rem-1px)]' : 'w-55']">
       <div class="flex md:hidden w-12 h-full items-center justify-center ml--2">
         <a-button size="small" type="text" @click="() => (sideHidden = false)">
@@ -42,7 +42,7 @@ async function logout() {
         </span>
       </a>
     </div>
-    <div class="hidden md:flex items-center border-zinc-4/20 border-x px-2">
+    <div class="hidden md:flex items-center border-zinc-4/20 border-x px-2 [--primary-6:var(--gray-9)]">
       <a-badge :count="9" dot :offset="[-22, 5]" class="[&>.arco-badge-custom-dot]:overflow-visible">
         <template #content>
           <span class="block h-1.5 w-1.5 pointer-events-none rounded-full bg-green-500 relative shadow-[0_0_0_1px_var(--color-bg-2)]">
@@ -79,11 +79,11 @@ async function logout() {
       </a-button>
       <a-button shape="circle" class="" size="small" type="text" @click.stop="async() => await toggleFullscreen()">
         <template #icon>
-          <span :class="[isFullscreen ? 'i-carbon-screen' : 'i-carbon-center-to-fit']" />
+          <span :class="[isFullscreen ? 'i-carbon-minimize' : 'i-carbon-center-to-fit']" />
         </template>
       </a-button>
     </div>
-    <div class="grow-1 flex header-menu justify-end md:justify-between">
+    <div class="grow-1 flex header-menu justify-end md:justify-between [--primary-6:var(--gray-9)]">
       <div class="hidden md:flex items-center px-2">
         <a-button class="px-2 hover:[--color-fill-2:transparent]" size="medium" type="text">
           <span i-carbon-search class="" />

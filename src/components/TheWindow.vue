@@ -57,7 +57,7 @@ function handleDelete(key) {
               <a-tab-pane v-for="(item, index) of data" :key="item.key" :title="item.title" :closable="index !== 2">
                 <UseElementSize v-slot="{ height }">
                   <div class="bg-white text-black dark:text-white dark:bg-zinc-900 pt-0 h-280px md:h-350px">
-                    <CommonCodeMirror
+                    <CommonCodeMirrorCodeMirror
                       v-model="item.content" :mode="item.lang || 'text'" class="relative"
                       :style="{ height: `${height}px` }"
                     />
