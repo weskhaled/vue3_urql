@@ -16,11 +16,11 @@ async function logout() {
 </script>
 
 <template>
-  <div class="flex items-center justify-between px-2 h-14.5 border-b border-zinc-3/30 dark:border-zinc-6/30 ml-12">
+  <div class="flex items-center justify-between px-2 h-14.5 border-b border-zinc-3/30 dark:border-zinc-6/30 ml-12 [--primary-6:var(--gray-9)]">
     <div class="grow-0 flex items-center transition-width duration-300" :class="[sideFixed ? 'w-[calc(11.5rem-1px)]' : 'w-55']">
       <a href="" class="" @click.prevent="router.push('/')">
         <span
-          class="tracking-tight inline-block text-4/5 border-2px uppercase border-black dark:border-white font-semibold py-1 px-2"
+          class="tracking-tight inline-block text-4/5 border-2px uppercase border-blue-5 dark:border-blue-5 text-blue-5 dark:text-blue-5 font-semibold py-1 px-2"
         >
           <span class="hidden sm:inline-block">
             <span class="font-light mr--1.3">

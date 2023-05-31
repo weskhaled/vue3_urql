@@ -34,7 +34,7 @@ error.value && (message.error('Error', `${error.value}`))
   <a-layout class="font-sans relative !arco-theme-1">
     <AdminLayoutSider />
     <a-layout>
-      <a-layout-header class="z-99 backdrop-blur backdrop-filter bg-white/75 dark:bg-black/55 fixed w-full">
+      <a-layout-header class="z-99 backdrop-blur backdrop-filter bg-white/65 dark:bg-black/65 fixed w-full">
         <AdminLayoutHeader />
       </a-layout-header>
       <a-layout class="flex flex-col min-h-[calc(100vh-3.625rem)] ml-0 !mt-14.5 transition-margin" :class="[sideFixed ? (smAndSmaller ? '!ml-12' : '!ml-60') : '!ml-12']">
@@ -59,7 +59,7 @@ error.value && (message.error('Error', `${error.value}`))
       </a-layout>
     </a-layout>
 
-    <a-trigger v-model:popupVisible="popupVisible" :trigger="['click', 'hover']" position="top">
+    <a-trigger v-model:popupVisible="popupVisible" :trigger="['click', 'hover']" position="top" class="!dark:[--color-fill-2:black]">
       <Draggable
         storage-key="vueuse-draggable" storage-type="session"
         class="fixed h-42px w-40px z-105" :initial-value="{ x: windowWidth - 150, y: windowHeight - 150 }" :prevent-default="true"
@@ -71,8 +71,8 @@ error.value && (message.error('Error', `${error.value}`))
           </span>
         </div>
         <div :class="`button-trigger ${popupVisible ? 'button-trigger-active' : ''}`">
-          <IconClose v-if="popupVisible" />
-          <IconMessage v-else />
+          <span v-if="popupVisible" i-carbon-close />
+          <span v-else i-carbon-overflow-menu-vertical />
         </div>
       </Draggable>
       <template #content>

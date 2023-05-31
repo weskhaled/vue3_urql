@@ -7,7 +7,7 @@ import Typed from 'typed.js'
 import JCaptcha from 'js-captcha'
 import { vIntersectionObserver, vOnClickOutside } from '@vueuse/components'
 import { FreeMode, Mousewheel, Scrollbar } from 'swiper'
-import { mdAndLarger } from '~/common/stores'
+import { isAuthenticated, mdAndLarger } from '~/common/stores'
 import { useIsotope } from '~/composables/isotope'
 import 'swiper/css/scrollbar'
 import TheWindow from '~/components/TheWindow.vue'
@@ -401,7 +401,7 @@ function submitContact({ values, errors }) {
             class="header-right"
             :class="(windowScrollY > 200) ? '[--primary-6:0,0,0] md:dark:[--primary-6:255,255,255]' : '[--primary-6:0,0,0] md:[--primary-6:0,0,0] dark:[--primary-6:255,255,255]'"
           >
-            <a-button class="!hover:bg-zinc-6/30" type="text" size="large" @click.stop="async() => await router.push('/admin')">
+            <a-button v-if="isAuthenticated" class="!hover:bg-zinc-6/30" type="text" size="large" @click.stop="async() => await router.push('/admin')">
               <template #icon>
                 <span class="w-5 h-5 mx-1 block text-lg i-carbon-user-avatar-filled-alt" />
               </template>
@@ -467,10 +467,10 @@ function submitContact({ values, errors }) {
             <a
               href="javascript:;"
               :class="[outputTransition === 100 ? 'animate__animated animate__fadeInLeft animate__delay-1s opacity-100' : '![--animate-delay:0.25s] animate__delay-1s duration-0.1s animate__animated animate__fadeOutUp opacity-0']"
-              class="![--animate-delay:0.25s]" @click.prevent="async() => await router.push('/admin')"
+              class="![--animate-delay:0.25s]" @click.prevent="async() => await router.push('/auth/login')"
             >
               <span>
-                Admin
+                Login
               </span>
             </a>
           </nav>
