@@ -22,7 +22,7 @@
 const sliders: Ref<any[]> = ref([
   {
     title: '1/2',
-    content: h('div', { class: 'text-left max-w-3xl pt-14.5 mt-6' }, [h('p', { class: 'text-4 ![--animate-delay:0.15s] animate__delay-1s animate__animated animate__fadeInUp' }, 'This is just a cover'), h('h1', { class: 'mb-2 font-bold text-lg md:text-3rem leading-tight ![--animate-delay:0.1s] animate__delay-2s animate__animated animate__slideInUp' }, 'Welcome to the Admin')]),
+    content: h('div', { class: 'text-left max-w-3xl pt-14.5 mt-6' }, [h('p', { class: 'text-4 ![--animate-delay:0.15s] animate__delay-1s animate__animated animate__fadeInUp' }, 'This is just a cover'), h('h1', { class: 'mb-2 font-bold text-lg md:text-2xl leading-tight ![--animate-delay:0.1s] animate__delay-2s animate__animated animate__slideInUp' }, 'Welcome to Page Test')]),
     image: {
       screen: 'https://images.unsplash.com/photo-1645747103867-0669a7eff310?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80',
       screenDark: 'https://images.unsplash.com/photo-1649778457108-4e9a88b5d726?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80',
@@ -82,7 +82,7 @@ const sliders: Ref<any[]> = ref([
       </div>
     </main>
   </div>
-  <div relative h-180 flex items-center>
+  <div relative h-180 flex items-center mb--10.25>
     <div container px-4 mx-auto relative z-1 text-center>
       <div class="relative inline-block px-6 py-4 bg-zinc-9/1 dark:bg-zinc-1/1 backdrop-blur backdrop-filter border border-zinc-4/20">
         <div
@@ -94,7 +94,7 @@ const sliders: Ref<any[]> = ref([
           <span i-carbon-ibm-watson-machine-learning block text-white text-sm m-auto leading-8 class="icon-shadow" />
         </button>
         <h2
-          class="text-2xl/10 md:text-8xl/30 inline font-extrabold capitalize fill-transparent bg-gradient-to-r from-slate-7 dark:from-slate-1 to-purple-4 dark:to-purple-1 bg-clip-text"
+          class="text-2xl/10 md:text-5xl/20 inline font-extrabold capitalize fill-transparent bg-gradient-to-r from-slate-7 dark:from-slate-1 to-purple-4 dark:to-purple-1 bg-clip-text"
           style="-webkit-text-fill-color: transparent;"
         >
           think big <span font-thin>
@@ -103,7 +103,11 @@ const sliders: Ref<any[]> = ref([
         </h2>
       </div>
     </div>
-    <div class="h-full pointer-events-none w-full absolute top-0 bg-black right-0 bg-cover mix-blend-multiply dark:mix-blend-lighten dark:bg-top-center opacity-85 dark:rotate-180 bg-top-center bg-[url(https://images.unsplash.com/photo-1470016342826-876ea880d0be?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80)] dark:bg-[url(https://images.unsplash.com/photo-1485673634125-0f3ae8fd3209?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80)]" />
+    <div
+      class="h-full pointer-events-none w-full absolute top-0 bg-black right-0 bg-cover mix-blend-multiply dark:mix-blend-lighten opacity-85 dark:rotate-180 bg-top-center
+    bg-[url(https://images.unsplash.com/photo-1470016342826-876ea880d0be?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80)]
+    dark:bg-[url(https://images.unsplash.com/photo-1485673634125-0f3ae8fd3209?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80)]"
+    />
   </div>
 </template>
 

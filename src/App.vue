@@ -46,7 +46,7 @@ watch(userLang, async (val) => {
       <RouterView />
     </a-config-provider>
     <template #fallback>
-      <span class="flex justify-center content-center h-screen">
+      <span class="flex justify-center content-center h-screen bg-light/55 dark:bg-dark/55">
         <span class="m-auto">
           <span class="mx-auto my-2 block w-8 h-8 i-line-md-loading-twotone-loop" />
           Loading...

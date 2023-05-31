@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import HeaderTitle from '~/components/common/HeaderTitle.vue'
 // import { mdAndLarger, smAndSmaller } from '~/common/stores'
 // definePage({
 //   name: 'adminSocial',
@@ -23,7 +22,7 @@ import HeaderTitle from '~/components/common/HeaderTitle.vue'
 const sliders: Ref<any[]> = ref([
   {
     title: '1/2',
-    content: h('div', { class: 'py-6 pb-2 text-left mt-14.5 ![--animate-delay:0.1s] animate__delay-2s animate__animated animate__slideInUp' }, [h(HeaderTitle, { class: '' })]),
+    content: h('div', { class: 'text-left max-w-3xl pt-14.5 mt-6' }, [h('p', { class: 'text-4 ![--animate-delay:0.15s] animate__delay-1s animate__animated animate__fadeInUp' }, 'This is just a cover'), h('h1', { class: 'mb-2 font-bold text-lg md:text-2xl leading-tight ![--animate-delay:0.1s] animate__delay-2s animate__animated animate__slideInUp' }, 'Welcome to page Social')]),
     image: {
       screen: 'https://images.unsplash.com/photo-1645747103867-0669a7eff310?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80',
       screenDark: 'https://images.unsplash.com/photo-1649778457108-4e9a88b5d726?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80',

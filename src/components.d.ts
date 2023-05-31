@@ -58,6 +58,7 @@ declare module '@vue/runtime-core' {
     ATrigger: typeof import('@arco-design/web-vue')['Trigger']
     CommonCodeMirrorCodeMirror: typeof import('./components/common/CodeMirror/CodeMirror.vue')['default']
     CommonHeaderTitle: typeof import('./components/common/HeaderTitle.vue')['default']
+    CommonPageHeader: typeof import('./components/common/PageHeader.vue')['default']
     HeroSlider: typeof import('./components/HeroSlider.vue')['default']
     IconBug: typeof import('@arco-design/web-vue/es/icon')['IconBug']
     IconBulb: typeof import('@arco-design/web-vue/es/icon')['IconBulb']

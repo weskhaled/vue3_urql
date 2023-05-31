@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { gql, useQuery } from '@urql/vue'
 import { UseDraggable as Draggable } from '@vueuse/components'
+// import { promiseTimeout } from '@vueuse/core'
 import { currentUser, isAuthenticated, layoutBoxed, sideFixed, smAndSmaller } from '~/common/stores'
 
 // const { t } = useI18n()
@@ -28,6 +29,7 @@ const { data, error } = await useQuery({
 })
 data.value && (currentUser.value = data.value.me)
 error.value && (message.error('Error', `${error.value}`))
+// await promiseTimeout(120000)
 </script>
 
 <template>
@@ -35,25 +37,13 @@ error.value && (message.error('Error', `${error.value}`))
     <a-layout class="font-sans relative !arco-theme-1">
       <AdminLayoutSider />
       <a-layout>
-        <a-layout-header class="z-99 backdrop-blur backdrop-filter bg-white/65 dark:bg-black/65 fixed 5xl:container mx-auto w-full" :class="[layoutBoxed ? 'md:container' : 'w-full']">
+        <a-layout-header class="z-99 backdrop-blur backdrop-filter bg-white/75 dark:bg-black/75 fixed 5xl:container mx-auto w-full" :class="[layoutBoxed ? 'md:container' : 'w-full']">
           <AdminLayoutHeader />
         </a-layout-header>
         <a-layout class="flex flex-col min-h-[calc(100vh-3.625rem)] ml-0 !mt-14.5 transition-margin" :class="[sideFixed ? (smAndSmaller ? '!md:ml-12' : '!md:ml-60') : '!md:ml-12']">
-          <Suspense>
-            <a-layout-content class="grow-1">
-              <RouterView />
-            </a-layout-content>
-            <template #fallback>
-              <div class="p-4 grow-1">
-                <a-skeleton :animation="true">
-                  <a-space direction="vertical" :style="{ width: '100%' }" size="large">
-                    <a-skeleton-line :rows="5" />
-                    <a-skeleton-shape />
-                  </a-space>
-                </a-skeleton>
-              </div>
-            </template>
-          </Suspense>
+          <a-layout-content class="grow-1">
+            <RouterView />
+          </a-layout-content>
           <a-layout-footer class="grow-0">
             <AdminLayoutFooter />
           </a-layout-footer>

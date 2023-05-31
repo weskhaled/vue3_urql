@@ -5,7 +5,7 @@ const formatted = useDateFormat(useNow(), 'YYYY')
 </script>
 
 <template>
-  <nav text-xl text-center border-t-1px dark:border-zinc-8 p-2 flex items-center justify-between bg-white dark:bg-dark-8 class="border-zinc-4/30">
+  <nav text-xl text-center border-t-1px p-2 flex items-center justify-between relative z-2 backdrop-blur-2px class="dark:bg-dark-8/75 bg-white/75 border-zinc-2/40 dark:border-zinc-8/60">
     <a-button type="outline" size="mini">
       <span class="flex items-center">
         <span class="w-3 h-3 mr-1 inline-block i-carbon-favorite-filled" />
