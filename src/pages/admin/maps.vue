@@ -40,7 +40,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <section class="mt--14.5 h-[calc(100vh-2.8rem)] relative overflow-hidden">
+  <section class="mt--14.5 h-[calc(100vh-2.5rem)] relative overflow-hidden">
     <div class="absolute top-0 w-full h-full z-2 pointer-events-none shadow-zinc-6/40 dark:shadow-zinc-1/40 shadow-[inset_0_8px_8px_-8px_var(--un-shadow-color),inset_0_-8px_8px_-8px_var(--un-shadow-color)]" />
     <div id="maps" ref="mapRef" class="h-full z-1" />
   </section>

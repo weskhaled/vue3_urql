@@ -20,10 +20,12 @@ export const refreshToken: Ref<string | null> = useStorage('refreshToken', null)
 export const isAuthenticated = computed(() => token.value && token.value?.length && refreshToken.value && refreshToken.value?.length)
 export const currentUser: Ref<any | null> = ref(null)
 export const sideCollapsed: Ref<boolean> = useStorage('side-collapsed', false)
+export const sideHidden: Ref<boolean> = useStorage('side-hidden', true)
 export const sideFixed: Ref<boolean> = useStorage('side-fixed', false)
 export const breakpoints = useBreakpoints(breakpointsTailwind)
 export const mdAndLarger = breakpoints.greaterOrEqual('md')
 export const smAndSmaller = breakpoints.smallerOrEqual('sm')
+export const mdAndSmaller = breakpoints.smallerOrEqual('md')
 // export const adminSidebarMenu: Ref<any[]> = ref(generatedRoutes.filter(route => route.meta?.adminSidebar).map(r => r?.meta?.adminSidebar).sort((a, b) => a.order - b.order))
 export const menuItems = computed(() => {
   const groupedMenu = generatedRoutes.filter(r => r.meta?.adminSidebar).map(r => ({ routeName: r.name, requiresAuth: r.meta?.requiresAuth, path: r.path, ...r.meta?.adminSidebar })).reduce((result, currentValue) => {

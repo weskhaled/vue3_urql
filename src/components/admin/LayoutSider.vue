@@ -3,7 +3,7 @@ import { vOnClickOutside } from '@vueuse/components'
 import { MenuItem, SubMenu } from '@arco-design/web-vue'
 import { isDark } from '~/composables/dark'
 // import '@arco-design/web-vue/es/menu-item/style/css.js'
-import { mdAndLarger, menuItems, sideCollapsed, sideFixed, smAndSmaller } from '~/common/stores'
+import { mdAndLarger, mdAndSmaller, menuItems, sideCollapsed, sideFixed, sideHidden, smAndSmaller } from '~/common/stores'
 import generatedRoutes from '~pages'
 
 // const { t } = useI18n()
@@ -29,16 +29,20 @@ onMounted(() => {
   activeMenu && selectedKeysSider.value.push(`${activeMenu}`)
   openedMenu && openKeySider.value.push(`/${openedMenu}`)
 })
+watch(mdAndSmaller, (val) => {
+  val && (sideCollapsed.value = false)
+})
 </script>
 
 <template>
   <a-layout-sider
-    v-on-click-outside="() => smAndSmaller && ((sideCollapsed = true) && (visibleDrawer = false))"
+    v-on-click-outside="() => sideHidden = true"
     hide-trigger
     :theme="isDark ? 'dark' : 'light'" :width="sideFixed ? 240 : 260" collapsible :default-collapsed="sideCollapsed"
-    :collapsed="sideCollapsed" :class="[sideFixed ? (smAndSmaller ? '!fixed' : '!fixed') : '!fixed']" class="z-100 !duration-450 [--color-menu-light-bg:#fafafa] [--color-menu-dark-bg:#010101] border-r border-light-7 dark:border-dark-6 !shadow-sm [&>.arco-layout-sider-children]:overflow-hidden"
-    @mouseenter="() => !smAndSmaller && (sideCollapsed = false)"
-    @mouseleave="() => !sideFixed && ((sideCollapsed = true) && (visibleDrawer = false))"
+    :collapsed="sideCollapsed" :class="[sideFixed ? (smAndSmaller ? '!fixed' : '!fixed') : '!fixed', sideHidden ? 'translate-x--100%' : 'translate-x-0']"
+    class="z-100 !transition-all !md:translate-x-0 !duration-320 [--color-menu-light-bg:#fafafa] [--color-menu-dark-bg:#010101] border-r border-zinc-3/30 dark:border-dark-2/65 !shadow-sm [&>.arco-layout-sider-children]:overflow-hidden"
+    @mouseenter="() => mdAndLarger && (sideCollapsed = false)"
+    @mouseleave="() => mdAndLarger && !sideFixed && ((sideCollapsed = true) && (visibleDrawer = false))"
   >
     <div class="h-14.5 bg-zinc-1 relative dark:bg-dark-9 flex items-center justify-end border-b-1px border-zinc-5/10 dark:border-zinc-5/10 relative z-2">
       <div flex px-2.5 flex-1 justify-between :class="sideCollapsed && mdAndLarger && 'duration-300 translate-x--12'">
@@ -69,9 +73,9 @@ onMounted(() => {
               <span :class="[!sideFixed ? 'i-carbon-radio-button' : 'i-carbon-radio-button-checked']" />
             </template>
           </a-button>
-          <a-button class="block md:hidden" size="small" type="text" @click="() => (sideCollapsed = !sideCollapsed, (sideCollapsed && (visibleDrawer = false)))">
+          <a-button class="block md:hidden" size="small" type="text" @click="() => (sideHidden = true)">
             <template #icon>
-              <span :class="[!sideCollapsed ? 'i-carbon-side-panel-close-filled' : 'i-carbon-side-panel-open-filled']" />
+              <span class="i-line-md-menu-fold-left" />
             </template>
           </a-button>
         </div>

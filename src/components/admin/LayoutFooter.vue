@@ -12,7 +12,7 @@ const formatted = useDateFormat(useNow(), 'YYYY')
         designed with love
       </span>
     </a-button>
-    <span text-xs text-gray-500 leading-28px hidden sm:inline-block>
+    <span text-xs text-gray-500 leading-21px hidden sm:inline-block>
       Created by Weskhaled ⓒ Copyright {{ formatted }}
     </span>
   </nav>

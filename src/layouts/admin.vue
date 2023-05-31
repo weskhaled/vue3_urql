@@ -37,7 +37,7 @@ error.value && (message.error('Error', `${error.value}`))
       <a-layout-header class="z-99 backdrop-blur backdrop-filter bg-white/65 dark:bg-black/65 fixed w-full">
         <AdminLayoutHeader />
       </a-layout-header>
-      <a-layout class="flex flex-col min-h-[calc(100vh-3.625rem)] ml-0 !mt-14.5 transition-margin" :class="[sideFixed ? (smAndSmaller ? '!ml-12' : '!ml-60') : '!ml-12']">
+      <a-layout class="flex flex-col min-h-[calc(100vh-3.625rem)] ml-0 !mt-14.5 transition-margin" :class="[sideFixed ? (smAndSmaller ? '!md:ml-12' : '!md:ml-60') : '!md:ml-12']">
         <Suspense>
           <a-layout-content class="grow-1">
             <RouterView />
