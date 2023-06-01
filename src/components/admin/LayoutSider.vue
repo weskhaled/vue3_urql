@@ -19,6 +19,7 @@ function onCollapse(val, type) {
 }
 
 async function onClickMenuItem(key) {
+  sideHidden.value = true
   await router.push(key)
 }
 const selectedKeysSider = ref<string[]>([])

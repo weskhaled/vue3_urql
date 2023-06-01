@@ -54,7 +54,7 @@ meta:
     title: Maps
     link: /admin/maps
     order: 2
-    icon: i-carbon-choropleth-map
+    icon: i-fluent-globe-location-20-regular
     childOf: null
     hidden: false
 </route>

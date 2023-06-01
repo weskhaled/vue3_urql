@@ -3,7 +3,7 @@
   "private": true,
   "packageManager": "pnpm@7.30.0",
   "scripts": {
-    "build": "vite-ssg build",
+    "build": "cross-env NODE_ENV=production vite-ssg build vite-ssg build",
     "build:vite": "vite build",
     "dev": "vite --port 3333 --open",
     "lint": "eslint .",
@@ -27,6 +27,7 @@
     "@codemirror/state": "^6.2.0",
     "@codemirror/view": "^6.11.3",
     "@googlemaps/js-api-loader": "^1.15.2",
+    "@iconify-json/fluent": "^1.1.22",
     "@iconify-json/la": "^1.1.4",
     "@unocss/reset": "^0.52.7",
     "@urql/exchange-auth": "^2.1.2",

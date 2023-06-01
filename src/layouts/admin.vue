@@ -50,42 +50,41 @@ error.value && (message.error('Error', `${error.value}`))
         </a-layout>
       </a-layout>
 
-      <a-trigger v-model:popupVisible="popupVisible" :trigger="['click', 'hover']" position="top" class="!dark:[--color-fill-2:black]">
-        <Draggable
-          storage-key="vueuse-draggable" storage-type="session"
-          class="fixed h-42px w-40px z-105" :initial-value="{ x: windowWidth - 150, y: windowHeight - 150 }" :prevent-default="true"
-          :handle="handle"
-        >
-          <div ref="handle">
-            <span class="text-10px cursor-grab active:cursor-grabbing absolute z-102 top--5px left--5px w-5 h-5 rounded-full text-light-50 flex items-center justify-center bg-blue-700">
-              <IconDragArrow />
-            </span>
-          </div>
+      <Draggable
+        storage-key="vueuse-draggable" storage-type="session"
+        class="fixed h-42px w-40px z-105" :initial-value="{ x: windowWidth - 150, y: windowHeight - 150 }" :prevent-default="true"
+      >
+        <div ref="handle">
+          <span class="text-10px cursor-grab active:cursor-grabbing absolute z-102 top--5px left--5px w-5 h-5 rounded-full text-light-50 flex items-center justify-center bg-blue-700">
+            <IconDragArrow />
+          </span>
+        </div>
+        <a-trigger v-model:popupVisible="popupVisible" :trigger="['hover']" position="top" class="cursor-grab dark:[--color-fill-2:black]">
           <div :class="`button-trigger ${popupVisible ? 'button-trigger-active' : ''}`">
             <span v-if="popupVisible" i-carbon-close />
             <span v-else i-carbon-overflow-menu-vertical />
           </div>
-        </Draggable>
-        <template #content>
-          <a-menu
-            :style="{ marginBottom: '-2px' }" mode="popButton" :tooltip-props="{ mini: true, position: 'left' }"
-            show-collapse-button
-          >
-            <a-menu-item key="1">
-              <template #icon>
-                <IconBug />
-              </template>
-              Bugs
-            </a-menu-item>
-            <a-menu-item key="2">
-              <template #icon>
-                <IconBulb />
-              </template>
-              Ideas
-            </a-menu-item>
-          </a-menu>
-        </template>
-      </a-trigger>
+          <template #content>
+            <a-menu
+              :style="{ marginBottom: '-2px' }" mode="popButton" :tooltip-props="{ mini: true, position: 'left' }"
+              show-collapse-button
+            >
+              <a-menu-item key="1">
+                <template #icon>
+                  <IconBug />
+                </template>
+                Bugs
+              </a-menu-item>
+              <a-menu-item key="2">
+                <template #icon>
+                  <IconBulb />
+                </template>
+                Ideas
+              </a-menu-item>
+            </a-menu>
+          </template>
+        </a-trigger>
+      </Draggable>
     </a-layout>
   </div>
 </template>
