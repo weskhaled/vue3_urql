@@ -49,7 +49,7 @@ onMounted(() => {
 
 <template>
   <!-- Example -->
-  <div class="flex min-h-screen">
+  <div class="flex min-h-screen bg-white/70 dark:bg-dark-1/50">
     <!-- Container -->
     <div class="flex flex-row w-full">
       <!-- Sidebar -->

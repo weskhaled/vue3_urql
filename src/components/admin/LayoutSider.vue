@@ -13,11 +13,6 @@ const route = useRoute()
 
 const visibleDrawer = ref(false)
 
-function onCollapse(val, type) {
-  sideCollapsed.value = val
-  !val && (visibleDrawer.value = false)
-}
-
 async function onClickMenuItem(key) {
   sideHidden.value = true
   await router.push(key)
