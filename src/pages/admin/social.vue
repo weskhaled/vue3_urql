@@ -20,16 +20,9 @@ import { useArrayUnique, useFetch, useMemoize } from '@vueuse/core'
 // const { message } = useMessage()
 // const { width: windowWidth } = useWindowSize()
 // const router = useRouter()
-// function sToTime(t: number) {
-//   const padZero = (v: number) => (v < 10) ? `0${v}` : v
-
-//   return `${padZero(parseInt((t / (60 * 60)) % 24))}:${
-//          padZero(parseInt((t / (60)) % 60))}:${
-//          padZero(parseInt((t) % 60))}`
-// }
 
 const mediaVolume: Ref<number> = useStorage('radio-volume', 50)
-const srcHasError = ref(false)
+
 const currentStation = ref(null)
 const radioList: any = ref([])
 
@@ -37,12 +30,16 @@ const audioRadioRef = ref<HTMLAudioElement | null>(null)
 
 const stations = useMemoize(
   async (): Promise<any> =>
-    useFetch('/stations/search?limit=2000&language=french&hidebroken=true&order=clickcount&reverse=true').get().json(),
+    // useFetch('/stations/search?limit=2000&language=french&hidebroken=true&order=clickcount&reverse=true').get().json(),
+    useFetch('https://at1.api.radio-browser.info/json/stations/search?limit=2000&language=french&hidebroken=true&order=clickcount&reverse=true').get().json(),
 )
 async function getStations() {
   const { data, error } = await stations()
 
-  if (!error.value)
+  if (error.value)
+    return
+
+  if (data.value)
     radioList.value = useArrayUnique(data.value.filter(i => i.favicon), (a, b) => a.name.trim() === b.name.trim()).value
 }
 function formatDuration(seconds: number) {
@@ -63,7 +60,6 @@ const volumeValue = computed({
 useEventListener(audioRadioRef, 'error', () => {
   playing.value = false
   waiting.value = false
-  srcHasError.value = true
   state.value.srcHasError = true
   next()
 })
@@ -73,9 +69,7 @@ watchThrottled(
     if (newVal)
       currentStation.value = newVal
 
-    srcHasError.value = false
-
-    if ((oldVal && newVal) && playing.value && !state.value.srcHasError) {
+    if ((oldVal?.value && newVal.value) && playing.value && !state.value.srcHasError) {
       playing.value = false
       const playPromise = audioRadioRef.value?.play()
       playPromise && (await playPromise.then(() => {
@@ -150,7 +144,7 @@ onMounted(() => {
       <div class="stations-list bg-slate-1 dark:bg-dark-9">
         <UseVirtualList :list="radioList" :options="{ itemHeight: 70 }" height="360px">
           <template #default="{ data, index }">
-            <div h-70px flex items-center class="b-b border-dark-1/5 dark:border-light-1/5" :class="[state?.stationuuid === data?.stationuuid ? 'bg-blue-5/10' : '', data.srcHasError && 'bg-red-5/5']">
+            <div h-70px flex items-center class="b-b border-dark-1/5 dark:border-light-1/5" :class="[state?.stationuuid === data?.stationuuid ? 'bg-blue-5/10' : '', data.srcHasError && 'bg-red-4/10']">
               <a-list-item :key="index" class="px-4">
                 <a-list-item-meta
                   :title="data.name"
@@ -181,9 +175,9 @@ onMounted(() => {
           </template>
         </UseVirtualList>
       </div>
-      <div class="bg-slate-50 text-slate-500 dark:bg-dark-8 dark:text-slate-200 rounded-b-sm flex items-center py-3 md:py-0">
+      <div class="bg-slate-50 text-slate-500 border-slate-2 dark:border-black b-t dark:bg-dark-8 dark:text-slate-200 rounded-b-sm flex items-center py-3 lg:py-0">
         <div class="flex-auto flex items-center justify-evenly">
-          <a-button shape="circle" class="hidden sm:block lg:hidden xl:block !w-8 !h-8 lg:!w-12 lg:!h-12" type="text" aria-label="Previous">
+          <a-button shape="circle" class="block !w-8 !h-8 lg:!w-12 lg:!h-12" type="text" aria-label="Previous">
             <template #icon>
               <span i-fluent-heart-16-regular class="" />
             </template>
@@ -209,7 +203,7 @@ onMounted(() => {
               <span i-fluent-next-16-regular class="" />
             </template>
           </a-button>
-          <a-button shape="circle" class="hidden sm:block lg:hidden xl:block !w-8 !h-8 lg:!w-12 lg:!h-12" type="text" aria-label="Previous">
+          <a-button shape="circle" class="block !w-8 !h-8 lg:!w-12 lg:!h-12" type="text" aria-label="Previous">
             <template #icon>
               <span i-fluent-apps-list-detail-24-regular class="" />
             </template>
@@ -264,7 +258,7 @@ onMounted(() => {
       </div>
     </main>
   </div>
-  <div relative h-180 flex items-center mb--40px>
+  <div relative h-180 flex items-center>
     <div container px-4 mx-auto relative z-1 text-center>
       <div class="relative inline-block px-6 py-4 bg-zinc-9/1 dark:bg-zinc-1/1 backdrop-blur backdrop-filter border border-zinc-4/20">
         <div
