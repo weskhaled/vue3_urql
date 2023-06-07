@@ -60,7 +60,7 @@ const volumeValue = computed({
     volume.value = value / 100
   },
 })
-useEventListener(audioRadioRef, 'error', (e) => {
+useEventListener(audioRadioRef, 'error', () => {
   playing.value = false
   waiting.value = false
   srcHasError.value = true
