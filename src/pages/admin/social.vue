@@ -264,7 +264,7 @@ onMounted(() => {
       </div>
     </main>
   </div>
-  <div relative h-180 flex items-center mb--41px>
+  <div relative h-180 flex items-center mb--40px>
     <div container px-4 mx-auto relative z-1 text-center>
       <div class="relative inline-block px-6 py-4 bg-zinc-9/1 dark:bg-zinc-1/1 backdrop-blur backdrop-filter border border-zinc-4/20">
         <div
