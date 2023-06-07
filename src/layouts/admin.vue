@@ -2,7 +2,7 @@
 import { gql, useQuery } from '@urql/vue'
 import { UseDraggable as Draggable } from '@vueuse/components'
 // import { promiseTimeout } from '@vueuse/core'
-import { currentUser, isAuthenticated, layoutBoxed, sideFixed, smAndSmaller } from '~/common/stores'
+import { currentUser, isAuthenticated, layoutBoxed, mdAndSmaller, sideFixed, smAndSmaller } from '~/common/stores'
 
 // const { t } = useI18n()
 const router = useRouter()
@@ -33,7 +33,7 @@ error.value && (message.error('Error', `${error.value}`))
 </script>
 
 <template>
-  <div class="shadow-slate-2/25 dark:shadow-slate-8/25 shadow-md bg-white dark:bg-black 5xl:container mx-auto transition-width" :class="[layoutBoxed ? 'md:container' : 'w-full']">
+  <div class="shadow-slate-2/25 dark:shadow-slate-8/25 shadow-md bg-light-1 dark:bg-dark-9 5xl:container mx-auto transition-width" :class="[layoutBoxed ? 'md:container' : 'w-full']">
     <a-layout class="font-sans relative !arco-theme-1">
       <AdminLayoutSider />
       <a-layout>
@@ -52,14 +52,14 @@ error.value && (message.error('Error', `${error.value}`))
 
       <Draggable
         storage-key="vueuse-draggable" storage-type="session"
-        class="fixed h-42px w-40px z-105" :initial-value="{ x: windowWidth - 150, y: windowHeight - 150 }" :prevent-default="true"
+        class="fixed z-1001" :initial-value="{ x: windowWidth - 150, y: windowHeight - 150 }" :prevent-default="true"
       >
         <div ref="handle">
           <span class="text-10px cursor-grab active:cursor-grabbing absolute z-102 top--5px left--5px w-5 h-5 rounded-full text-light-50 flex items-center justify-center bg-blue-700">
             <IconDragArrow />
           </span>
         </div>
-        <a-trigger v-model:popupVisible="popupVisible" :trigger="['hover']" position="top" class="cursor-grab dark:[--color-fill-2:black]">
+        <a-trigger v-model:popupVisible="popupVisible" :trigger="[mdAndSmaller ? 'click' : 'hover']" position="top" class="cursor-grab dark:[--color-fill-2:black]">
           <div :class="`button-trigger ${popupVisible ? 'button-trigger-active' : ''}`">
             <span v-if="popupVisible" i-carbon-close />
             <span v-else i-carbon-overflow-menu-vertical />

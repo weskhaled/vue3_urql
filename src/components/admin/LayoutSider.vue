@@ -36,11 +36,11 @@ watch(mdAndSmaller, (val) => {
     hide-trigger
     :theme="isDark ? 'dark' : 'light'" :width="sideFixed ? 240 : 260" collapsible :default-collapsed="sideCollapsed"
     :collapsed="sideCollapsed" :class="[sideFixed ? (smAndSmaller ? '!fixed' : '!fixed') : '!fixed', sideHidden ? 'translate-x--100%' : 'translate-x-0']"
-    class="z-101 !transition-transform-250 !md:transition-width-150 !md:translate-x-0 [--color-menu-light-bg:rgba(255,255,255,1)] [--color-menu-dark-bg:rgba(0,0,0,1)] border-r border-slate-3/30 dark:border-slate-6/30 !shadow-sm [&>.arco-layout-sider-children]:overflow-hidden"
+    class="z-101 !transition-transform-250 !md:transition-width-150 !md:translate-x-0 [--color-menu-light-bg:rgba(255,255,255,1)] [--color-menu-dark-bg:rgba(0,0,0,1)] !shadow-sm [&>.arco-layout-sider-children]:overflow-hidden"
     @mouseenter="() => mdAndLarger && (sideCollapsed = false)"
     @mouseleave="() => mdAndLarger && !sideFixed && ((sideCollapsed = true) && (visibleDrawer = false))"
   >
-    <div class="h-14.5 bg-zinc-1 relative dark:bg-dark-9 flex items-center justify-end border-b-1px border-zinc-5/10 dark:border-zinc-5/10 relative z-2">
+    <div class="h-14.5 bg-light-5 relative dark:bg-dark-9 flex items-center justify-end border-b-1px border-zinc-5/10 dark:border-zinc-5/10 relative z-2">
       <div flex px-2.5 flex-1 justify-between :class="sideCollapsed && mdAndLarger && 'duration-300 translate-x--12'">
         <div flex items-center>
           <a href="" :class="sideCollapsed ? 'invisible opacity-0' : 'delay-100 visible opacity-100'" class="transition-opacity duration-300 inline-block grow-1 mr-auto" @click.prevent="router.push('/')">
@@ -77,7 +77,7 @@ watch(mdAndSmaller, (val) => {
         </div>
       </div>
     </div>
-    <div id="parentNode" relative z-1 backdrop-blur>
+    <div id="parentNode" class="border-r border-light-5 dark:border-dark-6 relative z-1">
       <a-menu
         :default-open-keys="openKeySider"
         :default-selected-keys="selectedKeysSider"

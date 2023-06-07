@@ -1,18 +1,39 @@
 <script setup lang="ts">
+const props = defineProps<{
+  bgImg?: string
+  bgImgDark?: string
+}>()
+const wrapperStyles: any = reactive({
+  container: {
+    top: '0px',
+  },
+  hederImage: {
+    backgroundPosition: '50% 0',
+  },
+})
+
+const wrapperRef = ref(null)
+const defaultSlotWrappeIsVisible = useElementVisibility(wrapperRef)
+const { height: defaultSlotWrapperHeight, top: defaultSlotWrapperTop } = useElementBounding(wrapperRef)
+
+watch(windowScrollY, (val) => {
+  if (defaultSlotWrappeIsVisible.value) {
+    const percentInView = defaultSlotWrapperHeight.value + val + defaultSlotWrapperTop.value - (val + defaultSlotWrapperHeight.value)
+    wrapperStyles.container.top = `${1 - percentInView * 0.25}px`
+    wrapperStyles.container.opacity = `${((percentInView * 0.1) + 100)}%`
+    wrapperStyles.hederImage.backgroundPosition = `50% ${percentInView * 0.25}px`
+  }
+})
 </script>
 
 <template>
-  <div class="relative inline-block px-6 py-4 bg-zinc-9/1 dark:bg-zinc-1/1 backdrop-blur backdrop-filter border border-zinc-4/20">
+  <div ref="wrapperRef" class="relative block px-6 bg-zinc-9/10 dark:bg-zinc-8/20 shadow-zinc-6/20 dark:shadow-zinc-5/20 shadow-[inset_0_8px_8px_-8px_var(--un-shadow-color),inset_0_-8px_8px_-8px_var(--un-shadow-color)]">
     <div
-      class="opacity-5 grayscale absolute inset-0 w-full h-full bg-cover bg-fixed bg-center bg-no-repeat bg-[url(/img/slider-3.avif)]"
+      class="opacity-60 z-0 absolute inset-0 w-full h-full bg-cover bg-fixed bg-top-center bg-no-repeat"
+      :style="{ ...wrapperStyles.hederImage, backgroundImage: `url(${isDark ? (props.bgImgDark || props.bgImg) : props.bgImg})` }"
     />
-    <h2
-      class="text-2xl/10 md:text-3xl/9 block font-extrabold capitalize fill-transparent bg-gradient-to-r from-sky-7 dark:from-sky-3 to-purple-9 dark:to-purple-3 bg-clip-text"
-      style="-webkit-text-fill-color: transparent;"
-    >
-      think big <span font-thin>
-        start small!
-      </span>
-    </h2>
+    <div class="relative z-1 py-6 pb-4" :style="{ ...wrapperStyles.container }">
+      <slot />
+    </div>
   </div>
 </template>

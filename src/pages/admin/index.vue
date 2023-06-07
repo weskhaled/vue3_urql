@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { gql, useQuery, useSubscription } from '@urql/vue'
+import { gql, useClientHandle, useQuery, useSubscription } from '@urql/vue'
 import { IconSearch } from '@arco-design/web-vue/es/icon'
 // import { promiseTimeout } from '@vueuse/core'
 import { mdAndLarger, smAndSmaller } from '~/common/stores'
+import { customFetch } from '~/common/services/customFetch'
 
 // definePage({
 //   name: 'adminIndex',
@@ -12,7 +13,7 @@ import { mdAndLarger, smAndSmaller } from '~/common/stores'
 //     layout: 'admin',
 //   },
 // })
-
+const { client: urqlClient } = useClientHandle()
 const { t } = useI18n()
 const { message } = useMessage()
 const { width: windowWidth } = useWindowSize()
@@ -156,6 +157,87 @@ if (error.value) {
   })
 }
 // await promiseTimeout(1200000)
+const mutationUploadFileGql = gql`
+  mutation ($file: Upload!) {
+    uploadFile(file: $file)
+}`
+function customRequest(option) {
+  const { onProgress, onError, onSuccess, fileItem, __name } = option
+
+  let abort: any
+  urqlClient.executeMutation({
+    key: 1,
+    query: mutationUploadFileGql,
+    variables: { file: fileItem.file },
+  }, {
+    requestPolicy: 'network-only',
+    fetch: (uri, options) => customFetch(uri, {
+      ...options,
+      useUpload: true,
+      onProgress: (e) => {
+        onProgress(e.loaded / e.total, e)
+      },
+      onAbortPossible: (abortHandler) => {
+        abort = abortHandler
+      },
+    }),
+  }).then(({ data, error }) => {
+    if (error)
+      onError(error)
+
+    else if (data)
+      onSuccess(data)
+  })
+
+  return {
+    abort() {
+      abort()
+    },
+  }
+
+  // const xhr = new XMLHttpRequest()
+  // if (xhr.upload) {
+  //   xhr.upload.onprogress = function (event) {
+  //     let percent
+  //     if (event.total > 0) {
+  //       // 0 ~ 1
+  //       percent = event.loaded / event.total
+  //     }
+  //     console.log(percent)
+  //     onProgress(percent, event)
+  //   }
+  // }
+  // xhr.onerror = function error(e) {
+  //   onError(e)
+  // }
+  // xhr.onload = function onload() {
+  //   if (xhr.status < 200 || xhr.status >= 300)
+  //     return onError(xhr.responseText)
+
+  //   onSuccess(xhr.response)
+  // }
+
+  // const formData = new FormData()
+  // formData.append('operations', JSON.stringify({
+  //   query: `mutation uploadFile($file: Upload!) {
+  //     uploadFile(file: $file)
+  //   }`,
+  //   variables: {
+  //     file: null,
+  //   },
+  // }))
+  // formData.append('map', JSON.stringify({ 0: ['variables.file'] }))
+  // formData.append('0', fileItem.file)
+  // xhr.open('post', 'http://localhost:8000/graphql', true)
+  // xhr.setRequestHeader('apollo-require-preflight', 'true')
+  // xhr.send(formData)
+
+  // return {
+  //   abort() {
+  //     xhr.abort()
+  //   },
+  // }
+}
 </script>
 
 <template>
@@ -171,13 +253,14 @@ if (error.value) {
       <p>
         <em text-sm opacity-75>{{ t('intro.desc') }}</em>
       </p>
+      <a-upload list-type="picture" :custom-request="customRequest" />
       <a-date-picker style="width: 200px;" />
 
       <div class="mt-1">
         <a-table
           size="medium" :scrollbar="false" :columns="columns"
           :scroll="{ x: smAndSmaller ? (windowWidth + 200) : '100%', y: 900 }" :data="allPlaces" :loading="fetching"
-          :pagination="{ total, pageSize, showPageSize: true, pageSizeOptions: [5, 10, 20] }"
+          :pagination="{ total, pageSize, showPageSize: true, pageSizeOptions: [5, 10, 20], size: 'small' }"
           @page-size-change="(val) => { pageSize = val; variables.input.pagination.size = val }" @change="handleChange"
         >
           <template #name-filter="{ filterValue, setFilterValue, handleFilterConfirm, handleFilterReset }">

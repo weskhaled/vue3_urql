@@ -10,7 +10,7 @@ import { FreeMode, Mousewheel, Scrollbar } from 'swiper'
 import { isAuthenticated, mdAndLarger } from '~/common/stores'
 import { useIsotope } from '~/composables/isotope'
 import 'swiper/css/scrollbar'
-import TheWindow from '~/components/TheWindow.vue'
+import TheWindow from '~/components/common/TheWindow.vue'
 
 const googleApiKey = import.meta.env.VITE_GOOGLE_API_KEY
 

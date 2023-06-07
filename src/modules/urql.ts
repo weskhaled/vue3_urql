@@ -37,7 +37,8 @@ const clientConfig = {
           if (!token.value)
             return operation
           return utils.appendHeaders(operation, {
-            authorization: `Bearer ${token.value}`,
+            'authorization': `Bearer ${token.value}`,
+            'apollo-require-preflight': 'true',
           })
         },
         async refreshAuth() {
@@ -59,9 +60,12 @@ const clientConfig = {
           window?.location?.reload()
         },
         didAuthError(error, _operation) {
+          // if (error.graphQLErrors.some(e => e.extensions?.code === 'UNAUTHENTICATED')) {
+          //   token.value = null
+          //   refreshToken.value = null
+          // }
+
           return error.graphQLErrors.some(e => e.extensions?.code === 'UNAUTHENTICATED')
-          token.value = null
-          refreshToken.value = null
         },
       }
     }),
