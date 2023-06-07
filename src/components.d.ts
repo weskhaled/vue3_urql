@@ -26,6 +26,7 @@ declare module '@vue/runtime-core' {
     AEmpty: typeof import('@arco-design/web-vue')['Empty']
     AForm: typeof import('@arco-design/web-vue')['Form']
     AFormItem: typeof import('@arco-design/web-vue')['FormItem']
+    AImage: typeof import('@arco-design/web-vue')['Image']
     AImagePreviewGroup: typeof import('@arco-design/web-vue')['ImagePreviewGroup']
     AInput: typeof import('@arco-design/web-vue')['Input']
     AInputPassword: typeof import('@arco-design/web-vue')['InputPassword']
@@ -75,6 +76,7 @@ declare module '@vue/runtime-core' {
     ThisForTest: typeof import('./components/ThisForTest.vue')['default']
     UseElementSize: typeof import('@vueuse/components')['UseElementSize']
     UseElementVisibility: typeof import('@vueuse/components')['UseElementVisibility']
+    UseImage: typeof import('@vueuse/components')['UseImage']
     UseVirtualList: typeof import('@vueuse/components')['UseVirtualList']
   }
 }

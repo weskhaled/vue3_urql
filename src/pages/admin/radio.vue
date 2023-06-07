@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { useArrayUnique, useFetch, useMemoize } from '@vueuse/core'
+import { useFuse } from '@vueuse/integrations/useFuse'
+import { useIDBKeyval } from '@vueuse/integrations/useIDBKeyval'
 // import { mdAndLarger, smAndSmaller } from '~/common/stores'
 // definePage({
 //   name: 'adminSocial',
@@ -17,38 +19,61 @@ import { useArrayUnique, useFetch, useMemoize } from '@vueuse/core'
 //   },
 // })
 // const { t } = useI18n()
-// const { message } = useMessage()
+const { message } = useMessage()
 // const { width: windowWidth } = useWindowSize()
 // const router = useRouter()
 
+const { data: radioStations, isFinished } = useIDBKeyval('radio-stations', [])
+
 const mediaVolume: Ref<number> = useStorage('radio-volume', 50)
 
-const currentStation = ref(null)
+const audioRadioRef = ref<HTMLAudioElement | null>(null)
+const inputSearchStation = ref('')
+const stationsListRef = ref(null)
+const stationsListIsFetching = ref(true)
 const radioList: any = ref([])
 
-const audioRadioRef = ref<HTMLAudioElement | null>(null)
-
+const [showFavoriteList, toggleShowFavoriteList] = useToggle()
+const [showStatiosList, toggleShowStatiosList] = useToggle()
+const { state, next, prev } = useCycleList(radioList)
+const { playing, currentTime, waiting, volume, muted } = useMediaControls(audioRadioRef)
+const { results: resultsSearchStation } = useFuse(inputSearchStation, radioList, {
+  fuseOptions: {
+    keys: ['name', 'homepage'],
+  },
+  matchAllWhenSearchEmpty: false,
+})
 const stations = useMemoize(
   async (): Promise<any> =>
-    // useFetch('/stations/search?limit=2000&language=french&hidebroken=true&order=clickcount&reverse=true').get().json(),
     useFetch('https://at1.api.radio-browser.info/json/stations/search?limit=2000&language=french&hidebroken=true&order=clickcount&reverse=true').get().json(),
 )
+watch(isFinished, (val) => {
+  if (val)
+    getStations()
+})
 async function getStations() {
+  if (radioStations.value.length > 0) {
+    radioList.value = radioStations.value
+    stationsListIsFetching.value = false
+    return
+  }
+
   const { data, error } = await stations()
 
   if (error.value)
     return
 
-  if (data.value)
-    radioList.value = useArrayUnique(data.value.filter(i => i.favicon), (a, b) => a.name.trim() === b.name.trim()).value
+  if (data.value) {
+    radioList.value = useArrayUnique(data.value.filter(i => i.favicon), (a, b) => a.name.trim() === b.name.trim()).value.map((s, index) => ({ ...s, isFavorite: false, srcHasError: false, index }))
+    radioStations.value = radioList.value
+  }
+
+  stationsListIsFetching.value = false
 }
+
 function formatDuration(seconds: number) {
   return new Date(1000 * seconds).toISOString().slice(14, 19)
 }
-
-const { state, next, prev } = useCycleList(radioList)
-
-const { playing, currentTime, waiting, volume, muted } = useMediaControls(audioRadioRef)
 
 const volumeValue = computed({
   get: () => mediaVolume.value,
@@ -57,19 +82,27 @@ const volumeValue = computed({
     volume.value = value / 100
   },
 })
-useEventListener(audioRadioRef, 'error', () => {
+useEventListener(audioRadioRef, 'error', (e) => {
   playing.value = false
-  waiting.value = false
-  state.value.srcHasError = true
-  next()
+
+  const src = e?.target?.currentSrc
+  if (!src)
+    return
+
+  const station = radioList.value.find(i => i.url_resolved === src)
+
+  station && (station.srcHasError = true)
+  message.error(`error in station ${e?.target?.error?.message}`)
 })
 watchThrottled(
   state,
   async (newVal, oldVal) => {
-    if (newVal)
-      currentStation.value = newVal
+    if (newVal?.srcHasError) {
+      playing.value = false
+      return
+    }
 
-    if ((oldVal?.value && newVal.value) && playing.value && !state.value.srcHasError) {
+    if ((oldVal && newVal) && playing.value && !newVal.srcHasError) {
       playing.value = false
       const playPromise = audioRadioRef.value?.play()
       playPromise && (await playPromise.then(() => {
@@ -81,11 +114,21 @@ watchThrottled(
   },
   { throttle: 1200 },
 )
+watchThrottled(
+  resultsSearchStation,
+  async (newVal, __oldVal) => {
+    if (!newVal.length)
+      return
+
+    const { refIndex } = newVal[0]
+    stationsListRef.value?.scrollTo(refIndex)
+  },
+  { throttle: 1000 })
 // Change initial media properties
 onMounted(() => {
   volume.value = mediaVolume.value / 100
   currentTime.value = 0
-  getStations()
+  // getStations()
 })
 </script>
 
@@ -96,29 +139,44 @@ onMounted(() => {
     bg-img-dark="https://images.unsplash.com/photo-1617397578305-53a7feadd726?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2942&q=80"
   >
     <div container mx-auto px-1 lg:px-3 lg:max-w-2xl>
-      <div class="bg-white border-slate-2 dark:bg-dark-7 dark:border-black border-b rounded-t-sm p-2 pb-2 sm:p-2 sm:pb-2 lg:p-2 xl:p-3 xl:pb-4 space-y-2 sm:space-y-3 lg:space-y-4 xl:space-y-5">
-        <div class="flex items-center space-x-2">
+      <div class="bg-white dark:bg-dark-7 rounded-t-sm p-2 pb-2 sm:p-2 sm:pb-2 lg:p-2 xl:p-3 xl:pb-4 space-y-2 sm:space-y-3 lg:space-y-4 xl:space-y-5">
+        <div class="flex items-center space-x-1">
           <div class="w-18 h-18 flex justify-center">
-            <img v-if="state?.favicon" :src="state.favicon" alt="" width="72" height="72" class="flex-none rounded-sm p-0 m-auto" loading="lazy">
-            <span v-else class="i-fluent-music-note-2-20-filled flex-none rounded-sm p-0 w-full h-full" />
+            <UseImage :src="state?.favicon">
+              <template #loading>
+                <span class="i-fluent-music-note-2-20-filled flex-none rounded-sm p-0 w-full h-full" />
+              </template>
+
+              <template #error>
+                <span class="i-fluent-music-note-2-20-filled flex-none rounded-sm p-0 w-full h-full" />
+              </template>
+            </UseImage>
           </div>
           <div class="min-w-0 flex-auto space-y-1 font-semibold">
-            <h2 class="text-slate-500 dark:text-slate-400 text-sm leading-6 truncate">
-              {{ currentStation?.homepage }}
+            <h2 class="text-slate-9 dark:text-slate-1 leading-6 truncate text-lg text-lg">
+              {{ state?.name }}
             </h2>
-            <p class="text-slate-900 dark:text-slate-50 text-lg">
-              {{ currentStation?.name }}
-            </p>
+            <a :href="state?.homepage" target="_blank" class="text-slate-6 dark:text-slate-4 text-xs truncate">
+              {{ state?.homepage }}
+            </a>
           </div>
-          <audio ref="audioRadioRef" autoplay="false" :src="currentStation?.url_resolved" class="hidden" />
+          <div v-if="state">
+            <a-button shape="circle" class="block !w-8 !h-8 lg:!w-12 lg:!h-12" type="text" @click="state.isFavorite = !state.isFavorite">
+              <template #icon>
+                <span v-if="state?.isFavorite" i-fluent-heart-16-filled class="text-red" />
+                <span v-else i-fluent-heart-16-regular class="text-red" />
+              </template>
+            </a-button>
+          </div>
+          <audio ref="audioRadioRef" autoplay="false" :src="state?.url_resolved" class="hidden" />
         </div>
         <div class="space-y-0">
           <div class="relative flex justify-center">
-            <div class="flex-none w-12 mr-1 text-center">
-              <a-button class="flex items-center justify-center mr-auto" type="text" shape="circle" @click="() => muted = !muted">
+            <div class="flex-none w-12 mr-1">
+              <a-button class="flex items-center justify-center mx-auto" type="text" shape="circle" @click="() => muted = !muted">
                 <template #icon>
                   <span v-if="muted" class="i-fluent-speaker-off-28-regular" />
-                  <span v-else-if="volume < 0.05" class="i-fluent-speaker-0-48-regular" />
+                  <span v-else-if="volume < 0.05" class="i-fluent-speaker-0-16-regular" />
                   <span v-else-if="volume < 0.25" class="i-fluent-speaker-1-16-regular" />
                   <span v-else class="i-fluent-speaker-16-regular" />
                 </template>
@@ -131,21 +189,32 @@ onMounted(() => {
               {{ formatDuration(currentTime) }}
             </div>
           </div>
-          <div class="flex justify-between text-sm leading-6 font-medium tabular-nums !hidden">
-            <div class="text-blue-6 dark:text-slate-100">
-              {{ formatDuration(currentTime) }}
-            </div>
-            <div class="text-slate-500 dark:text-slate-400 hidden">
-              {{ formatDuration(currentTime) }}
-            </div>
-          </div>
         </div>
       </div>
-      <div class="stations-list bg-slate-1 dark:bg-dark-9">
-        <UseVirtualList :list="radioList" :options="{ itemHeight: 70 }" height="360px">
+      <div class="stations-list bg-slate-1 dark:bg-dark-9 relative border-slate-2 dark:border-black overflow-hidden transition-all-230" :class="[showStatiosList ? 'h-361px border-t' : 'h-0']">
+        <span v-if="stationsListIsFetching" class="absolute flex justify-center content-center w-full h-full bg-light/55 dark:bg-dark/55 backdrop-blur z-3">
+          <span class="m-auto">
+            <span class="mx-auto text-blue my-2 block w-8 h-8 i-line-md-loading-twotone-loop" />
+          </span>
+        </span>
+        <div class="absolute top-0 w-full p-2 bg-white/40 dark:bg-dark/40 backdrop-blur b-b border-zinc-1/30 dark:border-zinc-9/30 shadow-black/5 shadow-sm z-2">
+          <a-input-search v-model="inputSearchStation" :disabled="showFavoriteList" placeholder="Please enter something" allow-clear class="[--color-fill-2:rgba(255,255,255,0.5)] dark:[--color-fill-2:rgba(0,0,0,0.5)]">
+            <template #prefix>
+              <a-button
+                type="text" shape="square" size="small" class="-ml-2.7"
+              >
+                <i i-carbon-reset block />
+              </a-button>
+            </template>
+          </a-input-search>
+        </div>
+        <UseVirtualList ref="stationsListRef" :list="showFavoriteList ? radioList.filter(s => s.isFavorite) : radioList" :options="{ itemHeight: 65 }" height="360px" class="pt-12">
           <template #default="{ data, index }">
-            <div h-70px flex items-center class="b-b border-dark-1/5 dark:border-light-1/5" :class="[state?.stationuuid === data?.stationuuid ? 'bg-blue-5/10' : '', data.srcHasError && 'bg-red-4/10']">
-              <a-list-item :key="index" class="px-4">
+            <div
+              flex items-center style="height: 65px" class="b-b border-dark-1/5 dark:border-light-1/5"
+              :class="[state?.stationuuid === data?.stationuuid ? 'bg-blue-5/10' : '', data.srcHasError && 'bg-red-4/10', resultsSearchStation.some((item) => item.refIndex === data.index) ? 'opacity-100' : (inputSearchStation.length ? 'opacity-30' : 'opacity-100')]"
+            >
+              <a-list-item :key="index" class="px-4 [&_.arco-list-item-action>_li:not(:last-child)]:mr-1">
                 <a-list-item-meta
                   :title="data.name"
                   class="[&_.arco-list-item-meta-content]:inline-grid [&_.arco-list-item-meta-content>div]:truncate"
@@ -154,15 +223,29 @@ onMounted(() => {
                     {{ data.homepage }}
                   </template>
                   <template #avatar>
-                    <a-avatar shape="square">
-                      <img
-                        alt="avatar"
-                        :src="data.favicon"
-                      >
-                    </a-avatar>
+                    <span class="w-14 h-14 flex p-1 justify-center content-center">
+                      <UseImage :src="data.favicon" class="transition-all">
+                        <template #loading>
+                          <span class="i-line-md-loading-twotone-loop text-blue p-0 w-6 h-6 m-auto opacity-60" />
+                        </template>
+
+                        <template #error>
+                          <span class="i-fluent-music-note-2-20-filled p-0 w-full h-full opacity-40" />
+                        </template>
+                      </UseImage>
+                    </span>
                   </template>
                 </a-list-item-meta>
                 <template #actions>
+                  <span v-if="data.srcHasError" w-full h-full flex items-center mr-1>
+                    <span class="text-red" i-fluent-info-16-regular />
+                  </span>
+                  <a-button v-else shape="circle" size="small" type="text" @click="() => data.isFavorite = !data.isFavorite">
+                    <template #icon>
+                      <span v-if="data.isFavorite" i-fluent-heart-16-filled class="text-red" />
+                      <span v-else i-fluent-heart-16-regular class="text-red" />
+                    </template>
+                  </a-button>
                   <a-button shape="circle" size="small" type="text" @click="() => state = data">
                     <template #icon>
                       <span v-if="(state.stationuuid === data.stationuuid) && playing" i-fluent-pause-12-filled />
@@ -175,20 +258,21 @@ onMounted(() => {
           </template>
         </UseVirtualList>
       </div>
-      <div class="bg-slate-50 text-slate-500 border-slate-2 dark:border-black b-t dark:bg-dark-8 dark:text-slate-200 rounded-b-sm flex items-center py-3 lg:py-0">
+      <div class="bg-slate-50 text-slate-500 border-slate-2 dark:border-black b-t dark:bg-dark-8 dark:text-slate-200 rounded-b-sm flex items-center py-3 lg:py-0 relative z-4">
         <div class="flex-auto flex items-center justify-evenly">
-          <a-button shape="circle" class="block !w-8 !h-8 lg:!w-12 lg:!h-12" type="text" aria-label="Previous">
+          <a-button shape="circle" class="block !w-8 !h-8 lg:!w-12 lg:!h-12" type="text" aria-label="FavoriteList" @click="() => { toggleShowFavoriteList(); showFavoriteList ? stationsListRef?.scrollTo(0) : stationsListRef?.scrollTo(state.index) }">
             <template #icon>
-              <span i-fluent-heart-16-regular class="" />
+              <span v-if="showFavoriteList" i-fluent-heart-16-filled class="" />
+              <span v-else i-fluent-heart-16-regular class="" />
             </template>
           </a-button>
-          <a-button shape="circle" class="block !w-8 !h-8 lg:!w-12 lg:!h-12" type="text" aria-label="Previous" @click="prev()">
+          <a-button shape="circle" class="block !w-8 !h-8 lg:!w-12 lg:!h-12" type="text" aria-label="Previous" @click="() => (prev() && stationsListRef?.scrollTo(state.index))">
             <template #icon>
               <span i-fluent-previous-16-regular class="" />
             </template>
           </a-button>
         </div>
-        <a-button :disabled="!state || waiting" long class="dark:text-slate-1 flex-none -my-3 lg:-my-2 mx-auto !w-14 !h-14 lg:!w-20 lg:!h-20 rounded-full ring-1 ring-slate-900/5 shadow-sm flex items-center justify-center" type="primary" shape="circle" @click="async () => !waiting && (!audioRadioRef?.paused ? audioRadioRef?.pause() : (!state.srcHasError && await audioRadioRef?.play()))">
+        <a-button :disabled="!state || waiting" long class="dark:text-slate-1 flex-none -my-4 lg:-my-3 mx-auto !w-16 !h-16 lg:!w-20 lg:!h-20 rounded-full ring-1 ring-slate-900/5 shadow-sm flex items-center justify-center" type="primary" shape="circle" @click="async () => { (!waiting && (!audioRadioRef?.paused ? audioRadioRef?.pause() : (!state.srcHasError && await audioRadioRef?.play()))); stationsListRef?.scrollTo(state.index) }">
           <template v-if="waiting">
             <span i-line-md-loading-twotone-loop class="text-3xl" />
           </template>
@@ -198,14 +282,15 @@ onMounted(() => {
           </template>
         </a-button>
         <div class="flex-auto flex items-center justify-evenly">
-          <a-button shape="circle" class="block !w-8 !h-8 lg:!w-12 lg:!h-12 xl:block" type="text" aria-label="Next" @click="next()">
+          <a-button shape="circle" class="block !w-8 !h-8 lg:!w-12 lg:!h-12 xl:block" type="text" aria-label="Next" @click="() => (next() && stationsListRef?.scrollTo(state.index))">
             <template #icon>
               <span i-fluent-next-16-regular class="" />
             </template>
           </a-button>
-          <a-button shape="circle" class="block !w-8 !h-8 lg:!w-12 lg:!h-12" type="text" aria-label="Previous">
+          <a-button shape="circle" class="block !w-8 !h-8 lg:!w-12 lg:!h-12" type="text" aria-label="List" @click="toggleShowStatiosList()">
             <template #icon>
-              <span i-fluent-apps-list-detail-24-regular class="" />
+              <span v-if="showStatiosList" i-fluent-text-bullet-list-dismiss-20-regular class="" />
+              <span v-else i-fluent-text-bullet-list-ltr-20-filled class="" />
             </template>
           </a-button>
         </div>
@@ -288,10 +373,10 @@ meta:
   layout: admin
   requiresAuth: true
   adminSidebar:
-    title: Social
-    link: /admin/social
+    title: Radio
+    link: /admin/radio
     order: 1
-    icon: i-carbon-two-person-lift
+    icon: i-fluent-music-note-2-20-regular
     childOf: null
     hidden: false
 </route>

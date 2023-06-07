@@ -54,7 +54,7 @@ dependencies:
     version: 1.1.26(vue@3.3.4)
   '@vueuse/integrations':
     specifier: ^10.1.2
-    version: 10.1.2(fuse.js@6.6.2)(nprogress@0.2.0)(vue@3.3.4)
+    version: 10.1.2(fuse.js@6.6.2)(idb-keyval@6.2.1)(nprogress@0.2.0)(vue@3.3.4)
   animate.css:
     specifier: ^4.1.1
     version: 4.1.1
@@ -70,6 +70,9 @@ dependencies:
   graphql-ws:
     specifier: ^5.12.1
     version: 5.12.1(graphql@16.6.0)
+  idb-keyval:
+    specifier: ^6.2.1
+    version: 6.2.1
   isotope-layout:
     specifier: ^3.0.6
     version: 3.0.6
@@ -4107,7 +4110,7 @@ packages:
       '@unhead/vue': 1.1.26(vue@3.3.4)
       vue: 3.3.4
 
-  /@vueuse/integrations@10.1.2(fuse.js@6.6.2)(nprogress@0.2.0)(vue@3.3.4):
+  /@vueuse/integrations@10.1.2(fuse.js@6.6.2)(idb-keyval@6.2.1)(nprogress@0.2.0)(vue@3.3.4):
     resolution: {integrity: sha512-wUpG3Wv6LiWerOwCzOAM0iGhNQ4vfFUTkhj/xQy7TLXduh2M3D8N08aS0KqlxsejY6R8NLxydDIM+68QfHZZ8Q==}
     peerDependencies:
       async-validator: '*'
@@ -4151,6 +4154,7 @@ packages:
       '@vueuse/core': 10.1.2(vue@3.3.4)
       '@vueuse/shared': 10.1.2(vue@3.3.4)
       fuse.js: 6.6.2
+      idb-keyval: 6.2.1
       nprogress: 0.2.0
       vue-demi: 0.14.1(vue@3.3.4)
     transitivePeerDependencies:
@@ -7279,6 +7283,10 @@ packages:
     dependencies:
       safer-buffer: 2.1.2
     dev: true
+
+  /idb-keyval@6.2.1:
+    resolution: {integrity: sha512-8Sb3veuYCyrZL+VBt9LJfZjLUPWVvqn8tG28VqYNFCo43KHcKuq+b4EiXGeuaLAQWL2YmyDgMp2aSpH9JHsEQg==}
+    dev: false
 
   /idb@7.0.2:
     resolution: {integrity: sha512-jjKrT1EnyZewQ/gCBb/eyiYrhGzws2FeY92Yx8qT9S9GeQAmo4JFVIiWRIfKW/6Ob9A+UDAOW9j9jn58fy2HIg==}
