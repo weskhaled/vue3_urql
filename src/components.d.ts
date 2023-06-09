@@ -60,6 +60,7 @@ declare module '@vue/runtime-core' {
     AUpload: typeof import('@arco-design/web-vue')['Upload']
     CommonCodeMirrorCodeMirror: typeof import('./components/common/CodeMirror/CodeMirror.vue')['default']
     CommonPageHeader: typeof import('./components/common/PageHeader.vue')['default']
+    CommonRadio: typeof import('./components/common/Radio.vue')['default']
     CommonTheWindow: typeof import('./components/common/TheWindow.vue')['default']
     HeroSlider: typeof import('./components/HeroSlider.vue')['default']
     IconBug: typeof import('@arco-design/web-vue/es/icon')['IconBug']
