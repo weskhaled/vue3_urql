@@ -241,11 +241,11 @@ export default ({ mode }) => {
           secure: true,
         },
         // Proxying websockets or socket.io: ws://localhost:5173/socket.io -> ws://localhost:5174/socket.io
-        '/stations': {
-          target: 'https://at1.api.radio-browser.info/json/stations/',
+        '/all-api': {
+          target: 'http://all.api.radio-browser.info/json',
           changeOrigin: true,
           secure: false,
-          rewrite: path => path.replace(/^\/stations/, ''),
+          rewrite: path => path.replace(/^\/all-api/, ''),
         },
       },
     },

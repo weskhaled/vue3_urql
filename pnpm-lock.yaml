@@ -2,8 +2,8 @@ lockfileVersion: '6.0'
 
 dependencies:
   '@arco-design/web-vue':
-    specifier: ^2.46.2
-    version: 2.46.2(vue@3.3.4)
+    specifier: ^2.47.1
+    version: 2.47.1(vue@3.3.4)
   '@codemirror/autocomplete':
     specifier: ^6.7.1
     version: 6.7.1(@codemirror/language@6.6.0)(@codemirror/state@6.2.0)(@codemirror/view@6.11.3)(@lezer/common@1.0.2)
@@ -98,8 +98,8 @@ dependencies:
     specifier: ^3.3.4
     version: 3.3.4
   vue-demi:
-    specifier: ^0.14.1
-    version: 0.14.1(vue@3.3.4)
+    specifier: ^0.14.5
+    version: 0.14.5(vue@3.3.4)
   vue-i18n:
     specifier: ^9.2.2
     version: 9.2.2(vue@3.3.4)
@@ -430,8 +430,8 @@ packages:
       color: 3.2.1
     dev: false
 
-  /@arco-design/web-vue@2.46.2(vue@3.3.4):
-    resolution: {integrity: sha512-I8j98DQVcbbuHUOhoMpm9eM5VG3ws+0SYLz11zeFj6sr1osTISMVoxExkk50KvGudahyi8I81n6vJey9FkgDjQ==}
+  /@arco-design/web-vue@2.47.1(vue@3.3.4):
+    resolution: {integrity: sha512-oe3gh5CKWqR1/chWfrWIO9iCGgDnzUw8GgfFPevn7CdMKeZQqExkrw4xWL96XmuGBfyZ06jODj3kezipWZ6NFw==}
     peerDependencies:
       vue: ^3.1.0
     dependencies:
@@ -4085,7 +4085,7 @@ packages:
     dependencies:
       '@vueuse/core': 10.1.2(vue@3.3.4)
       '@vueuse/shared': 10.1.2(vue@3.3.4)
-      vue-demi: 0.14.1(vue@3.3.4)
+      vue-demi: 0.14.5(vue@3.3.4)
     transitivePeerDependencies:
       - '@vue/composition-api'
       - vue
@@ -4097,7 +4097,7 @@ packages:
       '@types/web-bluetooth': 0.0.17
       '@vueuse/metadata': 10.1.2
       '@vueuse/shared': 10.1.2(vue@3.3.4)
-      vue-demi: 0.14.1(vue@3.3.4)
+      vue-demi: 0.14.5(vue@3.3.4)
     transitivePeerDependencies:
       - '@vue/composition-api'
       - vue
@@ -4159,7 +4159,7 @@ packages:
       fuse.js: 6.6.2
       idb-keyval: 6.2.1
       nprogress: 0.2.0
-      vue-demi: 0.14.1(vue@3.3.4)
+      vue-demi: 0.14.5(vue@3.3.4)
     transitivePeerDependencies:
       - '@vue/composition-api'
       - vue
@@ -4174,7 +4174,7 @@ packages:
       vue-router: '>=4.0.0-rc.1'
     dependencies:
       '@vueuse/shared': 10.1.2(vue@3.3.4)
-      vue-demi: 0.14.1(vue@3.3.4)
+      vue-demi: 0.14.5(vue@3.3.4)
       vue-router: 4.2.2(vue@3.3.4)
     transitivePeerDependencies:
       - '@vue/composition-api'
@@ -4184,7 +4184,7 @@ packages:
   /@vueuse/shared@10.1.2(vue@3.3.4):
     resolution: {integrity: sha512-1uoUTPBlgyscK9v6ScGeVYDDzlPSFXBlxuK7SfrDGyUTBiznb3mNceqhwvZHjtDRELZEN79V5uWPTF1VDV8svA==}
     dependencies:
-      vue-demi: 0.14.1(vue@3.3.4)
+      vue-demi: 0.14.5(vue@3.3.4)
     transitivePeerDependencies:
       - '@vue/composition-api'
       - vue
@@ -9181,7 +9181,7 @@ packages:
       '@vue/devtools-api': 6.5.0
       typescript: 4.9.5
       vue: 3.3.4
-      vue-demi: 0.14.1(vue@3.3.4)
+      vue-demi: 0.14.5(vue@3.3.4)
     dev: false
 
   /pkg-types@1.0.2:
@@ -11430,8 +11430,8 @@ packages:
     resolution: {integrity: sha512-AFbieoL7a5LMqcnOF04ji+rpXadgOXnZsxQr//r83kLPr7biP7am3g9zbaZIaBGwBRWeSvoMD4mgPdX3e4NWBg==}
     dev: true
 
-  /vue-demi@0.14.1(vue@3.3.4):
-    resolution: {integrity: sha512-rt+yuCtXvscYot9SQQj3WKZJVSriPNqVkpVBNEHPzSgBv7QIYzsS410VqVgvx8f9AAPgjg+XPKvmV3vOqqkJQQ==}
+  /vue-demi@0.14.5(vue@3.3.4):
+    resolution: {integrity: sha512-o9NUVpl/YlsGJ7t+xuqJKx8EBGf1quRhCiT6D/J0pfwmk9zUwYkC7yrF4SZCe6fETvSM3UNL2edcbYrSyc4QHA==}
     engines: {node: '>=12'}
     hasBin: true
     requiresBuild: true

@@ -26,7 +26,6 @@ declare module '@vue/runtime-core' {
     AEmpty: typeof import('@arco-design/web-vue')['Empty']
     AForm: typeof import('@arco-design/web-vue')['Form']
     AFormItem: typeof import('@arco-design/web-vue')['FormItem']
-    AImage: typeof import('@arco-design/web-vue')['Image']
     AImagePreviewGroup: typeof import('@arco-design/web-vue')['ImagePreviewGroup']
     AInput: typeof import('@arco-design/web-vue')['Input']
     AInputPassword: typeof import('@arco-design/web-vue')['InputPassword']
