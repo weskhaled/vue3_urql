@@ -54,7 +54,7 @@ dependencies:
     version: 1.1.26(vue@3.3.4)
   '@vueuse/integrations':
     specifier: ^10.1.2
-    version: 10.1.2(fuse.js@6.6.2)(idb-keyval@6.2.1)(nprogress@0.2.0)(vue@3.3.4)
+    version: 10.1.2(fuse.js@6.6.2)(idb-keyval@6.2.1)(nprogress@0.2.0)(sortablejs@1.15.0)(vue@3.3.4)
   '@vueuse/router':
     specifier: ^10.1.2
     version: 10.1.2(vue-router@4.2.2)(vue@3.3.4)
@@ -88,6 +88,9 @@ dependencies:
   pinia:
     specifier: ^2.0.36
     version: 2.0.36(typescript@4.9.5)(vue@3.3.4)
+  sortablejs:
+    specifier: ^1.15.0
+    version: 1.15.0
   swiper:
     specifier: ^9.3.2
     version: 9.3.2
@@ -4113,7 +4116,7 @@ packages:
       '@unhead/vue': 1.1.26(vue@3.3.4)
       vue: 3.3.4
 
-  /@vueuse/integrations@10.1.2(fuse.js@6.6.2)(idb-keyval@6.2.1)(nprogress@0.2.0)(vue@3.3.4):
+  /@vueuse/integrations@10.1.2(fuse.js@6.6.2)(idb-keyval@6.2.1)(nprogress@0.2.0)(sortablejs@1.15.0)(vue@3.3.4):
     resolution: {integrity: sha512-wUpG3Wv6LiWerOwCzOAM0iGhNQ4vfFUTkhj/xQy7TLXduh2M3D8N08aS0KqlxsejY6R8NLxydDIM+68QfHZZ8Q==}
     peerDependencies:
       async-validator: '*'
@@ -4159,6 +4162,7 @@ packages:
       fuse.js: 6.6.2
       idb-keyval: 6.2.1
       nprogress: 0.2.0
+      sortablejs: 1.15.0
       vue-demi: 0.14.5(vue@3.3.4)
     transitivePeerDependencies:
       - '@vue/composition-api'
@@ -10012,6 +10016,10 @@ packages:
       ip: 2.0.0
       smart-buffer: 4.2.0
     dev: true
+
+  /sortablejs@1.15.0:
+    resolution: {integrity: sha512-bv9qgVMjUMf89wAvM6AxVvS/4MX3sPeN0+agqShejLU5z5GX4C75ow1O2e5k4L6XItUyAK3gH6AxSbXrOM5e8w==}
+    dev: false
 
   /source-map-js@1.0.2:
     resolution: {integrity: sha512-R0XvVJ9WusLiqTCEiGCmICCMplcCkIwwR11mOSD9CR5u+IXYdiseeEuXCVAjS54zqwkLcPNnmU4OeJ6tUrWhDw==}
