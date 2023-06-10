@@ -10,6 +10,7 @@ import { useSortable } from '@vueuse/integrations/useSortable'
 // const router = useRouter()
 const { message } = useMessage()
 const stationUrlResolvedQuery = useRouteQuery('station-url-resolved', null, { transform: String })
+const countryUrlResolvedQuery = useRouteQuery('country-url-resolved', 'FR', { transform: String })
 const { data: radioStationsIDB, isFinished: isFinishedRadioStations } = useIDBKeyval('radio-stations', [])
 const { data: savedStationsIDB, isFinished: isFinishedSavedStations } = useIDBKeyval('saved-stations', [])
 
@@ -50,12 +51,14 @@ const { results: resultsSearchFavoriteStation } = useFuse(inputSearchStation, sa
   matchAllWhenSearchEmpty: true,
 })
 useSortable(wrapperFavoriteList, resultsSearchFavoriteStation, {
-  onUpdate: (e) => {
-    if (e.item.dataset.stationuuid) {
-      const station = savedStationsIDB.value.find(i => i.stationuuid === e.item.dataset.stationuuid)
-      if (station)
-        station.order = e.newIndex
-    }
+  handle: '.handle',
+  onUpdate: async (e) => {
+    const parent = useParentElement(e.item).value
+
+    parent?.querySelectorAll('.station').forEach((el, index) => {
+      const station = savedStationsIDB.value.find(i => i.stationuuid === el.dataset.stationuuid)
+      station && (station.order = index)
+    })
   },
 })
 const getStationsMemoize = useMemoize(
@@ -64,8 +67,8 @@ const getStationsMemoize = useMemoize(
 )
 watch(isFinishedRadioStations, async (val) => {
   if (val) {
-    if (radioStationsIDB.value.length === 0) {
-      getStations(selectedCountry.value)
+    if (radioStationsIDB.value.length === 0 || (countryUrlResolvedQuery.value !== selectedCountry.value)) {
+      getStations(countryUrlResolvedQuery.value || selectedCountry.value)
     }
     else {
       stationsListIsFetching.value = false
@@ -93,7 +96,7 @@ async function getStations(countryCode = 'FR') {
     return
 
   if (data.value)
-    radioStationsIDB.value = useArrayUnique(data.value, (a, b) => a.name.trim() === b.name.trim()).value.map((s, index) => ({ ...s, isFavorite: false, srcHasError: false, index, order: ++index }))
+    radioStationsIDB.value = useArrayUnique(data.value, (a, b) => a.name.trim() === b.name.trim()).value.map((s, index) => ({ ...s, isFavorite: false, srcHasError: false, index, order: index }))
 
   stationsListIsFetching.value = false
   await nextTick()
@@ -163,6 +166,7 @@ watchThrottled(
   selectedCountry,
   async (newVal, __oldVal) => {
     getStations(newVal)
+    countryUrlResolvedQuery.value = newVal
   },
   { throttle: 1000 },
 )
@@ -189,8 +193,10 @@ onMounted(async () => {
   currentTime.value = 0
   playing.value = false
   const { data: dataCountries, error: errorCountries } = await useFetch('/all-api/countries').get().json()
-  if (dataCountries.value && errorCountries)
+  if (dataCountries.value && !errorCountries.value) {
     countries.value = dataCountries.value.map((c: any) => ({ label: c.name, value: c.iso_3166_1, count: c.stationcount }))
+    countryUrlResolvedQuery.value && (selectedCountry.value = countryUrlResolvedQuery.value)
+  }
 })
 </script>
 
@@ -202,7 +208,7 @@ onMounted(async () => {
       <div class="flex items-center space-x-1">
         <div
           class="w-18 h-18 flex justify-center flex-none"
-          @click="() => { state && (showStatiosList = true, stationsListRef?.scrollTo(state.index)) }"
+          @click="() => { !showFavoriteList && state && (showStatiosList = true, stationsListRef?.scrollTo(state.index)) }"
         >
           <UseImage :src="state?.favicon">
             <template #loading>
@@ -275,7 +281,7 @@ onMounted(async () => {
     </div>
     <div
       class="stations-list bg-slate-1 dark:bg-dark-9 relative border-slate-2 dark:border-black overflow-hidden transition-all-230"
-      :class="[showStatiosList ? 'h-361px border-t' : 'h-0']"
+      :class="[showStatiosList ? 'h-360px border-t-0' : 'h-0']"
     >
       <span
         v-if="stationsListIsFetching"
@@ -286,7 +292,7 @@ onMounted(async () => {
         </span>
       </span>
       <div
-        class="absolute z-10 top-0 w-full p-2 bg-white/40 dark:bg-dark/40 backdrop-blur b-b border-zinc-1/30 dark:border-zinc-9/30 shadow-black/5 shadow-sm"
+        class="absolute z-13 top-0 w-full p-2 bg-white/40 dark:bg-dark/40 backdrop-blur b-b border-zinc-1/30 dark:border-zinc-9/30 shadow-black/5 shadow-sm"
       >
         <div class="flex justify-end w-full space-x-1 [--color-fill-2:rgba(255,255,255,0.5)] dark:[--color-fill-2:rgba(0,0,0,0.5)]">
           <a-select
@@ -296,19 +302,27 @@ onMounted(async () => {
             :scrollbar="false" class="w-2/6" :options="countries"
             placeholder="Please select ..."
           />
-          <a-input-search
-            v-model="inputSearchStation"
-            :disabled="(showFavoriteList && !resultsSearchFavoriteStation.length) || (!showFavoriteList && !resultsSearchStation.length)"
-            class="transition-width-320"
-            placeholder="Please enter something" allow-clear
-            :class="[showFavoriteList ? 'w-6/6' : 'w-4/6']"
-          >
-            <template #prefix>
-              <a-button type="text" shape="square" size="small" class="-ml-2.7">
-                <i i-carbon-reset block />
+          <div class="flex items-center space-x-2" :class="[showFavoriteList ? 'w-6/6' : 'w-4/6']">
+            <div v-if="showFavoriteList" flex-none flex items-center>
+              <a-button
+                shape="circle" class="block w-6 h-6 mr-1" type="text" aria-label="FavoriteList"
+                @click="async () => { inputSearchStation = ''; showStatiosList = true; toggleShowFavoriteList(); await nextTick(); (!showFavoriteList && (stationsListRef?.scrollTo(state.index))) }"
+              >
+                <template #icon>
+                  <span i-fluent-arrow-left-16-filled class="" />
+                </template>
               </a-button>
-            </template>
-          </a-input-search>
+              <h4 class="uppercase text-sm/7 font-bold">
+                My Favorite
+              </h4>
+            </div>
+            <a-input-search
+              v-model="inputSearchStation"
+              :disabled="(showFavoriteList && !resultsSearchFavoriteStation.length) || (!showFavoriteList && !resultsSearchStation.length)"
+              class="transition-width-320"
+              :placeholder="showFavoriteList ? 'Search in Favorite' : 'Search ...'" allow-clear
+            />
+          </div>
         </div>
       </div>
       <div class="flex w-full overflow-hidden relative z-9">
@@ -320,7 +334,7 @@ onMounted(async () => {
             <template #default="{ data, index }">
               <div
                 flex items-center style="height: 65px" class="b-b border-dark-1/5 dark:border-light-1/5"
-                :class="[state?.stationuuid === data.item.stationuuid ? 'bg-blue-5/10' : '', data.item.srcHasError && 'bg-red-4/10']"
+                :class="[state?.stationuuid === data.item.stationuuid ? 'bg-blue-5/5' : '', data.item.srcHasError && 'bg-red-4/10']"
               >
                 <a-list-item :key="index" class="px-2 [&_.arco-list-item-action>_li:not(:last-child)]:mr-1">
                   <a-list-item-meta
@@ -354,7 +368,7 @@ onMounted(async () => {
                     </span>
                     <a-button
                       v-else shape="circle" size="small" type="text"
-                      @click="() => { !showFavoriteList ? (savedStationsIDB.some((i) => i.stationuuid === data.item.stationuuid) ? (savedStationsIDB = savedStationsIDB.filter((i) => i.stationuuid !== data.item.stationuuid)) : savedStationsIDB.push(data.item)) : (savedStationsIDB = savedStationsIDB.filter((i) => i.stationuuid !== data.item.stationuuid)) }"
+                      @click="() => { !showFavoriteList ? (savedStationsIDB.some((i) => i.stationuuid === data.item.stationuuid) ? (savedStationsIDB = savedStationsIDB.filter((i) => i.stationuuid !== data.item.stationuuid)) : savedStationsIDB.push({ ...data.item, order: savedStationsIDB.length })) : (savedStationsIDB = savedStationsIDB.filter((i) => i.stationuuid !== data.item.stationuuid)) }"
                     >
                       <template #icon>
                         <span
@@ -391,14 +405,14 @@ onMounted(async () => {
               <template #image>
                 <icon-exclamation-circle-fill />
               </template>
-              No data, please reload!
+              No Favorite yet, you can add!
             </a-empty>
           </div>
           <div ref="wrapperFavoriteList" class="pt-12">
             <div
               v-for="data in (resultsSearchFavoriteStation.sort((a, b) => a.item.order - b.item.order))" :key="data.refIndex" :data-stationuuid="data.item.stationuuid" :data-order="data.item.order"
-              flex items-center style="height: 65px" class="b-b border-dark-1/5 dark:border-light-1/5 bg-light-2 dark:bg-dark-9 cursor-move"
-              :class="[state?.item?.stationuuid === data?.item?.stationuuid ? 'bg-blue-5/10' : '', data?.item?.srcHasError && 'bg-red-4/10']"
+              flex items-center style="height: 65px" class="station b-b border-dark-1/5 dark:border-light-1/5 bg-light-1 dark:bg-dark-9"
+              :class="[state?.stationuuid === data.item.stationuuid ? '!bg-blue-5/5' : '', data?.item?.srcHasError && '!bg-red-4/10']"
             >
               <a-list-item class="px-2 [&_.arco-list-item-action>_li:not(:last-child)]:mr-1">
                 <a-list-item-meta
@@ -430,8 +444,11 @@ onMounted(async () => {
                   <span v-if="data.item?.srcHasError" w-full h-full flex items-center mr-1>
                     <span class="text-red" i-fluent-info-16-regular />
                   </span>
+                  <span class="handle" w-full h-full flex items-center mr-1>
+                    <span class="text-blue" i-fluent-text-direction-horizontal-left-20-regular />
+                  </span>
                   <a-button
-                    v-else shape="circle" size="small" type="text"
+                    shape="circle" size="small" type="text"
                     @click="() => { !showFavoriteList ? (savedStationsIDB.some((i) => i.stationuuid === data.item?.stationuuid) ? (savedStationsIDB = savedStationsIDB.filter((i) => i.stationuuid !== data.item?.stationuuid)) : savedStationsIDB.push(data.item)) : (savedStationsIDB = savedStationsIDB.filter((i) => i.stationuuid !== data.item?.stationuuid)) }"
                   >
                     <template #icon>
@@ -466,11 +483,11 @@ onMounted(async () => {
       </div>
     </div>
     <div
-      class="bg-slate-50 text-slate-500 border-slate-2 dark:border-black b-t dark:bg-dark-8 dark:text-slate-200 rounded-b-sm flex items-center py-3 lg:py-0 relative z-15"
+      class="bg-slate-50 text-slate-500 border-slate-2 dark:border-black b-t dark:bg-dark-8 dark:text-slate-200 rounded-b-sm flex items-center py-2 lg:py-1 relative z-15"
     >
       <div class="flex-auto flex items-center justify-evenly">
         <a-button
-          shape="circle" class="block !w-8 !h-8 lg:!w-12 lg:!h-12" type="text" aria-label="FavoriteList"
+          shape="circle" class="block !w-8 !h-8 lg:!w-10 lg:!h-10" type="text" aria-label="FavoriteList"
           @click="async () => { inputSearchStation = ''; showStatiosList = true; toggleShowFavoriteList(); await nextTick(); (!showFavoriteList && (stationsListRef?.scrollTo(state.index))) }"
         >
           <template #icon>
@@ -479,7 +496,7 @@ onMounted(async () => {
           </template>
         </a-button>
         <a-button
-          shape="circle" class="block !w-8 !h-8 lg:!w-12 lg:!h-12" type="text" aria-label="Previous"
+          shape="circle" class="block !w-8 !h-8 lg:!w-10 lg:!h-10" type="text" aria-label="Previous"
           @click="async () => { prev(); inputSearchStation = ''; await nextTick(); stationsListRef?.scrollTo(state.index) }"
         >
           <template #icon>
@@ -489,7 +506,7 @@ onMounted(async () => {
       </div>
       <a-button
         :disabled="!state || waiting" long
-        class="dark:text-slate-1 flex-none -my-4 lg:-my-3 mx-auto !w-16 !h-16 lg:!w-20 lg:!h-20 rounded-full ring-1 ring-slate-900/5 shadow-sm flex items-center justify-center"
+        class="dark:text-slate-1 flex-none -my-4 lg:-my-3 mx-auto !w-16 !h-16 lg:!w-18 lg:!h-18 rounded-full ring-1 ring-slate-900/5 shadow-sm flex items-center justify-center"
         type="primary" shape="circle"
         @click="async () => { (!waiting && togglePlayPauseMedia()); stationsListRef?.scrollTo(state.index) }"
       >
@@ -503,7 +520,7 @@ onMounted(async () => {
       </a-button>
       <div class="flex-auto flex items-center justify-evenly">
         <a-button
-          shape="circle" class="block !w-8 !h-8 lg:!w-12 lg:!h-12 xl:block" type="text" aria-label="Next"
+          shape="circle" class="block !w-8 !h-8 lg:!w-10 lg:!h-10 xl:block" type="text" aria-label="Next"
           @click="async () => { next(); inputSearchStation = ''; await nextTick(); stationsListRef?.scrollTo(state.index) }"
         >
           <template #icon>
@@ -511,7 +528,7 @@ onMounted(async () => {
           </template>
         </a-button>
         <a-button
-          shape="circle" class="block !w-8 !h-8 lg:!w-12 lg:!h-12" type="text" aria-label="List"
+          shape="circle" class="block !w-8 !h-8 lg:!w-10 lg:!h-10" type="text" aria-label="List"
           @click="toggleShowStatiosList()"
         >
           <template #icon>
