@@ -6,7 +6,6 @@ import { useIDBKeyval } from '@vueuse/integrations/useIDBKeyval'
 import { useSortable } from '@vueuse/integrations/useSortable'
 // import { mdAndLarger, smAndSmaller } from '~/common/stores'
 // const { t } = useI18n()
-// const { width: windowWidth } = useWindowSize()
 // const router = useRouter()
 const { message } = useMessage()
 const stationUrlResolvedQuery = useRouteQuery('station-url-resolved', null, { transform: String })
@@ -25,6 +24,11 @@ const countries = ref([{
   value: 'GB',
   label: '🇬🇧 United Kingdom',
   other: '🇬🇧',
+},
+{
+  label: '🇹🇳 Tunisia',
+  value: 'TN',
+  other: 93,
 }])
 const audioRadioRef = ref<HTMLAudioElement | null>(null)
 const wrapperFavoriteList = ref<HTMLElement | null>(null)
@@ -34,11 +38,33 @@ const stationsListIsFetching = ref(true)
 const [playPauseMedia, togglePlayPauseMedia] = useToggle()
 const [showFavoriteList, toggleShowFavoriteList] = useToggle()
 const [showStatiosList, toggleShowStatiosList] = useToggle()
+// const playList = computed(() => showFavoriteList.value ? savedStationsIDB.value : radioStationsIDB.value)
+const stationInPlay = ref()
 
-const { state, next, prev } = useCycleList(radioStationsIDB)
+// const { state, next, prev } = useCycleList(playList)
+
+const { history, undo, redo, last, canRedo, canUndo, pause, resume, dispose, clear } = useThrottledRefHistory(stationInPlay, {
+  deep: false,
+  // flush: 'sync',
+  throttle: 1000,
+})
+
+const currentStation = computed({
+  get() {
+    const foundedInSaved = savedStationsIDB.value.find(i => i.stationuuid === stationInPlay.value?.stationuuid)
+
+    if (foundedInSaved)
+      return foundedInSaved
+    else
+      return radioStationsIDB.value.find(i => i.stationuuid === stationInPlay.value?.stationuuid)
+  },
+  set(newValue) {
+    stationInPlay.value = newValue
+  },
+})
 
 const { playing, currentTime, waiting, volume, muted } = useMediaControls(audioRadioRef)
-const { results: resultsSearchStation } = useFuse(inputSearchStation, radioStationsIDB, {
+const { results: resultsSearchStation } = useFuse(inputSearchStation, useSorted(radioStationsIDB, (a, b) => a.isFavorite - b.isFavorite, { dirty: true }), {
   fuseOptions: {
     keys: ['name', 'homepage', 'tags'],
   },
@@ -76,7 +102,7 @@ watch(isFinishedRadioStations, async (val) => {
       if (stationUrlResolvedQuery.value) {
         const station = radioStationsIDB.value.find(i => i.url_resolved === stationUrlResolvedQuery.value)
         if (station)
-          state.value = station
+          stationInPlay.value = station
       }
     }
   }
@@ -103,7 +129,7 @@ async function getStations(countryCode = 'FR') {
   if (stationUrlResolvedQuery.value) {
     const station = radioStationsIDB.value.find(i => i.url_resolved === stationUrlResolvedQuery.value)
     if (station)
-      state.value = station
+      stationInPlay.value = station
   }
 }
 
@@ -132,9 +158,8 @@ useEventListener(audioRadioRef, 'error', (e) => {
 })
 
 watchThrottled(
-  state,
+  stationInPlay,
   async (newVal, __oldVal) => {
-    stationUrlResolvedQuery.value = newVal.url_resolved
     if (!playPauseMedia.value) {
       playing.value = false
       return
@@ -142,6 +167,9 @@ watchThrottled(
 
     if (newVal) {
       await nextTick()
+      stationUrlResolvedQuery.value = newVal.url_resolved
+      countryUrlResolvedQuery.value = newVal.countrycode
+      selectedCountry.value = newVal.countrycode
       const playPromise = audioRadioRef.value?.play()
       playPromise && (playPromise.then(() => {
         newVal.srcHasError = false
@@ -166,7 +194,6 @@ watchThrottled(
   selectedCountry,
   async (newVal, __oldVal) => {
     getStations(newVal)
-    countryUrlResolvedQuery.value = newVal
   },
   { throttle: 1000 },
 )
@@ -177,8 +204,8 @@ watchThrottled(
       await nextTick()
       const playPromise = audioRadioRef.value?.play()
       playPromise && (playPromise.then(() => {
-        state.value.srcHasError = false
-        stationUrlResolvedQuery.value = state.value.url_resolved
+        stationInPlay.value.srcHasError = false
+        stationUrlResolvedQuery.value = stationInPlay.value.url_resolved
       }))
     }
     else {
@@ -208,9 +235,9 @@ onMounted(async () => {
       <div class="flex items-center space-x-1">
         <div
           class="w-18 h-18 flex justify-center flex-none"
-          @click="() => { !showFavoriteList && state && (showStatiosList = true, stationsListRef?.scrollTo(state.index)) }"
+          @click="() => { !showFavoriteList && stationInPlay && (showStatiosList = true, stationsListRef?.scrollTo(stationInPlay?.index)) }"
         >
-          <UseImage :src="state?.favicon">
+          <UseImage :src="currentStation?.favicon">
             <template #loading>
               <span class="i-fluent-music-note-2-20-filled flex-none rounded-sm p-0 w-full h-full" />
             </template>
@@ -222,34 +249,34 @@ onMounted(async () => {
         </div>
         <div class="min-w-0 flex-auto space-y-1 font-semibold">
           <h2 class="text-slate-9 dark:text-slate-1 leading-6 truncate text-lg text-lg">
-            {{ state?.name }}
+            {{ stationInPlay?.name }}
           </h2>
           <div flex>
-            <a :href="state?.homepage" target="_blank" class="text-slate-6 dark:text-slate-4 text-xs truncate">
+            <a :href="stationInPlay?.homepage" target="_blank" class="text-slate-6 dark:text-slate-4 text-xs truncate">
               <span>
-                {{ state?.homepage }}
+                {{ stationInPlay?.homepage }}
               </span>
             </a>
           </div>
         </div>
-        <div v-if="state">
-          <span v-if="state.srcHasError" w-full h-full flex items-center mr-1>
+        <div v-if="stationInPlay">
+          <span v-if="stationInPlay.srcHasError" w-full h-full flex items-center mr-1>
             <span class="text-red" i-fluent-info-16-regular />
           </span>
           <a-button
             v-else shape="circle" size="small" type="text"
-            @click="() => { savedStationsIDB.some((i) => i.stationuuid === state.stationuuid) ? (savedStationsIDB = savedStationsIDB.filter((i) => i.stationuuid !== state.stationuuid)) : savedStationsIDB.push(state) }"
+            @click="() => { savedStationsIDB.some((i) => i.stationuuid === stationInPlay.stationuuid) ? (savedStationsIDB = savedStationsIDB.filter((i) => i.stationuuid !== stationInPlay.stationuuid)) : savedStationsIDB.push(stationInPlay) }"
           >
             <template #icon>
               <span
-                v-if="savedStationsIDB.some((i) => i.stationuuid === state.stationuuid)"
+                v-if="savedStationsIDB.some((i) => i.stationuuid === stationInPlay.stationuuid)"
                 i-fluent-heart-16-filled class="text-red"
               />
               <span v-else i-fluent-heart-16-regular class="text-red" />
             </template>
           </a-button>
         </div>
-        <video ref="audioRadioRef" :src="state?.url_resolved" class="hidden" />
+        <video ref="audioRadioRef" :src="currentStation?.url_resolved" class="hidden" />
       </div>
       <div class="space-y-0">
         <div class="relative flex justify-center">
@@ -283,14 +310,6 @@ onMounted(async () => {
       class="stations-list bg-slate-1 dark:bg-dark-9 relative border-slate-2 dark:border-black overflow-hidden transition-all-230"
       :class="[showStatiosList ? 'h-360px border-t-0' : 'h-0']"
     >
-      <span
-        v-if="stationsListIsFetching"
-        class="absolute flex justify-center content-center w-full h-full bg-light/55 dark:bg-dark/55 backdrop-blur z-12"
-      >
-        <span class="m-auto">
-          <span class="mx-auto text-blue my-2 block w-8 h-8 i-line-md-loading-twotone-loop" />
-        </span>
-      </span>
       <div
         class="absolute z-13 top-0 w-full p-2 bg-white/40 dark:bg-dark/40 backdrop-blur b-b border-zinc-1/30 dark:border-zinc-9/30 shadow-black/5 shadow-sm"
       >
@@ -306,7 +325,7 @@ onMounted(async () => {
             <div v-if="showFavoriteList" flex-none flex items-center>
               <a-button
                 shape="circle" class="block w-6 h-6 mr-1" type="text" aria-label="FavoriteList"
-                @click="async () => { inputSearchStation = ''; showStatiosList = true; toggleShowFavoriteList(); await nextTick(); (!showFavoriteList && (stationsListRef?.scrollTo(state.index))) }"
+                @click="async () => { inputSearchStation = ''; showStatiosList = true; toggleShowFavoriteList(); await nextTick(); (!showFavoriteList && (stationsListRef?.scrollTo(stationInPlay?.index))) }"
               >
                 <template #icon>
                   <span i-fluent-arrow-left-16-filled class="" />
@@ -318,7 +337,6 @@ onMounted(async () => {
             </div>
             <a-input-search
               v-model="inputSearchStation"
-              :disabled="(showFavoriteList && !resultsSearchFavoriteStation.length) || (!showFavoriteList && !resultsSearchStation.length)"
               class="transition-width-320"
               :placeholder="showFavoriteList ? 'Search in Favorite' : 'Search ...'" allow-clear
             />
@@ -326,6 +344,14 @@ onMounted(async () => {
         </div>
       </div>
       <div class="flex w-full overflow-hidden relative z-9">
+        <span
+          v-if="stationsListIsFetching"
+          class="absolute flex justify-center content-center w-full h-full bg-light/55 dark:bg-dark/55 backdrop-blur z-2"
+        >
+          <span class="m-auto">
+            <span class="mx-auto text-blue my-2 block w-8 h-8 i-line-md-loading-twotone-loop" />
+          </span>
+        </span>
         <div class="w-full flex-none transition-all-230 relative z-1" :class="[showFavoriteList ? '-translate-x-[calc(10%)]' : 'translate-x-0']">
           <UseVirtualList
             ref="stationsListRef" :list="resultsSearchStation" :options="{ itemHeight: 65 }" height="360px"
@@ -334,7 +360,7 @@ onMounted(async () => {
             <template #default="{ data, index }">
               <div
                 flex items-center style="height: 65px" class="b-b border-dark-1/5 dark:border-light-1/5"
-                :class="[state?.stationuuid === data.item.stationuuid ? 'bg-blue-5/5' : '', data.item.srcHasError && 'bg-red-4/10']"
+                :class="[stationInPlay?.stationuuid === data.item.stationuuid ? 'bg-blue-5/5' : '', data.item.srcHasError && 'bg-red-4/10']"
               >
                 <a-list-item :key="index" class="px-2 [&_.arco-list-item-action>_li:not(:last-child)]:mr-1">
                   <a-list-item-meta
@@ -378,15 +404,15 @@ onMounted(async () => {
                         <span v-else i-fluent-heart-16-regular class="text-red" />
                       </template>
                     </a-button>
-                    <a-button :disabled="state?.stationuuid === data.item.stationuuid && waiting" shape="circle" size="small" type="text" @click="async() => { state?.stationuuid === data.item.stationuuid ? togglePlayPauseMedia() : (state = data.item, await nextTick(), playPauseMedia = true) }">
+                    <a-button :disabled="stationInPlay?.stationuuid === data.item.stationuuid && waiting" shape="circle" size="small" type="text" @click="async() => { stationInPlay?.stationuuid === data.item.stationuuid ? togglePlayPauseMedia() : (currentStation = data.item, await nextTick(), playPauseMedia = true) }">
                       <template #icon>
                         <span
-                          v-if="state?.stationuuid === data.item.stationuuid && waiting"
+                          v-if="stationInPlay?.stationuuid === data.item.stationuuid && waiting"
                           i-line-md-loading-twotone-loop class="text-sm"
                         />
                         <template v-else>
                           <span
-                            v-if="(state?.stationuuid === data.item.stationuuid) && playPauseMedia"
+                            v-if="(stationInPlay?.stationuuid === data.item.stationuuid) && playPauseMedia"
                             i-fluent-pause-12-filled
                           />
                           <span v-else i-fluent-play-20-filled />
@@ -399,7 +425,7 @@ onMounted(async () => {
             </template>
           </UseVirtualList>
         </div>
-        <div class="relative z-3 bg-slate-2 dark:bg-dark-9 shadow-md w-[calc(100%-2rem)] flex-none transition-all-230 overflow-y-auto overflow-x-hidden h-360px" :class="[showFavoriteList ? '-translate-x-[calc(100%)]' : 'translate-x-[calc(100%)]']">
+        <div class="relative z-4 bg-light-1 dark:bg-dark-9 shadow-md w-[calc(100%-2rem)] flex-none transition-all-230 overflow-y-auto overflow-x-hidden h-360px" :class="[showFavoriteList ? '-translate-x-[calc(100%)]' : 'translate-x-[calc(100%)]']">
           <div v-if="!resultsSearchFavoriteStation.length" class="flex items-center justify-center w-full h-full">
             <a-empty>
               <template #image>
@@ -412,7 +438,7 @@ onMounted(async () => {
             <div
               v-for="data in (resultsSearchFavoriteStation.sort((a, b) => a.item.order - b.item.order))" :key="data.refIndex" :data-stationuuid="data.item.stationuuid" :data-order="data.item.order"
               flex items-center style="height: 65px" class="station b-b border-dark-1/5 dark:border-light-1/5 bg-light-1 dark:bg-dark-9"
-              :class="[state?.stationuuid === data.item.stationuuid ? '!bg-blue-5/5' : '', data?.item?.srcHasError && '!bg-red-4/10']"
+              :class="[stationInPlay?.stationuuid === data.item.stationuuid ? '!bg-blue-5/5' : '', data?.item?.srcHasError && '!bg-red-4/10']"
             >
               <a-list-item class="px-2 [&_.arco-list-item-action>_li:not(:last-child)]:mr-1">
                 <a-list-item-meta
@@ -459,15 +485,15 @@ onMounted(async () => {
                       <span v-else i-fluent-heart-16-regular class="text-red" />
                     </template>
                   </a-button>
-                  <a-button :disabled="state?.stationuuid === data.item?.stationuuid && waiting" shape="circle" size="small" type="text" @click="async() => { state?.stationuuid === data.item?.stationuuid ? togglePlayPauseMedia() : (state = data.item, await nextTick(), playPauseMedia = true) }">
+                  <a-button :disabled="stationInPlay?.stationuuid === data.item?.stationuuid && waiting" shape="circle" size="small" type="text" @click="async() => { stationInPlay?.stationuuid === data.item?.stationuuid ? togglePlayPauseMedia() : (currentStation = data.item, await nextTick(), playPauseMedia = true) }">
                     <template #icon>
                       <span
-                        v-if="state?.stationuuid === data.item?.stationuuid && waiting"
+                        v-if="stationInPlay?.stationuuid === data.item?.stationuuid && waiting"
                         i-line-md-loading-twotone-loop class="text-sm"
                       />
                       <template v-else>
                         <span
-                          v-if="(state?.stationuuid === data.item?.stationuuid) && playPauseMedia"
+                          v-if="(stationInPlay?.stationuuid === data.item?.stationuuid) && playPauseMedia"
                           i-fluent-pause-12-filled
                         />
                         <span v-else i-fluent-play-20-filled />
@@ -479,7 +505,7 @@ onMounted(async () => {
             </div>
           </div>
         </div>
-        <div class="absolute z-2 w-full h-full top-0 bg-black transition-all-320" :class="[showFavoriteList ? 'opacity-60' : 'opacity-0 invisible pointer-events-none']" @click="() => showFavoriteList = false" />
+        <div class="absolute z-3 w-full h-full top-0 bg-black transition-all-320" :class="[showFavoriteList ? 'opacity-60' : 'opacity-0 invisible pointer-events-none']" @click="() => showFavoriteList = false" />
       </div>
     </div>
     <div
@@ -488,7 +514,7 @@ onMounted(async () => {
       <div class="flex-auto flex items-center justify-evenly">
         <a-button
           shape="circle" class="block !w-8 !h-8 lg:!w-10 lg:!h-10" type="text" aria-label="FavoriteList"
-          @click="async () => { inputSearchStation = ''; showStatiosList = true; toggleShowFavoriteList(); await nextTick(); (!showFavoriteList && (stationsListRef?.scrollTo(state.index))) }"
+          @click="async () => { inputSearchStation = ''; showStatiosList = true; toggleShowFavoriteList(); await nextTick(); (!showFavoriteList && (stationsListRef?.scrollTo(stationInPlay?.index))) }"
         >
           <template #icon>
             <span v-if="showFavoriteList" i-fluent-arrow-left-16-filled class="" />
@@ -496,8 +522,8 @@ onMounted(async () => {
           </template>
         </a-button>
         <a-button
-          shape="circle" class="block !w-8 !h-8 lg:!w-10 lg:!h-10" type="text" aria-label="Previous"
-          @click="async () => { prev(); inputSearchStation = ''; await nextTick(); stationsListRef?.scrollTo(state.index) }"
+          shape="circle" class="block !w-8 !h-8 lg:!w-10 lg:!h-10" type="text" aria-label="Previous" :disabled="history.length < 3 || !canUndo"
+          @click="async () => { undo(); inputSearchStation = ''; await nextTick(); stationsListRef?.scrollTo(stationInPlay?.index) }"
         >
           <template #icon>
             <span i-fluent-previous-16-regular class="" />
@@ -505,10 +531,10 @@ onMounted(async () => {
         </a-button>
       </div>
       <a-button
-        :disabled="!state || waiting" long
+        :disabled="!stationInPlay || waiting" long
         class="dark:text-slate-1 flex-none -my-4 lg:-my-3 mx-auto !w-16 !h-16 lg:!w-18 lg:!h-18 rounded-full ring-1 ring-slate-900/5 shadow-sm flex items-center justify-center"
         type="primary" shape="circle"
-        @click="async () => { (!waiting && togglePlayPauseMedia()); stationsListRef?.scrollTo(state.index) }"
+        @click="async () => { (!waiting && togglePlayPauseMedia()); stationsListRef?.scrollTo(stationInPlay?.index) }"
       >
         <template v-if="waiting">
           <span i-line-md-loading-twotone-loop class="text-3xl" />
@@ -520,8 +546,8 @@ onMounted(async () => {
       </a-button>
       <div class="flex-auto flex items-center justify-evenly">
         <a-button
-          shape="circle" class="block !w-8 !h-8 lg:!w-10 lg:!h-10 xl:block" type="text" aria-label="Next"
-          @click="async () => { next(); inputSearchStation = ''; await nextTick(); stationsListRef?.scrollTo(state.index) }"
+          shape="circle" class="block !w-8 !h-8 lg:!w-10 lg:!h-10 xl:block" type="text" aria-label="Next" :disabled="!canRedo"
+          @click="async () => { redo(); inputSearchStation = ''; await nextTick(); stationsListRef?.scrollTo(stationInPlay?.index) }"
         >
           <template #icon>
             <span i-fluent-next-16-regular class="" />
