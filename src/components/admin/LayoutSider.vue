@@ -40,7 +40,7 @@ watch(mdAndSmaller, (val) => {
     @mouseenter="() => mdAndLarger && (sideCollapsed = false)"
     @mouseleave="() => mdAndLarger && !sideFixed && ((sideCollapsed = true) && (visibleDrawer = false))"
   >
-    <div class="h-14.5 bg-light-5 relative dark:bg-dark-9 flex items-center justify-end border-b-1px border-zinc-5/10 dark:border-zinc-5/10 relative z-2">
+    <div class="h-14.5 bg-light-5 relative dark:bg-dark-9 flex items-center justify-end border-b-1px b-r-1px border-zinc-5/10 dark:border-zinc-5/10 relative z-2">
       <div flex px-2.5 flex-1 justify-between :class="sideCollapsed && mdAndLarger && 'duration-300 translate-x--12'">
         <div flex items-center>
           <a href="" :class="sideCollapsed ? 'invisible opacity-0' : 'delay-100 visible opacity-100'" class="transition-opacity duration-300 inline-block grow-1 mr-auto" @click.prevent="router.push('/')">
@@ -77,11 +77,11 @@ watch(mdAndSmaller, (val) => {
         </div>
       </div>
     </div>
-    <div id="parentNode" class="border-r border-light-5 dark:border-dark-6 relative z-1">
+    <div id="parentNode" class="bg-[var(--color-menu-light-bg)] dark:bg-[var(--color-menu-dark-bg)] border-r border-light-7 dark:border-dark-6 relative z-1 !w-auto">
       <a-menu
         :default-open-keys="openKeySider"
         :default-selected-keys="selectedKeysSider"
-        class="menu-side-nav"
+        class="menu-side-nav !bg-transparent"
         @menu-item-click="onClickMenuItem"
       >
         <component :is="parent.children ? SubMenu : MenuItem" v-for="parent in menuItems" :key="parent.path">

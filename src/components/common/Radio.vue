@@ -8,8 +8,8 @@ import { useSortable } from '@vueuse/integrations/useSortable'
 // const { t } = useI18n()
 // const router = useRouter()
 const { message } = useMessage()
-const stationUrlResolvedQuery = useRouteQuery('station', null, { transform: String })
-const countryUrlResolvedQuery = useRouteQuery('country', null, { transform: String })
+const stationUrlResolvedQuery = useRouteQuery('station', null)
+const countryUrlResolvedQuery = useRouteQuery('country', null)
 const { data: radioStationsIDB, isFinished: isFinishedRadioStations } = useIDBKeyval('radio-stations', [])
 const { data: savedStationsIDB, isFinished: isFinishedSavedStations } = useIDBKeyval('saved-stations', [])
 
@@ -38,29 +38,11 @@ const stationsListIsFetching = ref(true)
 const [playPauseMedia, togglePlayPauseMedia] = useToggle()
 const [showFavoriteList, toggleShowFavoriteList] = useToggle()
 const [showStatiosList, toggleShowStatiosList] = useToggle()
-// const playList = computed(() => showFavoriteList.value ? savedStationsIDB.value : radioStationsIDB.value)
 const stationInPlay = ref()
 
 // const { state, next, prev } = useCycleList(playList)
-
-const { history, undo, redo, last, canRedo, canUndo, pause, resume, dispose, clear } = useThrottledRefHistory(stationInPlay, {
-  deep: false,
+const { history, undo, redo, last, canRedo, canUndo, commit } = useManualRefHistory(stationInPlay, {
   // flush: 'sync',
-  throttle: 1000,
-})
-
-const currentStation = computed({
-  get() {
-    const foundedInSaved = savedStationsIDB.value.find(i => i.stationuuid === stationInPlay.value?.stationuuid)
-
-    if (foundedInSaved)
-      return foundedInSaved
-    else
-      return radioStationsIDB.value.find(i => i.stationuuid === stationInPlay.value?.stationuuid)
-  },
-  set(newValue) {
-    stationInPlay.value = newValue
-  },
 })
 
 const { playing, currentTime, waiting, volume, muted } = useMediaControls(audioRadioRef)
@@ -97,8 +79,10 @@ const getCountriesMemoize = useMemoize(
 )
 watch(isFinishedRadioStations, async (val) => {
   if (val) {
-    if (radioStationsIDB.value.length === 0 || (countryUrlResolvedQuery.value !== selectedCountry.value)) {
-      getStations(countryUrlResolvedQuery.value || selectedCountry.value)
+    const country = countryUrlResolvedQuery.value !== null ? countryUrlResolvedQuery.value : selectedCountry.value
+    if (radioStationsIDB.value.length === 0 || (country !== selectedCountry.value)) {
+      getStations(country)
+      selectedCountry.value = country
     }
     else {
       stationsListIsFetching.value = false
@@ -106,10 +90,10 @@ watch(isFinishedRadioStations, async (val) => {
       if (stationUrlResolvedQuery.value) {
         const station = radioStationsIDB.value.find(i => i.stationuuid === stationUrlResolvedQuery.value)
         if (station)
-          currentStation.value = station
+          stationInPlay.value = station
       }
       else {
-        currentStation.value = radioStationsIDB.value[0]
+        stationInPlay.value = radioStationsIDB.value[0]
       }
     }
   }
@@ -133,13 +117,13 @@ async function getStations(countryCode = 'FR') {
 
   stationsListIsFetching.value = false
   await nextTick()
-  if (stationUrlResolvedQuery.value) {
+  if (stationUrlResolvedQuery.value !== null) {
     const station = radioStationsIDB.value.find(i => i.stationuuid === stationUrlResolvedQuery.value)
     if (station)
-      currentStation.value = station
+      stationInPlay.value = station
   }
   else {
-    currentStation.value = radioStationsIDB.value[0]
+    stationInPlay.value = radioStationsIDB.value[0]
   }
 }
 
@@ -169,18 +153,18 @@ useEventListener(audioRadioRef, 'error', (e) => {
 watchThrottled(
   stationInPlay,
   async (newVal, __oldVal) => {
-    countryUrlResolvedQuery.value = newVal?.countrycode
     if (!playPauseMedia.value) {
       playing.value = false
       return
     }
 
     if (newVal) {
-      stationUrlResolvedQuery.value = newVal.stationuuid
-      selectedCountry.value = newVal.countrycode
       await nextTick()
       const playPromise = audioRadioRef.value?.play()
       playPromise && (playPromise.then(() => {
+        commit()
+        stationUrlResolvedQuery.value = newVal.stationuuid
+        countryUrlResolvedQuery.value = newVal.countrycode
         newVal.srcHasError = false
         playing.value = true
       }))
@@ -201,8 +185,8 @@ watchThrottled(
 )
 watchThrottled(
   selectedCountry,
-  async (newVal, __oldVal) => {
-    getStations(newVal)
+  async (newVal) => {
+    newVal && getStations(newVal)
   },
   { throttle: 1000 },
 )
@@ -213,7 +197,10 @@ watchThrottled(
       await nextTick()
       const playPromise = audioRadioRef.value?.play()
       playPromise && (playPromise.then(() => {
-        currentStation.value.srcHasError = false
+        stationUrlResolvedQuery.value = stationInPlay.value.stationuuid
+        countryUrlResolvedQuery.value = stationInPlay.value.countrycode
+        stationInPlay.value.srcHasError = false
+        playing.value = true
       }))
     }
     else {
@@ -224,10 +211,8 @@ watchThrottled(
 )
 async function getCountries() {
   const { data: dataCountries, error: errorCountries } = await getCountriesMemoize()
-  if (dataCountries.value && !errorCountries.value) {
+  if (dataCountries.value && !errorCountries.value)
     countries.value = dataCountries.value.map((c: any) => ({ label: c.name, value: c.iso_3166_1, count: c.stationcount }))
-    countryUrlResolvedQuery.value && (selectedCountry.value = countryUrlResolvedQuery.value)
-  }
 }
 // Change initial media properties
 onMounted(async () => {
@@ -287,7 +272,9 @@ onMounted(async () => {
             </template>
           </a-button>
         </div>
-        <video ref="audioRadioRef" :src="stationInPlay?.url_resolved" class="hidden" />
+        <Teleport to="body">
+          <video ref="audioRadioRef" :src="stationInPlay?.url_resolved" class="hidden" />
+        </Teleport>
       </div>
       <div class="space-y-0">
         <div class="relative flex justify-center">
@@ -336,7 +323,7 @@ onMounted(async () => {
             <div v-if="showFavoriteList" flex-none flex items-center>
               <a-button
                 shape="circle" class="block w-6 h-6 mr-1" type="text" aria-label="FavoriteList"
-                @click="async () => { inputSearchStation = ''; showStatiosList = true; toggleShowFavoriteList(); await nextTick(); (!showFavoriteList && (stationsListRef?.scrollTo(currentStation?.index))) }"
+                @click="async () => { inputSearchStation = ''; showStatiosList = true; toggleShowFavoriteList(); await nextTick(); (!showFavoriteList && (stationsListRef?.scrollTo(stationInPlay?.index))) }"
               >
                 <template #icon>
                   <span i-fluent-arrow-left-16-filled class="" />
@@ -416,7 +403,7 @@ onMounted(async () => {
                         <span v-else i-fluent-heart-16-regular class="text-red" />
                       </template>
                     </a-button>
-                    <a-button :disabled="stationInPlay?.stationuuid === data.item.stationuuid && waiting" shape="circle" size="small" type="text" @click="async() => { stationInPlay?.stationuuid === data.item.stationuuid ? togglePlayPauseMedia() : (currentStation = data.item, await nextTick(), playPauseMedia = true) }">
+                    <a-button :disabled="stationInPlay?.stationuuid === data.item.stationuuid && waiting" shape="circle" size="small" type="text" @click="async() => { stationInPlay?.stationuuid === data.item.stationuuid ? togglePlayPauseMedia() : (stationInPlay = data.item, await nextTick(), playPauseMedia = true) }">
                       <template #icon>
                         <span
                           v-if="stationInPlay?.stationuuid === data.item.stationuuid && waiting"
@@ -497,7 +484,7 @@ onMounted(async () => {
                       <span v-else i-fluent-heart-16-regular class="text-red" />
                     </template>
                   </a-button>
-                  <a-button :disabled="stationInPlay?.stationuuid === data.item?.stationuuid && waiting" shape="circle" size="small" type="text" @click="async() => { stationInPlay?.stationuuid === data.item?.stationuuid ? togglePlayPauseMedia() : (currentStation = data.item, await nextTick(), playPauseMedia = true) }">
+                  <a-button :disabled="stationInPlay?.stationuuid === data.item?.stationuuid && waiting" shape="circle" size="small" type="text" @click="async() => { stationInPlay?.stationuuid === data.item?.stationuuid ? togglePlayPauseMedia() : (stationInPlay = data.item, await nextTick(), playPauseMedia = true) }">
                     <template #icon>
                       <span
                         v-if="stationInPlay?.stationuuid === data.item?.stationuuid && waiting"
@@ -526,19 +513,19 @@ onMounted(async () => {
       <div class="flex-auto flex items-center justify-evenly">
         <a-button
           shape="circle" class="block !w-8 !h-8 lg:!w-10 lg:!h-10" type="text" aria-label="FavoriteList"
-          @click="async () => { inputSearchStation = ''; showStatiosList = true; toggleShowFavoriteList(); await nextTick(); (!showFavoriteList && (stationsListRef?.scrollTo(currentStation?.index))) }"
+          @click="async () => { inputSearchStation = ''; showStatiosList = true; toggleShowFavoriteList(); await nextTick(); (!showFavoriteList && (stationsListRef?.scrollTo(stationInPlay?.index))) }"
         >
           <template #icon>
-            <span v-if="showFavoriteList" i-fluent-arrow-left-16-filled class="" />
+            <span v-if="showFavoriteList" i-carbon-search class="" />
             <span v-else i-fluent-clipboard-heart-20-regular class="" />
           </template>
         </a-button>
         <a-button
           shape="circle" class="block !w-8 !h-8 lg:!w-10 lg:!h-10" type="text" aria-label="Previous" :disabled="history.length < 3 || !canUndo"
-          @click="async () => { undo(); inputSearchStation = ''; await nextTick(); stationsListRef?.scrollTo(currentStation?.index) }"
+          @click="async () => { undo(); inputSearchStation = ''; await nextTick(); stationsListRef?.scrollTo(stationInPlay?.index) }"
         >
           <template #icon>
-            <span i-fluent-previous-16-regular class="" />
+            <span i-carbon-undo class="" />
           </template>
         </a-button>
       </div>
@@ -546,7 +533,7 @@ onMounted(async () => {
         :disabled="!stationInPlay || waiting" long
         class="dark:text-slate-1 flex-none -my-4 lg:-my-3 mx-auto !w-16 !h-16 lg:!w-18 lg:!h-18 rounded-full ring-1 ring-slate-900/5 shadow-sm flex items-center justify-center"
         type="primary" shape="circle"
-        @click="async () => { (!waiting && togglePlayPauseMedia()); stationsListRef?.scrollTo(currentStation?.index) }"
+        @click="async () => { (!waiting && togglePlayPauseMedia()); stationsListRef?.scrollTo(stationInPlay?.index) }"
       >
         <template v-if="waiting">
           <span i-line-md-loading-twotone-loop class="text-3xl" />
@@ -559,10 +546,10 @@ onMounted(async () => {
       <div class="flex-auto flex items-center justify-evenly">
         <a-button
           shape="circle" class="block !w-8 !h-8 lg:!w-10 lg:!h-10 xl:block" type="text" aria-label="Next" :disabled="!canRedo"
-          @click="async () => { redo(); inputSearchStation = ''; await nextTick(); stationsListRef?.scrollTo(currentStation?.index) }"
+          @click="async () => { redo(); inputSearchStation = ''; await nextTick(); stationsListRef?.scrollTo(stationInPlay?.index) }"
         >
           <template #icon>
-            <span i-fluent-next-16-regular class="" />
+            <span i-carbon-redo class="" />
           </template>
         </a-button>
         <a-button
