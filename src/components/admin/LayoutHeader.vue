@@ -94,7 +94,7 @@ async function logout() {
       </div>
       <div class="flex items-center">
         <a-dropdown trigger="hover">
-          <a-button class="px-2 mr-2" type="text">
+          <a-button class="px-2 mr-1" type="text">
             <span class="flex items-center">
               <span class="w-4 h-4 mr-1 inline-block leading-30px text-md i-carbon-globe" />
               {{ userLang }}
@@ -120,7 +120,7 @@ async function logout() {
           </template>
         </a-dropdown>
         <a-tooltip content="Toggle Dark mode" position="br" mini>
-          <a-button class="px-2" type="text" @click="toggleDark()">
+          <a-button class="px-2 mr-1" type="text" @click="toggleDark()">
             <template #icon>
               <span class="w-4 h-4 mx-1 block text-sm i-carbon-sun dark:i-carbon-moon" />
             </template>

@@ -228,9 +228,13 @@ export default ({ mode }) => {
         protocol: 'ws',
       },
       proxy: {
-        // with options: http://localhost:5173/api/bar-> http://jsonplaceholder.typicode.com/bar
+        '/api': {
+          target: process.env.VITE_API_URL || 'http://localhost:3000',
+          changeOrigin: true,
+          rewrite: path => path.replace(/^\/api/, ''),
+        },
         '/graphql': {
-          target: process.env.VITE_API_URL || 'http://localhost:3000/graphql',
+          target: `${process.env.VITE_API_URL || 'http://localhost:3000'}/graphql`,
           changeOrigin: true,
           rewrite: path => path.replace(/^\/graphql/, ''),
         },
@@ -239,6 +243,7 @@ export default ({ mode }) => {
           target: process.env.VITE_API_WS_URL || 'ws://localhost:3000/graphql',
           ws: true,
           secure: true,
+          rewrite: path => path.replace(/^\/socket.io/, ''),
         },
         // Proxying websockets or socket.io: ws://localhost:5173/socket.io -> ws://localhost:5174/socket.io
         '/all-api': {

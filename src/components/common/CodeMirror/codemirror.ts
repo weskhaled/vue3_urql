@@ -46,13 +46,10 @@ const langExtensions: Record<string, () => {}> = {
   css,
   html: () => htmlLanguage.extension,
   vue: () => htmlLanguage.extension,
-  svelte: () => htmlLanguage.extension,
   js: javascript,
   mjs: javascript,
   cjs: javascript,
   ts: () => javascript({ typescript: true }),
-  mts: () => javascript({ typescript: true }),
-  cts: () => javascript({ typescript: true }),
   jsx: () => javascript({ jsx: true }),
   tsx: () => javascript({ typescript: true, jsx: true }),
 }
@@ -74,6 +71,7 @@ export function useCodeMirror(
       mode === 'html' && autocomplete && htmlLanguage.data.of({ autocomplete }),
       readOnly && EditorState.readOnly.of(true),
       keymap.of(keymaps),
+      EditorView.lineWrapping,
     ].filter(Boolean) as Extension[]
   })
   let skip = false

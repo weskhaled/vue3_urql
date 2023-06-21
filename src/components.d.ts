@@ -55,6 +55,7 @@ declare module '@vue/runtime-core' {
     ATimeline: typeof import('@arco-design/web-vue')['Timeline']
     ATimelineItem: typeof import('@arco-design/web-vue')['TimelineItem']
     ATooltip: typeof import('@arco-design/web-vue')['Tooltip']
+    ATree: typeof import('@arco-design/web-vue')['Tree']
     ATrigger: typeof import('@arco-design/web-vue')['Trigger']
     AUpload: typeof import('@arco-design/web-vue')['Upload']
     CommonCodeMirrorCodeMirror: typeof import('./components/common/CodeMirror/CodeMirror.vue')['default']

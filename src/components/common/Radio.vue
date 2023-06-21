@@ -41,11 +41,10 @@ const [showStatiosList, toggleShowStatiosList] = useToggle()
 const stationInPlay = ref()
 
 // const { state, next, prev } = useCycleList(playList)
-const { history, undo, redo, last, canRedo, canUndo, commit } = useManualRefHistory(stationInPlay, {
-  // flush: 'sync',
-})
+const { history, undo, redo, last, canRedo, canUndo, commit } = useManualRefHistory(stationInPlay)
 
-const { playing, currentTime, waiting, volume, muted } = useMediaControls(audioRadioRef)
+const { playing, currentTime, waiting, volume, muted, buffered, duration } = useMediaControls(audioRadioRef)
+
 const { results: resultsSearchStation } = useFuse(inputSearchStation, useSorted(radioStationsIDB, (a, b) => a.isFavorite - b.isFavorite, { dirty: true }), {
   fuseOptions: {
     keys: ['name', 'homepage', 'tags'],
@@ -162,7 +161,6 @@ watchThrottled(
       await nextTick()
       const playPromise = audioRadioRef.value?.play()
       playPromise && (playPromise.then(() => {
-        commit()
         stationUrlResolvedQuery.value = newVal.stationuuid
         countryUrlResolvedQuery.value = newVal.countrycode
         newVal.srcHasError = false
@@ -228,7 +226,7 @@ onMounted(async () => {
     <div
       class="bg-white dark:bg-dark-7 rounded-t-sm p-2 pb-2 sm:p-2 sm:pb-2 lg:p-2 xl:p-3 xl:pb-4 space-y-2 sm:space-y-3 lg:space-y-4 xl:space-y-5"
     >
-      <div class="flex items-center space-x-1">
+      <div class="flex items-center space-x-2">
         <div
           class="w-18 h-18 flex justify-center flex-none"
           @click="() => { !showFavoriteList && stationInPlay && (showStatiosList = true, stationsListRef?.scrollTo(stationInPlay?.index)) }"
@@ -243,8 +241,8 @@ onMounted(async () => {
             </template>
           </UseImage>
         </div>
-        <div class="min-w-0 flex-auto space-y-1 font-semibold">
-          <h2 class="text-slate-9 dark:text-slate-1 leading-6 truncate text-lg text-lg">
+        <div class="min-w-0 flex-auto space-y-1 font-semibold relative h-18 flex flex-col justify-center">
+          <h2 class="text-slate-9 dark:text-slate-1 truncate text-lg lg:text-3xl">
             {{ stationInPlay?.name }}
           </h2>
           <div flex>
@@ -272,10 +270,8 @@ onMounted(async () => {
             </template>
           </a-button>
         </div>
-        <Teleport to="body">
-          <video ref="audioRadioRef" :src="stationInPlay?.url_resolved" class="hidden" />
-        </Teleport>
       </div>
+      <audio ref="audioRadioRef" controls="true" :src="stationInPlay?.url_resolved" class="hidden flex-none" />
       <div class="space-y-0">
         <div class="relative flex justify-center">
           <div class="flex-none w-12 mr-1">
@@ -291,7 +287,7 @@ onMounted(async () => {
               </template>
             </a-button>
           </div>
-          <div class="flex-1 flex justify-center">
+          <div class="flex-1 flex justify-center relative overflow-hidden">
             <a-slider
               v-model:model-value="volumeValue" class="w-full" :min="0" :max="100"
               :default-value="volumeValue" :disabled="muted"
@@ -403,7 +399,7 @@ onMounted(async () => {
                         <span v-else i-fluent-heart-16-regular class="text-red" />
                       </template>
                     </a-button>
-                    <a-button :disabled="stationInPlay?.stationuuid === data.item.stationuuid && waiting" shape="circle" size="small" type="text" @click="async() => { stationInPlay?.stationuuid === data.item.stationuuid ? togglePlayPauseMedia() : (stationInPlay = data.item, await nextTick(), playPauseMedia = true) }">
+                    <a-button :disabled="stationInPlay?.stationuuid === data.item.stationuuid && waiting" shape="circle" size="small" type="text" @click="async() => { stationInPlay?.stationuuid === data.item.stationuuid ? togglePlayPauseMedia() : (stationInPlay = data.item, commit(), await nextTick(), playPauseMedia = true) }">
                       <template #icon>
                         <span
                           v-if="stationInPlay?.stationuuid === data.item.stationuuid && waiting"
@@ -484,7 +480,7 @@ onMounted(async () => {
                       <span v-else i-fluent-heart-16-regular class="text-red" />
                     </template>
                   </a-button>
-                  <a-button :disabled="stationInPlay?.stationuuid === data.item?.stationuuid && waiting" shape="circle" size="small" type="text" @click="async() => { stationInPlay?.stationuuid === data.item?.stationuuid ? togglePlayPauseMedia() : (stationInPlay = data.item, await nextTick(), playPauseMedia = true) }">
+                  <a-button :disabled="stationInPlay?.stationuuid === data.item?.stationuuid && waiting" shape="circle" size="small" type="text" @click="async() => { stationInPlay?.stationuuid === data.item?.stationuuid ? togglePlayPauseMedia() : (stationInPlay = data.item, commit(), await nextTick(), playPauseMedia = true) }">
                     <template #icon>
                       <span
                         v-if="stationInPlay?.stationuuid === data.item?.stationuuid && waiting"
@@ -521,7 +517,7 @@ onMounted(async () => {
           </template>
         </a-button>
         <a-button
-          shape="circle" class="block !w-8 !h-8 lg:!w-10 lg:!h-10" type="text" aria-label="Previous" :disabled="history.length < 3 || !canUndo"
+          shape="circle" class="block !w-8 !h-8 lg:!w-10 lg:!h-10" type="text" aria-label="Previous" :disabled="history.length <= 2 || !canUndo"
           @click="async () => { undo(); inputSearchStation = ''; await nextTick(); stationsListRef?.scrollTo(stationInPlay?.index) }"
         >
           <template #icon>
@@ -554,7 +550,7 @@ onMounted(async () => {
         </a-button>
         <a-button
           shape="circle" class="block !w-8 !h-8 lg:!w-10 lg:!h-10" type="text" aria-label="List"
-          @click="toggleShowStatiosList()"
+          @click="() => { showFavoriteList = false; toggleShowStatiosList() }"
         >
           <template #icon>
             <span v-if="showStatiosList" i-fluent-text-bullet-list-dismiss-20-regular class="" />

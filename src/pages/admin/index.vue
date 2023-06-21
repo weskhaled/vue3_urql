@@ -19,13 +19,13 @@ const { message } = useMessage()
 const { width: windowWidth } = useWindowSize()
 // const router = useRouter()
 
-const pageSize: any = ref(5)
+const pageSize: any = ref(20)
 const variables = reactive(
   {
     input: {
       pagination: {
         page: 0,
-        size: 5,
+        size: 20,
       },
       relations: 'user',
       order: {},
@@ -194,62 +194,19 @@ function customRequest(option) {
       abort()
     },
   }
-
-  // const xhr = new XMLHttpRequest()
-  // if (xhr.upload) {
-  //   xhr.upload.onprogress = function (event) {
-  //     let percent
-  //     if (event.total > 0) {
-  //       // 0 ~ 1
-  //       percent = event.loaded / event.total
-  //     }
-  //     console.log(percent)
-  //     onProgress(percent, event)
-  //   }
-  // }
-  // xhr.onerror = function error(e) {
-  //   onError(e)
-  // }
-  // xhr.onload = function onload() {
-  //   if (xhr.status < 200 || xhr.status >= 300)
-  //     return onError(xhr.responseText)
-
-  //   onSuccess(xhr.response)
-  // }
-
-  // const formData = new FormData()
-  // formData.append('operations', JSON.stringify({
-  //   query: `mutation uploadFile($file: Upload!) {
-  //     uploadFile(file: $file)
-  //   }`,
-  //   variables: {
-  //     file: null,
-  //   },
-  // }))
-  // formData.append('map', JSON.stringify({ 0: ['variables.file'] }))
-  // formData.append('0', fileItem.file)
-  // xhr.open('post', 'http://localhost:8000/graphql', true)
-  // xhr.setRequestHeader('apollo-require-preflight', 'true')
-  // xhr.send(formData)
-
-  // return {
-  //   abort() {
-  //     xhr.abort()
-  //   },
-  // }
 }
 </script>
 
 <template>
   <div class="p-2 min-h-full flex flex-col">
-    <div class="mb-2 bg-white dark:bg-dark-950 shadow shadow-gray-200 dark:shadow-gray-900">
+    <div class="mb-2 bg-white dark:bg-dark-950 shadow-none shadow-gray-200 dark:shadow-gray-900">
       <a-breadcrumb class="p-2">
         <a-breadcrumb-item>Home</a-breadcrumb-item>
         <a-breadcrumb-item>List</a-breadcrumb-item>
         <a-breadcrumb-item>App</a-breadcrumb-item>
       </a-breadcrumb>
     </div>
-    <div class="bg-white dark:bg-dark-950 p-2 min-h-full flex-1 shadow shadow-gray-200 dark:shadow-gray-900">
+    <div class="bg-white dark:bg-dark-950 p-2 min-h-full flex-1 shadow-none shadow-gray-200 dark:shadow-gray-900">
       <p>
         <em text-sm opacity-75>{{ t('intro.desc') }}</em>
       </p>

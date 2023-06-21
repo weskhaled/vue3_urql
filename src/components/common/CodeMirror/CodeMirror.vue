@@ -14,14 +14,16 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{ (e: 'update:modelValue', payload: string): void }>()
-
 const el = ref<HTMLElement>()
+defineExpose({ codemirrorRef: el })
 const input = useVModel(props, 'modelValue', emit, { passive: true })
 
 onMounted(async () => {
   const cm = useCodeMirror(el, input, reactive({
     autocomplete: props.getHint,
     ...toRefs(props),
+    tabSize: 2,
+    lineWrapping: true,
   }))
 
   useEventListener(cm.contentDOM.parentElement, 'scroll', useThrottleFn(() => {
@@ -55,14 +57,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div
-    ref="el"
-    relative
-    font-mono
-    text-sm
-    border-none
-    data-enable-grammarly="false"
-  />
+  <div ref="el" relative font-mono text-sm border-none data-enable-grammarly="false" />
 </template>
 
 <style>
@@ -72,7 +67,7 @@ deepl-inline-translate,
 grammarly-popups,
 deepl-inline-popup,
 grammarly-desktop-integration {
-    display: none!important;
+  display: none !important;
 }
 
 .cm-editor {
@@ -128,9 +123,11 @@ html.dark {
   --cm-ttc-c-track: #111;
 }
 
-.highlighted, .highlighted > span {
+.highlighted,
+.highlighted>span {
   border-bottom: 1px dashed currentColor;
 }
+
 .cm-scroller::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -143,17 +140,21 @@ html.dark {
   scrollbar-width: thin;
   scrollbar-color: var(--cm-ttc-c-thumb) var(--cm-ttc-c-track);
 }
+
 .scrolls-sidebar {
   height: calc(100vh - 25px - 1.5rem - 65px - 1rem - 2px) !important;
 }
+
 .overview-scrolls .cm-scroller {
   --use-overview-scrolls: var(--overview-scrolls, calc(100vh - 116px - 1rem - 61px - 1rem - 2px));
   height: var(--use-overview-scrolls) !important;
 }
+
 .module-scrolls .cm-scroller {
   --use-module-scrolls: var(--module-scrolls, calc(100vh - 41px - 2.5rem));
   height: var(--use-module-scrolls) !important;
 }
+
 .repl-scrolls .cm-scroller {
   --use-repl-scrolls: var(--repl-scrolls, calc(100vh - 41px - 2.5rem));
   height: var(--use-repl-scrolls) !important;
@@ -162,11 +163,13 @@ html.dark {
 .cm-scroller::-webkit-scrollbar-track {
   background: var(--cm-ttc-c-track);
 }
+
 .cm-scroller::-webkit-scrollbar-thumb {
   background-color: var(--cm-ttc-c-thumb);
   border-radius: 3px;
   border: 2px solid var(--cm-ttc-c-thumb);
 }
+
 .cm-scroller::-webkit-scrollbar-corner {
   background-color: var(--cm-ttc-c-track);
 }

@@ -89,7 +89,7 @@ meta:
     title: Radio
     link: /admin/radio
     order: 1
-    icon: i-fluent-music-note-2-20-regular
+    icon: i-carbon-radio
     childOf: null
     hidden: false
 </route>
