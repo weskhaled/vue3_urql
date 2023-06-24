@@ -3,7 +3,7 @@ import { createWorker } from 'tesseract.js'
 export function useTesseract() {
   const lang = ref('fra')
   const result = ref('')
-  const status = ref('LOADING') as Ref<'LOADING' | 'RECOGNIZING' | 'DONE'>
+  const status = ref('INIT') as Ref<'INIT' | 'LOADING' | 'RECOGNIZING' | 'DONE'>
 
   function setLang(l: string) {
     lang.value = l

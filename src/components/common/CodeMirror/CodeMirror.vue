@@ -1,9 +1,9 @@
 <script setup lang="ts">
 // import { getMatchedPositions } from '@unocss/shared-common'
-import { Decoration } from '@codemirror/view'
-import { useEventListener, useThrottleFn } from '@vueuse/core'
+// import { Decoration } from '@codemirror/view'
+// import { useEventListener, useThrottleFn } from '@vueuse/core'
 import type { CompletionSource } from '@codemirror/autocomplete'
-import { addMarks, filterMarks, useCodeMirror } from './codemirror'
+import { filterMarks, useCodeMirror } from './codemirror'
 
 const props = defineProps<{
   modelValue: string
@@ -15,33 +15,34 @@ const props = defineProps<{
 
 const emit = defineEmits<{ (e: 'update:modelValue', payload: string): void }>()
 const el = ref<HTMLElement>()
-defineExpose({ codemirrorRef: el })
+const cm = ref()
+defineExpose({ codemirrorRef: el, cm })
 const input = useVModel(props, 'modelValue', emit, { passive: true })
 
 onMounted(async () => {
-  const cm = useCodeMirror(el, input, reactive({
+  cm.value = useCodeMirror(el, input, reactive({
     autocomplete: props.getHint,
     ...toRefs(props),
-    tabSize: 2,
+    tabSize: 1,
     lineWrapping: true,
   }))
 
-  useEventListener(cm.contentDOM.parentElement, 'scroll', useThrottleFn(() => {
-    cm.requestMeasure()
+  useEventListener(cm.value.contentDOM.parentElement, 'scroll', useThrottleFn(() => {
+    cm.value.requestMeasure()
   }, 50, true))
 
-  function mark(start: number, end: number) {
-    const strikeMark = Decoration.mark({
-      class: 'highlighted',
-    })
-    cm.dispatch({
-      effects: addMarks.of([strikeMark.range(start, end)]),
-    })
-  }
+  // function mark(start: number, end: number) {
+  //   const strikeMark = Decoration.mark({
+  //     class: 'highlighted',
+  //   })
+  //   cm.dispatch({
+  //     effects: addMarks.of([strikeMark.range(start, end)]),
+  //   })
+  // }
 
   function highlight() {
-    cm.dispatch({
-      effects: filterMarks.of((from: number, to: number) => to <= 0 || from >= cm.state.doc.toString().length),
+    cm.value.dispatch({
+      effects: filterMarks.of((from: number, to: number) => to <= 0 || from >= cm.value.state.doc.toString().length),
     })
     // getMatchedPositions(props.modelValue, Array.from(props.matched || []), true)
     //   .forEach(i => mark(i[0], i[1]))
