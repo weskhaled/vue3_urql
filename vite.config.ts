@@ -132,6 +132,9 @@ export default ({ mode }) => {
       // https://github.com/antfu/vite-plugin-pwa
       VitePWA({
         registerType: 'autoUpdate',
+        devOptions: {
+          enabled: false,
+        },
         includeAssets: ['favicon.svg', 'safari-pinned-tab.svg'],
         manifest: {
           name: 'Weskhaled',

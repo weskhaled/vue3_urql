@@ -2,13 +2,14 @@
 // import { getMatchedPositions } from '@unocss/shared-common'
 // import { Decoration } from '@codemirror/view'
 // import { useEventListener, useThrottleFn } from '@vueuse/core'
+import type { MaybeRefOrGetter } from '@vueuse/shared'
 import type { CompletionSource } from '@codemirror/autocomplete'
 import { filterMarks, useCodeMirror } from './codemirror'
 
 const props = defineProps<{
-  modelValue: string
-  mode?: string
-  readOnly?: boolean
+  modelValue: MaybeRefOrGetter<string>
+  mode?: MaybeRefOrGetter<string>
+  readOnly?: MaybeRefOrGetter<boolean>
   matched?: Set<string> | string[]
   getHint?: CompletionSource
 }>()
