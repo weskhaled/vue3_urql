@@ -76,7 +76,7 @@ watch(windowScrollY, (val) => {
 
 <template>
   <Swiper
-    ref="sliderWrapperRef" :autoplay="options?.autoplay || false"
+    ref="sliderWrapperRef" :autoplay="options?.autoplay || false" :allow-touch-move="true" :loop="sliders.length > 1"
     :navigation="sliders.length > 1 && options?.modules?.includes('navigation')"
     :pagination="sliders.length > 1 && options?.modules?.includes('pagination') ? pagination : false" :modules="modules"
     class="hero-slider bg-white dark:bg-black" :slides-per-view="1" :space-between="0"

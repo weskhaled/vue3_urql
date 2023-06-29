@@ -1,5 +1,4 @@
 <!-- eslint-disable vue/one-component-per-file -->
-<!-- eslint-disable quote-props -->
 <script setup lang="ts">
 import { fetchEventSource } from '@microsoft/fetch-event-source'
 import { mdAndSmaller } from '~/common/stores'
@@ -15,26 +14,42 @@ const codemirrorRef = ref<HTMLElement>()
 const userMessageRef = ref<HTMLElement>()
 const conversationWrapperRef = ref<HTMLElement>()
 const cm = computed(() => codemirrorRef.value?.cm)
-const cmScrollDOM = computed(() => cm.value?.docView?.view?.scrollDOM)
 const cmDocViewDOM = computed(() => cm.value?.docView?.dom)
-const { y: yCmScrollDOM } = useScroll(cmScrollDOM, { behavior: 'smooth' })
-const { height: heightCmScrollDOM } = useElementSize(cmDocViewDOM)
-function fileToObjectUrl(file: File) {
-  return URL.createObjectURL(file)
-}
+const cmScrollDOM = computed(() => cm.value?.docView?.view?.scrollDOM)
+const { y: yCmScrollDOM } = useScroll(cmScrollDOM, { behavior: 'auto' })
+const [valueNavEditor, toggleNavEditor] = useToggle()
+const [valueSpeechRecognition, toggleSpeechRecognition] = useToggle()
+
+const controller = new AbortController()
 
 const codemirrorReadOnly = ref<boolean>(false)
 const conversation = reactive<any>({
   history: [],
 })
-
-const fetchingFromAi = ref(false)
 const userMessage = ref('')
 const lastResponse = ref('')
-
 const resultResponse = ref('')
-const [valueNavEditor, toggleNavEditor] = useToggle()
+const fetchingFromAi = ref(false)
 const tabActiveKey = ref('1')
+const speechLang = ref('en-US')
+const textFromSpeech = ref('')
+
+const { pause: pauseScrollHeightCM, resume: resumeScrollHeightCm } = useTimeoutPoll(() => {
+  if (cmScrollDOM.value) {
+    const { height } = cmDocViewDOM.value.getBoundingClientRect()
+    yCmScrollDOM.value = height
+  }
+}, 250)
+
+const speech = useSpeechRecognition({
+  lang: speechLang,
+  continuous: true,
+})
+
+watch(speech.result, (val) => {
+  if (val)
+    textFromSpeech.value = val
+})
 
 const tabs = shallowReactive([
   {
@@ -67,9 +82,23 @@ const tabs = shallowReactive([
     }),
   },
 ])
+
+function fileToObjectUrl(file: File) {
+  return URL.createObjectURL(file)
+}
+
 function handleAddTab(__event, file = File) {
+  if (!file)
+    return
+
+  const fidedOpenTab = tabs.find(item => item.key === `__${file.name}`)
+  if (fidedOpenTab) {
+    tabActiveKey.value = fidedOpenTab.key
+    return
+  }
+
   tabs.push({
-    key: `${tabs.length + 1}`,
+    key: `__${file.name}`,
     title: `${file.name}`,
     icon: 'i-tabler-photo-filled',
     props: {
@@ -81,7 +110,7 @@ function handleAddTab(__event, file = File) {
       props: ['file'],
       setup(props) {
         return () =>
-          h('div', { class: 'min-h-35rem max-h-70vh h-70vh overflow-auto' }, [
+          h('div', { class: 'min-h-35rem max-h-70vh h-70vh overflow-auto flex' }, [
             h('img', { src: fileToObjectUrl(props.file), class: 'max-h-full max-w-full m-auto' }),
           ])
       },
@@ -89,9 +118,10 @@ function handleAddTab(__event, file = File) {
     closable: true,
   })
   nextTick(() => {
-    tabActiveKey.value = `${tabs.length}`
+    tabActiveKey.value = `__${file.name}`
   })
 }
+
 function handleDeleteTab(key: string, __event) {
   const tabIndex = tabs.findIndex(item => item.key === key)
   tabIndex > -1 && tabs.splice(tabIndex, 1)
@@ -99,32 +129,12 @@ function handleDeleteTab(key: string, __event) {
     tabActiveKey.value = '1'
   })
 }
-const { pause: pauseWatchHeightCmScroll, resume: resumeWatchHeightCmScroll } = watchPausable(
-  heightCmScrollDOM,
-  (val) => {
-    if (codemirrorReadOnly.value) {
-      const height = Number((val + 8).toFixed(2))
-      yCmScrollDOM.value = height
-    }
-  },
-)
-pauseWatchHeightCmScroll()
-const speechLang = ref('en-US')
-const [valueSpeechRecognition, toggleSpeechRecognition] = useToggle()
-const speech = useSpeechRecognition({
-  lang: speechLang,
-  continuous: true,
-})
-const textFromSpeech = ref('')
-watch(speech.result, (val) => {
-  if (val)
-    textFromSpeech.value = val
-})
+
 async function addChunkToEditor(chunk: string) {
   lastResponse.value += chunk
   if (cm.value) {
     cm.value.focus()
-    // await nextTick()
+    await nextTick()
     cm.value.dispatch({
       changes: {
         from: cm.value.state.doc.length,
@@ -137,18 +147,7 @@ async function addChunkToEditor(chunk: string) {
     })
   }
 }
-// onChange(async (files) => {
-//   result.value = ''
-//   status.value = 'PENDING'
-//   // if (files?.length) {
-//   //   await initRecognition(files[0])
-//   //   await nextTick()
-//   //   userMessage.value += userMessage.value.length ? `\n${result.value}` : result.value
-//   // }
-// })
-watch(mdAndSmaller, (val) => {
-  windowLayoutSplit.value = val ? 0 : 0.3
-}, { immediate: true })
+
 function onSubmitToAI() {
   if (userMessage.value.length < 5) {
     message.error('Please enter at least 5 characters')
@@ -158,21 +157,21 @@ function onSubmitToAI() {
   const newConversation = {
     history: [
       ...conversation.history,
-      { speaker: 'human', text: userMessage.value, time: useNow().value },
+      { speaker: 'human', text: userMessage.value, time: useNow().value, aborted: false },
     ],
   }
+
   conversation.history = [
     ...newConversation.history,
   ]
 
   userMessage.value = ''
-  const controller = new AbortController()
 
   const paramsObj = {
-    conversation: newConversation,
+    conversation: { history: newConversation.history.filter(item => !item.aborted) },
     temperature: 0.7,
   }
-  // resultResponse.value = ''
+
   fetchEventSource('/api/ai/chat', {
     method: 'POST',
     headers: {
@@ -196,9 +195,8 @@ function onSubmitToAI() {
           behavior: 'smooth',
         })
       })
-      resumeWatchHeightCmScroll()
-      // eslint-disable-next-line no-console
-      console.log('Connection Established', res)
+      resumeScrollHeightCm()
+      console.warn('Connection Established', res)
     },
     onmessage(msg) {
       const { data } = msg
@@ -210,8 +208,19 @@ function onSubmitToAI() {
         }
         catch (err) {
           controller.abort()
-          // eslint-disable-next-line no-console
-          console.log(`Failed to parse data: ${data}`)
+          fetchingFromAi.value = false
+          pauseScrollHeightCM()
+          conversation.history = [
+            ...newConversation.history,
+            {
+              speaker: 'bot',
+              text: lastResponse.value,
+              time: useNow().value,
+              aborted: true,
+              error: err,
+            },
+          ]
+          console.error(`Failed to parse data: ${data}`)
         }
       }
     },
@@ -223,9 +232,10 @@ function onSubmitToAI() {
           speaker: 'bot',
           text: lastResponse.value,
           time: useNow().value,
+          aborted: false,
         },
       ]
-      pauseWatchHeightCmScroll()
+      pauseScrollHeightCM()
       nextTick(() => {
         userMessageRef.value?.focus()
         conversationWrapperRef.value?.scrollTo({
@@ -234,13 +244,11 @@ function onSubmitToAI() {
         })
       })
       codemirrorReadOnly.value = false
-      // eslint-disable-next-line no-console
-      console.log('Connection Closed by the Server')
+      console.warn('Connection Closed by the Server')
     },
     onerror(err) {
       fetchingFromAi.value = false
-      // eslint-disable-next-line no-console
-      console.log('There was an error from the Server!', err)
+      console.error('There was an error from the Server!', err)
     },
   })
 }
@@ -253,7 +261,7 @@ function onSubmitToAI() {
     bg-img-dark="https://images.unsplash.com/photo-1655637389009-81207e99c3c6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=900&q=80"
     :content-parallax="false"
   >
-    <div mx-auto mt-2 class="min-h-[calc(100vh-9.25rem)]">
+    <div mx-auto mt-2 class="min-h-[calc(100vh-9.2rem)]">
       <div class="rounded-sm overflow-hidden ring-1 ring-[var(--color-neutral-3)]">
         <div class="rounded-t-sm">
           <div
@@ -296,7 +304,7 @@ function onSubmitToAI() {
                       >
                         <a-button
                           :disabled="!conversation.history.length" class="block" status="danger" type="primary"
-                          size="mini"
+                          size="mini" title="delete all"
                         >
                           <template #icon>
                             <span i-carbon-trash-can />
@@ -335,13 +343,16 @@ function onSubmitToAI() {
                               :class="[item.speaker === 'human' ? 'flex-row' : 'flex-row-reverse']"
                             >
                               <span class="uppercase font-semibold">{{ item.speaker === 'human' ? 'Me' : 'Ai' }}</span>
-                              <span class="text-xs opacity-70">{{ ((date) => `${useTimeAgo(new
+                              <span class="text-xs opacity-70 mx-auto">{{ ((date) => `${useTimeAgo(new
                                 Date(date)).value}`)(item.time) }}</span>
                             </div>
                             <div
                               class="relative group bg-white/40 dark:bg-black/40 p-1 rounded-1"
-                              :class="[item.speaker === 'human' ? 'text-left rounded-tl-0' : 'text-right rounded-tr-0']"
+                              :class="[item.speaker === 'human' ? 'text-left mr-2 rounded-tl-0' : 'text-left ml-2 rounded-tr-0']"
                             >
+                              <span v-if="item.aborted && item.speaker === 'bot'" title="Response Aborted!!" class="absolute flex top--2 text-red left--2 z-2">
+                                <span i-carbon-information w-4 h-4 />
+                              </span>
                               <span
                                 role="button"
                                 class="absolute transition-all bg-white dark:bg-black p-0.5 flex items-center opacity-20 group-hover:opacity-80"
@@ -353,14 +364,16 @@ function onSubmitToAI() {
                                   class="cursor-pointer i-carbon-document-attachment active:i-carbon-checkmark active:text-green"
                                 />
                               </span>
-                              <p class="overflow-hidden truncate whitespace-normal">
-                                {{ item.text.substring(0, 120) }} {{ item.text.length > 120 ? '...' : '' }}
+                              <p class="line-clamp-3">
+                                {{ item.text?.substring(0, 500) }}
                               </p>
                             </div>
                           </div>
                         </div>
                         <div v-if="fetchingFromAi" w-full flex>
-                          <span i-line-md-downloading-loop mx-auto w-6 h-6 />
+                          <span title="loading AI" class="p-1 rounded-full mx-auto bg-white dark:bg-black">
+                            <span i-line-md-loading-alt-loop w-6 h-6 />
+                          </span>
                         </div>
                       </div>
                       <!-- chat inputs -->
@@ -396,7 +409,7 @@ function onSubmitToAI() {
                                     Text from image
                                   </span>
                                 </a-doption>
-                                <a-doption class="!bg-red-1/10 !text-red-4">
+                                <a-doption :disabled="!fetchingFromAi" :class="[!fetchingFromAi && 'opacity-40']" class="!bg-red-1/10 !text-red-4" @click="() => { controller.abort(); conversation.history[conversation.history.length - 1].aborted = true; conversation.history.push({ speaker: 'bot', text: lastResponse, time: useNow().value, aborted: true }); fetchingFromAi = false; }">
                                   <span flex items-center>
                                     <span i-carbon-close mr-1 />
                                     Stop Response
@@ -420,7 +433,7 @@ function onSubmitToAI() {
                           <div v-if="valueSpeechRecognition" mt-1>
                             <div class="bg-light-3 dark:bg-dark-9 rounded-2px p-1">
                               <div class="flex text-center items-center">
-                                <div>
+                                <div class="">
                                   <a-select v-model:model-value="speechLang" size="mini" placeholder="Select lang...">
                                     <a-option value="en-US">
                                       🇺🇸 English
@@ -474,8 +487,8 @@ function onSubmitToAI() {
                             <div class="bg-light-2 dark:bg-dark-9 rounded-2px p-1">
                               <div flex justify-between items-center>
                                 <div flex items-center max-w-fit overflow-hidden>
-                                  <span>
-                                    <img :src="fileToObjectUrl(files[0])" alt="" class="w-12 h-12 mr-1">
+                                  <span class="w-14 max-h-10 mr-1 overflow-auto">
+                                    <img :src="fileToObjectUrl(files[0])" alt="m-auto h-full">
                                   </span>
                                   <span truncate>
                                     {{ files[0].name }}
@@ -535,7 +548,7 @@ function onSubmitToAI() {
                       <template #title>
                         <div class="flex items-center">
                           <span class="mr-1" :class="tab.icon" />
-                          <span>{{ tab.title }}</span>
+                          <span :title="tab.title" class="max-w-32 truncate">{{ tab.title }}</span>
                         </div>
                       </template>
                       <div class="relative bg-white dark:bg-dark-950 dark:border-slate-900/50">
@@ -574,6 +587,9 @@ function onSubmitToAI() {
 }
 
 .editor-split {
+  .arco-split-pane.arco-split-pane-first {
+    @apply !lt-md:flex-none;
+  }
   .arco-split-trigger.arco-split-trigger-vertical {
     @apply hidden md:block z-22;
 
@@ -622,7 +638,7 @@ function onSubmitToAI() {
   .arco-tabs-nav.arco-tabs-nav-horizontal {
 
     .arco-tabs-nav-tab-list {
-      @apply !overflow-x-auto !overflow-y-hidden !mr-9 scrollbar scrollbar-track-color-dark-7 dark:scrollbar-track-color-dark-7 scrollbar-track-color-white scrollbar-h-1px scrollbar-radius-0 scrollbar-track-radius-0 scrollbar-thumb-radius-0;
+      @apply !overflow-x-auto !overflow-y-hidden !mr-9 scrollbar scrollbar-track-color-dark-7 dark:scrollbar-track-color-dark-9 scrollbar-track-color-black/60 scrollbar-thumb-color-white/70 scrollbar-h-1px scrollbar-radius-0 scrollbar-track-radius-0 scrollbar-thumb-radius-0;
     }
     // .arco-tabs-nav-extra {
     //   @apply !sticky right-0 bg-green;
@@ -649,13 +665,13 @@ function onSubmitToAI() {
 
       &.arco-tabs-tab-active {
         // @apply shadow-[inset_0_2px_2px_-2px_blue-5];
-        @apply shadow-blue-5 !border-b-white !dark:border-b-[#121212] border-b-1px;
-        box-shadow: inset 0 2px 0px 0px var(--un-shadow-color);
+        @apply shadow-blue-5 !border-b-white !dark:border-b-[#121212] border-b-1px bg-white dark:bg-[#121212];
+        box-shadow: inset 0 1px 0px 0px var(--un-shadow-color);
       }
     }
 
     .arco-tabs-nav-tab {
-      @apply w-full;
+      @apply w-full bg-[#f1f1f1] dark:bg-[#1a1a1a];
     }
 
     .arco-tabs-nav-add-btn {
@@ -671,8 +687,6 @@ function onSubmitToAI() {
   .arco-tabs-nav-tab.arco-tabs-nav-tab-scroll {
     @apply !overflow-x-auto !overflow-y-hidden;
   }
-
-  // [&_.arco-tabs-nav]:bg-light-2 [&_.arco-tabs-nav]:dark:bg-dark-9 [&_.arco-tabs-nav]:flex-row-reverse [&_.arco-tabs-nav]:md:flex-row [&_.arco-tabs-content]:p-0 ![&._.arco-tabs-nav]:before:h-0 [--border-radius-small:0px] [&_.arco-tabs-tab-title]:leading-8.5 ![&_.arco-tabs-tab]:py-0 ![&_.arco-tabs-tab]:mx-0px ![&_.arco-tabs-tab]:px-6px
 }
 </style>
 
@@ -681,7 +695,7 @@ meta:
   layout: admin
   requiresAuth: true
   adminSidebar:
-    title: Code With AI
+    title: Code.AI
     link: /admin/ai
     order: 3
     icon: i-tabler-brand-openai

@@ -538,7 +538,7 @@ function submitContact({ values, errors }) {
                   </Swiper>
                 </div>
               </a-tab-pane>
-              <a-tab-pane key="2" title="Clients">
+              <a-tab-pane key="2" title="Projects">
                 <div>
                   <Swiper
                     class="pb-5" :slides-per-view="2" :space-between="10" direction="horizontal"
@@ -562,8 +562,21 @@ function submitContact({ values, errors }) {
                       class="overflow-hidden flex items-center cursor-pointer group relative backdrop-blur flex justify-center content-center bg-zinc-3/20 p-2 h-20 transition-all hover:(bg-zinc-4/40)"
                     >
                       <div>
-                        <span class="uppercase inline-block text-4/6 py-1 px-2 font-semibold">
-                          <span font-light>First</span>Design
+                        <span class="underline uppercase inline-block text-4/6 py-1 px-2 font-semibold">
+                          <span font-light>Admin</span>Folio
+                        </span>
+                      </div>
+                    </SwiperSlide>
+                    <SwiperSlide
+                      class="overflow-hidden flex items-center cursor-pointer group relative backdrop-blur flex justify-center content-center bg-zinc-3/20 p-2 h-20 transition-all hover:(bg-zinc-4/40)"
+                    >
+                      <div>
+                        <span text-xl>
+                          <span
+                            font-mono inline font-bold text-6
+                            style="-webkit-text-fill-color: transparent;background: -webkit-linear-gradient( 45deg, #0037ff 50%, #008cff );-webkit-background-clip: text;"
+                          >Code.AI</span>
+                          <sup class="uppercase text-5.1 text-blue-7">+</sup>
                         </span>
                       </div>
                     </SwiperSlide>
@@ -584,6 +597,15 @@ function submitContact({ values, errors }) {
                       class="overflow-hidden flex items-center cursor-pointer group relative backdrop-blur flex justify-center content-center bg-zinc-3/20 p-2 h-20 transition-all hover:(bg-zinc-4/40)"
                     >
                       <div>
+                        <span class="uppercase inline-block text-4/6 py-1 px-2 font-semibold">
+                          <span font-light>First</span>Design
+                        </span>
+                      </div>
+                    </SwiperSlide>
+                    <SwiperSlide
+                      class="overflow-hidden flex items-center cursor-pointer group relative backdrop-blur flex justify-center content-center bg-zinc-3/20 p-2 h-20 transition-all hover:(bg-zinc-4/40)"
+                    >
+                      <div>
                         <sup class="text-1.5 top--3">Tunisian</sup>
                         <span text-xl>
                           <span
@@ -594,19 +616,6 @@ function submitContact({ values, errors }) {
                             font-500
                             style="-webkit-text-fill-color: transparent;background: -webkit-linear-gradient( 120deg, #ff8c00 20%, #ffdd00 );-webkit-background-clip: text;"
                           >DAY</span>
-                        </span>
-                      </div>
-                    </SwiperSlide>
-                    <SwiperSlide
-                      class="overflow-hidden flex items-center cursor-pointer group relative backdrop-blur flex justify-center content-center bg-zinc-3/20 p-2 h-20 transition-all hover:(bg-zinc-4/40)"
-                    >
-                      <div>
-                        <span text-xl>
-                          <span
-                            font-mono inline font-bold text-6
-                            style="-webkit-text-fill-color: transparent;background: -webkit-linear-gradient( 45deg, #0037ff 50%, #008cff );-webkit-background-clip: text;"
-                          >Core.AI</span>
-                          <sup class="uppercase text-5.1 text-blue-7">+</sup>
                         </span>
                       </div>
                     </SwiperSlide>
