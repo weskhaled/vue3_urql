@@ -54,7 +54,7 @@ watch(speech.result, (val) => {
 const tabs = shallowReactive([
   {
     key: '1',
-    title: 'code_with.ai',
+    title: 'code.ai',
     icon: 'i-tabler-brand-openai',
     closable: false,
     props: {
@@ -63,14 +63,17 @@ const tabs = shallowReactive([
       codemirrorRef,
       codemirrorReadOnly,
       mode: 'tsx',
-      wrapperClasses: 'overflow-auto flex',
+      wrapperClasses: 'overflow-auto',
     },
     component: defineComponent({
       name: 'CodeEditor',
       props: ['modelValue', 'codemirrorRef', 'codemirrorReadOnly', 'mode', 'wrapperClasses', 'windowContentRef'],
       setup(props) {
+        const wrapperTarget = computed(() => props.windowContentRef.value)
+        const { height } = useElementSize(wrapperTarget)
+
         return () =>
-          h('div', { class: props.wrapperClasses, style: { height: `${props.windowContentRef?.value?.clientHeight - 36}px` } }, [
+          h('div', { class: props.wrapperClasses, style: { height: `${height.value - 36}px` } }, [
             h(CodeMirror, {
               modelValue: props.modelValue,
               ref: props.codemirrorRef,
@@ -105,14 +108,17 @@ function handleAddTab(__event, file = File) {
     props: {
       file,
       windowContentRef,
-      wrapperClasses: 'overflow-auto flex',
+      wrapperClasses: 'overflow-auto flex flex-col',
     },
     component: defineComponent({
       name: 'ImageViewer',
       props: ['file', 'windowContentRef', 'wrapperClasses'],
       setup(props) {
+        const wrapperTarget = computed(() => props.windowContentRef.value)
+        const { height } = useElementSize(wrapperTarget)
+
         return () =>
-          h('div', { class: props.wrapperClasses, style: { height: `${props.windowContentRef?.value?.clientHeight - 36}px` } }, [
+          h('div', { class: props.wrapperClasses, style: { height: `${height.value - 36}px` } }, [
             h('img', { src: fileToObjectUrl(props.file), class: 'max-h-full max-w-full m-auto' }),
           ])
       },
@@ -276,9 +282,9 @@ function onSubmitToAI() {
     bg-img-dark="https://images.unsplash.com/photo-1655637389009-81207e99c3c6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=900&q=80"
     :content-parallax="false"
   >
-    <div class="min-h-[calc(100vh-9.2rem)] flex">
-      <div class="w-full rounded-sm overflow-hidden ring-1 ring-[var(--color-neutral-3)]  min-h-35">
-        <div class="rounded-t-sm flex flex-col h-full max-h-full overflow-hidden">
+    <div class="min-h-[calc(100vh-9.2rem)] max-h-[calc(100vh-9.2rem)] flex">
+      <div class="w-full rounded-sm overflow-hidden ring-1 ring-[var(--color-neutral-3)] flex box-border">
+        <div class="rounded-t-sm flex flex-col h-auto w-full overflow-hidden">
           <div
             class="py-2 items-center px-4 gap-8 flex justify-between w-full bg-light-1/90 dark:bg-dark-9/90 backdrop-blur"
           >
@@ -336,7 +342,7 @@ function onSubmitToAI() {
                       </a-button>
                     </div>
                   </div>
-                  <div class="flex-1 min-h-35rem max-h-full overflow-auto">
+                  <div class="flex-1 min-h-35rem h-auto max-h-full overflow-auto">
                     <div class="flex flex-col justify-between h-full gap-0px relative">
                       <!-- comments -->
                       <div ref="conversationWrapperRef" class="p-2 px-3 flex flex-col space-y-4 overflow-y-auto flex-1">

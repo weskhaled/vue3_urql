@@ -38,7 +38,7 @@ watch(windowScrollY, (val) => {
       class="opacity-60 z-0 absolute inset-0 w-full h-full bg-cover bg-fixed bg-center bg-no-repeat"
       :style="{ ...wrapperStyles.hederImage, backgroundImage: `url(${isDark ? (props.bgImgDark || props.bgImg) : props.bgImg})` }"
     />
-    <div class="relative z-1 py-6 pb-4" :style="{ ...wrapperStyles.container }">
+    <div class="relative z-1 py-6" :style="{ ...wrapperStyles.container }">
       <slot />
     </div>
   </div>
