@@ -106,20 +106,20 @@ function handleAddTab(__event, file = File) {
     title: `${file.name}`,
     icon: 'i-tabler-photo-filled',
     props: {
-      file,
+      modelValue: file,
       windowContentRef,
       wrapperClasses: 'overflow-auto flex flex-col',
     },
     component: defineComponent({
       name: 'ImageViewer',
-      props: ['file', 'windowContentRef', 'wrapperClasses'],
+      props: ['modelValue', 'windowContentRef', 'wrapperClasses'],
       setup(props) {
         const wrapperTarget = computed(() => props.windowContentRef.value)
         const { height } = useElementSize(wrapperTarget)
 
         return () =>
           h('div', { class: props.wrapperClasses, style: { height: `${height.value - 36}px` } }, [
-            h('img', { src: fileToObjectUrl(props.file), class: 'max-h-full max-w-full m-auto' }),
+            h('img', { src: fileToObjectUrl(props.modelValue), class: 'max-h-full max-w-full m-auto' }),
           ])
       },
     }),
@@ -282,7 +282,7 @@ function onSubmitToAI() {
     bg-img-dark="https://images.unsplash.com/photo-1655637389009-81207e99c3c6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=900&q=80"
     :content-parallax="false"
   >
-    <div class="min-h-[calc(100vh-9.2rem)] max-h-[calc(100vh-9.2rem)] flex">
+    <div class="h-[calc(100vh-9.2rem)] min-h-35rem flex">
       <div class="w-full rounded-sm overflow-hidden ring-1 ring-[var(--color-neutral-3)] flex box-border">
         <div class="rounded-t-sm flex flex-col h-auto w-full overflow-hidden">
           <div
@@ -342,7 +342,7 @@ function onSubmitToAI() {
                       </a-button>
                     </div>
                   </div>
-                  <div class="flex-1 min-h-35rem h-auto max-h-full overflow-auto">
+                  <div class="flex-auto h-auto max-h-full overflow-auto">
                     <div class="flex flex-col justify-between h-full gap-0px relative">
                       <!-- comments -->
                       <div ref="conversationWrapperRef" class="p-2 px-3 flex flex-col space-y-4 overflow-y-auto flex-1">
@@ -430,7 +430,7 @@ function onSubmitToAI() {
                                     Text from image
                                   </span>
                                 </a-doption>
-                                <a-doption :disabled="!fetchingFromAi" :class="[!fetchingFromAi && 'opacity-40']" class="!bg-red-1/10 !text-red-4" @click="() => { controller.abort(); conversation.history[conversation.history.length - 1].aborted = true; lastResponse.length && conversation.history.push({ speaker: 'bot', text: lastResponse, time: useNow().value, aborted: true }); fetchingFromAi = false; }">
+                                <a-doption :disabled="!fetchingFromAi" :class="[!fetchingFromAi && 'opacity-40']" class="!bg-red-1/10 !text-red-4" @click="() => { controller.abort(); conversation.history[conversation.history.length - 1].aborted = true; pauseScrollHeightCM(); lastResponse.length && conversation.history.push({ speaker: 'bot', text: lastResponse, time: useNow().value, aborted: true }); fetchingFromAi = false; }">
                                   <span flex items-center>
                                     <span i-carbon-close mr-1 />
                                     Stop Response
