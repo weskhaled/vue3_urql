@@ -1,6 +1,6 @@
 <!-- eslint-disable vue/one-component-per-file -->
 <script setup lang="ts">
-import { fetchEventSource } from '@microsoft/fetch-event-source'
+import { EventStreamContentType, fetchEventSource } from '@microsoft/fetch-event-source'
 import { mdAndSmaller } from '~/common/stores'
 import { useTesseract } from '~/composables/tesseract'
 import CodeMirror from '~/components/common/CodeMirror/CodeMirror.vue'
@@ -20,7 +20,7 @@ const { y: yCmScrollDOM } = useScroll(cmScrollDOM, { behavior: 'auto' })
 const [valueNavEditor, toggleNavEditor] = useToggle()
 const [valueSpeechRecognition, toggleSpeechRecognition] = useToggle()
 
-const controller = new AbortController()
+const controller = shallowRef(new AbortController())
 
 const codemirrorReadOnly = ref<boolean>(false)
 const conversation = reactive<any>({
@@ -154,6 +154,7 @@ function onSubmitToAI() {
     return
   }
 
+  controller.value = new AbortController()
   const newConversation = {
     history: [
       ...conversation.history,
@@ -179,24 +180,37 @@ function onSubmitToAI() {
     },
     body: JSON.stringify(paramsObj),
     openWhenHidden: true,
-    signal: controller.signal,
-    async onopen(res) {
-      valueNavEditor.value = false
-      fetchingFromAi.value = true
-      lastResponse.value = ''
-      if (resultResponse.value.length > 0)
-        resultResponse.value += '\n//AI Response:\n'
+    signal: controller.value.signal,
+    async onopen(response) {
+      if (response.ok && response.headers.get('content-type') === EventStreamContentType) {
+        valueNavEditor.value = false
+        fetchingFromAi.value = true
+        lastResponse.value = ''
+        if (resultResponse.value.length > 0)
+          resultResponse.value += '\n//AI Response:\n'
 
-      codemirrorReadOnly.value = true
-      tabActiveKey.value = '1'
-      nextTick(() => {
-        conversationWrapperRef.value?.scrollTo({
-          top: conversationWrapperRef.value?.scrollHeight,
-          behavior: 'smooth',
+        codemirrorReadOnly.value = true
+        tabActiveKey.value = '1'
+        nextTick(() => {
+          conversationWrapperRef.value?.scrollTo({
+            top: conversationWrapperRef.value?.scrollHeight,
+            behavior: 'smooth',
+          })
         })
-      })
-      resumeScrollHeightCm()
-      console.warn('Connection Established', res)
+        resumeScrollHeightCm()
+        console.warn('Connection Established', response)
+        // everything's good
+      }
+      else if (response.status >= 400 && response.status < 500 && response.status !== 429) {
+        message.error(`Error: ${response?.statusText} - ${response?.status}`)
+        controller.value.abort()
+        // client-side errors are usually non-retriable:
+        throw new Error('RetriableError')
+      }
+      else {
+        controller.value.abort()
+        throw new Error('FatalError')
+      }
     },
     onmessage(msg) {
       const { data } = msg
@@ -207,7 +221,6 @@ function onSubmitToAI() {
             addChunkToEditor(text)
         }
         catch (err) {
-          controller.abort()
           fetchingFromAi.value = false
           pauseScrollHeightCM()
           conversation.history = [
@@ -324,7 +337,7 @@ function onSubmitToAI() {
                   <div class="flex-1 min-h-35rem max-h-70vh h-70vh overflow-auto">
                     <div class="flex flex-col justify-between h-full gap-0px relative">
                       <!-- comments -->
-                      <div ref="conversationWrapperRef" class="p-2 px-3 flex flex-col space-y-4 overflow-y-auto">
+                      <div ref="conversationWrapperRef" class="p-2 px-3 flex flex-col space-y-4 overflow-y-auto flex-1">
                         <div
                           v-for="(item, index) in conversation.history" :key="index" class="flex gap-x-1"
                           :class="[item.speaker === 'human' ? 'flex-row' : 'flex-row-reverse']"
@@ -409,7 +422,7 @@ function onSubmitToAI() {
                                     Text from image
                                   </span>
                                 </a-doption>
-                                <a-doption :disabled="!fetchingFromAi" :class="[!fetchingFromAi && 'opacity-40']" class="!bg-red-1/10 !text-red-4" @click="() => { controller.abort(); conversation.history[conversation.history.length - 1].aborted = true; conversation.history.push({ speaker: 'bot', text: lastResponse, time: useNow().value, aborted: true }); fetchingFromAi = false; }">
+                                <a-doption :disabled="!fetchingFromAi" :class="[!fetchingFromAi && 'opacity-40']" class="!bg-red-1/10 !text-red-4" @click="() => { controller.abort(); conversation.history[conversation.history.length - 1].aborted = true; lastResponse.length && conversation.history.push({ speaker: 'bot', text: lastResponse, time: useNow().value, aborted: true }); fetchingFromAi = false; }">
                                   <span flex items-center>
                                     <span i-carbon-close mr-1 />
                                     Stop Response
@@ -551,7 +564,7 @@ function onSubmitToAI() {
                           <span :title="tab.title" class="max-w-32 truncate">{{ tab.title }}</span>
                         </div>
                       </template>
-                      <div class="relative bg-white dark:bg-dark-950 dark:border-slate-900/50">
+                      <div class="relative bg-white dark:bg-[#121212]">
                         <component :is="tab.component" v-bind="tab.props" />
                       </div>
                     </a-tab-pane>
@@ -638,7 +651,7 @@ function onSubmitToAI() {
   .arco-tabs-nav.arco-tabs-nav-horizontal {
 
     .arco-tabs-nav-tab-list {
-      @apply !overflow-x-auto !overflow-y-hidden !mr-9 scrollbar scrollbar-track-color-dark-7 dark:scrollbar-track-color-dark-9 scrollbar-track-color-black/60 scrollbar-thumb-color-white/70 scrollbar-h-1px scrollbar-radius-0 scrollbar-track-radius-0 scrollbar-thumb-radius-0;
+      @apply !overflow-x-auto !overflow-y-hidden !mr-9 !md:mr-0 scrollbar scrollbar-track-color-dark-7 dark:scrollbar-track-color-dark-9 scrollbar-track-color-black/60 scrollbar-thumb-color-white/70 scrollbar-h-1px scrollbar-radius-0 scrollbar-track-radius-0 scrollbar-thumb-radius-0;
     }
     // .arco-tabs-nav-extra {
     //   @apply !sticky right-0 bg-green;
