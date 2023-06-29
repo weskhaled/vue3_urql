@@ -59,5 +59,5 @@ export default defineConfig({
     transformerDirectives(),
     transformerVariantGroup(),
   ],
-  safelist: 'prose prose-sm m-auto text-left opacity-20'.split(' '),
+  safelist: 'prose prose-sm m-auto text-left h-screen opacity-20'.split(' '),
 })

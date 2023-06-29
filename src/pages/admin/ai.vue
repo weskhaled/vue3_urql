@@ -294,11 +294,18 @@ function onSubmitToAI() {
               <div class="ml-1.5 w-2.5 h-2.5 rounded-full bg-[#61C454]" />
             </div>
             <div class="flex justify-end">
-              <a-button type="text" size="mini">
-                <template #icon>
-                  <span i-carbon-overflow-menu-horizontal w-5 h-5 />
+              <a-dropdown>
+                <a-button type="text" size="mini">
+                  <template #icon>
+                    <span i-carbon-overflow-menu-horizontal w-5 h-5 />
+                  </template>
+                </a-button>
+                <template #content>
+                  <a-doption @click="() => (tabActiveKey = '1', tabs.length = 1)">
+                    Close All
+                  </a-doption>
                 </template>
-              </a-button>
+              </a-dropdown>
             </div>
           </div>
           <div
