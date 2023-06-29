@@ -59,17 +59,18 @@ const tabs = shallowReactive([
     closable: false,
     props: {
       modelValue: resultResponse,
+      windowContentRef,
       codemirrorRef,
       codemirrorReadOnly,
       mode: 'tsx',
-      wrapperClasses: 'min-h-35rem max-h-70vh h-70vh overflow-auto',
+      wrapperClasses: 'overflow-auto flex',
     },
     component: defineComponent({
       name: 'CodeEditor',
-      props: ['modelValue', 'codemirrorRef', 'codemirrorReadOnly', 'mode', 'wrapperClasses'],
+      props: ['modelValue', 'codemirrorRef', 'codemirrorReadOnly', 'mode', 'wrapperClasses', 'windowContentRef'],
       setup(props) {
         return () =>
-          h('div', { class: props.wrapperClasses }, [
+          h('div', { class: props.wrapperClasses, style: { height: `${props.windowContentRef?.value?.clientHeight - 36}px` } }, [
             h(CodeMirror, {
               modelValue: props.modelValue,
               ref: props.codemirrorRef,
@@ -103,14 +104,15 @@ function handleAddTab(__event, file = File) {
     icon: 'i-tabler-photo-filled',
     props: {
       file,
-      wrapperClasses: 'min-h-35rem max-h-70vh h-70vh overflow-auto',
+      windowContentRef,
+      wrapperClasses: 'overflow-auto flex',
     },
     component: defineComponent({
       name: 'ImageViewer',
-      props: ['file'],
+      props: ['file', 'windowContentRef', 'wrapperClasses'],
       setup(props) {
         return () =>
-          h('div', { class: 'min-h-35rem max-h-70vh h-70vh overflow-auto flex' }, [
+          h('div', { class: props.wrapperClasses, style: { height: `${props.windowContentRef?.value?.clientHeight - 36}px` } }, [
             h('img', { src: fileToObjectUrl(props.file), class: 'max-h-full max-w-full m-auto' }),
           ])
       },
@@ -187,7 +189,7 @@ function onSubmitToAI() {
         fetchingFromAi.value = true
         lastResponse.value = ''
         if (resultResponse.value.length > 0)
-          resultResponse.value += '\n//AI Response:\n'
+          resultResponse.value += '\n// AI Response:\n'
 
         codemirrorReadOnly.value = true
         tabActiveKey.value = '1'
@@ -274,9 +276,9 @@ function onSubmitToAI() {
     bg-img-dark="https://images.unsplash.com/photo-1655637389009-81207e99c3c6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=900&q=80"
     :content-parallax="false"
   >
-    <div mx-auto mt-2 class="min-h-[calc(100vh-9.2rem)]">
-      <div class="rounded-sm overflow-hidden ring-1 ring-[var(--color-neutral-3)]">
-        <div class="rounded-t-sm">
+    <div class="min-h-[calc(100vh-9.2rem)] flex">
+      <div class="w-full rounded-sm overflow-hidden ring-1 ring-[var(--color-neutral-3)]  min-h-35">
+        <div class="rounded-t-sm flex flex-col h-full max-h-full overflow-hidden">
           <div
             class="py-2 items-center px-4 gap-8 flex justify-between w-full bg-light-1/90 dark:bg-dark-9/90 backdrop-blur"
           >
@@ -295,9 +297,9 @@ function onSubmitToAI() {
           </div>
           <div
             ref="windowContentRef"
-            class="overflow-hidden w-full h-full min-h-0 b-t border-[var(--color-neutral-3)] relative md:grid"
+            class="overflow-hidden w-full h-full min-h-0 b-t border-[var(--color-neutral-3)] relative md:flex"
           >
-            <a-split v-model:size="windowLayoutSplit" min="280px" max="0.6" default-size="0.3" class="editor-split">
+            <a-split v-model:size="windowLayoutSplit" min="280px" max="0.6" default-size="0.3" class="editor-split w-full">
               <template #first>
                 <nav
                   class="b-r-1px md:b-r-0 border-[var(--color-neutral-3)] h-full w-[calc(100%-3rem)] md:w-auto absolute md:relative h-full flex flex-col bg-light-1/85 dark:bg-dark-8/85 backdrop-blur z-9 transition-all !md:translate-x-0"
@@ -334,7 +336,7 @@ function onSubmitToAI() {
                       </a-button>
                     </div>
                   </div>
-                  <div class="flex-1 min-h-35rem max-h-70vh h-70vh overflow-auto">
+                  <div class="flex-1 min-h-35rem max-h-full overflow-auto">
                     <div class="flex flex-col justify-between h-full gap-0px relative">
                       <!-- comments -->
                       <div ref="conversationWrapperRef" class="p-2 px-3 flex flex-col space-y-4 overflow-y-auto flex-1">
