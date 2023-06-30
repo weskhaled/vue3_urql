@@ -5,6 +5,8 @@ import { mdAndSmaller } from '~/common/stores'
 import { useTesseract } from '~/composables/tesseract'
 import CodeMirror from '~/components/common/CodeMirror/CodeMirror.vue'
 
+const API_URL = import.meta.env.VITE_API_URL
+
 const { files, open, reset, onChange } = useFileDialog({ accept: '.png, .jpg, .jpeg, .gif, .bmp, .tiff, .tif', multiple: false })
 const { message } = useMessage()
 const { init: initRecognition, result, status } = useTesseract()
@@ -182,7 +184,7 @@ function onSubmitToAI() {
     temperature: 0.7,
   }
 
-  fetchEventSource('/api/ai/chat', {
+  fetchEventSource(`${API_URL}/ai/chat`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
