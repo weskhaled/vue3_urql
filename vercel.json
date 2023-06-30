@@ -1,7 +1,7 @@
 {
   "rewrites": [
     {
-      "source": "/api/:match*",
+      "source": "/api/:path(.*)",
       "destination": "https://weskhaled-nest.up.railway.app"
     },
     {
@@ -9,7 +9,7 @@
       "destination": "https://weskhaled-nest.up.railway.app/graphql"
     },
     {
-      "source": "/all-api/:match*",
+      "source": "/all-api/:path(.*)",
       "destination": "http://all.api.radio-browser.info/json"
     }
   ]
