@@ -1,8 +1,16 @@
 {
   "rewrites": [
     {
+      "source": "/api/:match*",
+      "destination": "https://weskhaled-nest.up.railway.app"
+    },
+    {
       "source": "/graphql/:match*",
       "destination": "https://weskhaled-nest.up.railway.app/graphql"
+    },
+    {
+      "source": "/all-api/:match*",
+      "destination": "http://all.api.radio-browser.info/json"
     }
   ]
 }
