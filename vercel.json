@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/:path*",
+      "destination": "/index.html"
+    },
+    {
       "source": "/api/:path(.*)",
       "destination": "https://weskhaled-nest.up.railway.app"
     },
