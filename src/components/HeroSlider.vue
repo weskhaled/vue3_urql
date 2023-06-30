@@ -282,7 +282,7 @@ watch(windowScrollY, (val) => {
 
 /* Gap filler */
 .swiper-pagination {
-  @apply absolute bottom-8 w-full text-center z-11 right-1/2 md:right-3/4 transform translate-x-50% md:translate-x--0% py-2px px-5px rounded-xl w-auto bg-black/75;
+  @apply absolute bottom-8 w-full text-center z-11 right-1/2 md:right-4/5 transform translate-x-50% md:translate-x--0% py-2px px-5px rounded-xl w-auto bg-black/75;
 
   >span.swiper-pagination-bullet {
     @apply relative block float-left m-5px w-2 h-2 rounded-full transition-shadow duration-3 ease;
