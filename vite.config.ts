@@ -232,12 +232,12 @@ export default ({ mode }) => {
       },
       proxy: {
         '/api': {
-          target: process.env.VITE_API_URL || 'http://localhost:3000/',
+          target: process.env.VITE_API_URL || 'http://localhost:3000',
           changeOrigin: true,
           rewrite: path => path.replace(/^\/api/, ''),
         },
         '/graphql': {
-          target: `${process.env.VITE_API_URL || 'http://localhost:3000/'}graphql`,
+          target: `${process.env.VITE_API_URL || 'http://localhost:3000'}/graphql`,
           changeOrigin: true,
           rewrite: path => path.replace(/^\/graphql/, ''),
         },
