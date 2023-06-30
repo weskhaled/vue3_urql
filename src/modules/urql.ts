@@ -6,6 +6,7 @@ import { createClient as createWSClient } from 'graphql-ws'
 import { type UserModule } from '~/types'
 import { refreshToken, token } from '~/common/stores'
 
+const API_URL = import.meta.env.VITE_API_URL
 const API_WS_URL = import.meta.env.VITE_API_WS_URL
 
 const REFRESH = gql`mutation($token: JWT!) {
@@ -28,7 +29,7 @@ const wsClient = createWSClient({
 })
 
 const clientConfig = {
-  url: '/graphql',
+  url: `${API_URL}/graphql`,
   exchanges: [
     cacheExchange,
     authExchange(async (utils) => {
