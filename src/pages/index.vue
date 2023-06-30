@@ -10,7 +10,8 @@ import { FreeMode, Mousewheel, Scrollbar } from 'swiper'
 import { isAuthenticated, mdAndLarger } from '~/common/stores'
 import { useIsotope } from '~/composables/isotope'
 import 'swiper/css/scrollbar'
-import TheWindow from '~/components/common/TheWindow.vue'
+// import TheWindow from '~/components/common/TheWindow.vue'
+import CodeAI from '~/components/common/CodeAI.vue'
 
 const googleApiKey = import.meta.env.VITE_GOOGLE_API_KEY
 
@@ -42,7 +43,7 @@ const sliders: Ref<any[]> = ref([
   },
   {
     title: '2/2',
-    content: h(TheWindow, { class: 'delay-0s animate__animated animate__slideInDown' }),
+    content: h('div', { class: 'text-left flex h-[calc(100vh-15rem)] w-full mx-auto' }, [h(CodeAI, { class: 'mx-auto delay-0s animate__animated animate__slideInDown' })]),
     image: {
       screen: 'https://images.unsplash.com/photo-1620121692029-d088224ddc74?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2800&q=80',
       thumb: 'https://images.unsplash.com/photo-1620121692029-d088224ddc74?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=250&q=80',
@@ -476,13 +477,13 @@ function submitContact({ values, errors }) {
       </div>
     </header>
     <section class="relative font-sans">
-      <HeroSlider :grab-cursor="true" class="h-[calc(100vh-8rem)] min-h-400px" :sliders="sliders" />
+      <HeroSlider :grab-cursor="false" class="h-[calc(100vh-2rem)] min-h-400px" :sliders="sliders" />
     </section>
     <section class="relative">
       <div class="bg-white dark:bg-black">
         <div class="container mx-auto px-4">
           <div
-            class="p-5 rounded-2px pt-1 bg-white/80 dark:bg-zinc-9/70 backdrop-blur max-w-xl relative -mt-5 md:-mt-20 z-2 ml-auto m-auto md:mr-0 border-zinc-5/10 border shadow-sm shadow-black/3"
+            class="p-5 rounded-2px pt-1 bg-white/80 dark:bg-zinc-9/70 backdrop-blur max-w-xl relative -mt-4 md:-mt-12 z-2 ml-auto m-auto md:mr-0 border-zinc-5/10 border shadow-sm shadow-black/3"
           >
             <button
               class="w-10 h-10 justify-center content-center absolute flex top--6 left--6 bg-blue-6/90 hover:bg-blue-7/90 active:(bg-blue-7/80 border-blue-8) transition-all block z-2 border border-blue-8/20 backdrop-blur"

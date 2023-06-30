@@ -14,7 +14,7 @@ export interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   sliders: () => [],
-  options: () => ({ modules: ['pagination'], autoplay: { delay: 25000, disableOnInteraction: false, pauseOnMouseEnter: true }, containerClass: [] }),
+  options: () => ({ modules: ['pagination'], autoplay: { delay: 33335000, disableOnInteraction: false, pauseOnMouseEnter: true }, containerClass: [] }),
 })
 // const { modelValue } = defineModels<{
 //   modelValue: string
@@ -76,7 +76,7 @@ watch(windowScrollY, (val) => {
 
 <template>
   <Swiper
-    ref="sliderWrapperRef" :autoplay="options?.autoplay || false" :allow-touch-move="true" :loop="sliders.length > 1"
+    ref="sliderWrapperRef" :autoplay="options?.autoplay || false" :allow-touch-move="false" :loop="sliders.length > 1"
     :navigation="sliders.length > 1 && options?.modules?.includes('navigation')"
     :pagination="sliders.length > 1 && options?.modules?.includes('pagination') ? pagination : false" :modules="modules"
     class="hero-slider bg-white dark:bg-black" :slides-per-view="1" :space-between="0"
@@ -162,8 +162,11 @@ watch(windowScrollY, (val) => {
 .hero-slider {
   @apply bg-black;
 
-  >.swiper-wrapper>.swiper-slide>img {
-    @apply w-full h-full object-cover;
+  >.swiper-wrapper {
+    @apply !cursor-default;
+    &>.swiper-slide>img {
+      @apply w-full h-full object-cover;
+    }
   }
 
   .header-image {
