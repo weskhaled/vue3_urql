@@ -1,33 +1,32 @@
 <script lang="ts" setup>
 import { breakpointsTailwind, useBreakpoints } from '@vueuse/core'
-import { Autoplay, Navigation, Pagination } from 'swiper'
-// Import Swiper Vue.js components
+import { Mousewheel, Navigation, Pagination } from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import { isDark } from '~/composables/dark'
-// Import Swiper styles
 import 'swiper/css'
 
 export interface Props {
   sliders?: any[]
-  options?: { modules?: any[]; autoplay?: any; containerClass?: string[] }
+  options?: { modules?: any[]; autoplay: any; containerClass?: string[] }
 }
 
 const props = withDefaults(defineProps<Props>(), {
   sliders: () => [],
-  options: () => ({ modules: ['pagination'], autoplay: { delay: 33335000, disableOnInteraction: false, pauseOnMouseEnter: true }, containerClass: [] }),
+  options: () => ({ modules: ['pagination'], autoplay: { delay: 200, waitForTransition: true }, containerClass: [] }),
 })
-// const { modelValue } = defineModels<{
-//   modelValue: string
-// }>()
+
 const breakpoints = useBreakpoints(breakpointsTailwind)
 const mdAndLarger = breakpoints.greater('sm')
+const { counter, reset, pause, resume } = useInterval(props.options.autoplay.delay, { controls: true })
 const modules = computed(() => {
-  const swiperModules = [Autoplay]
+  const swiperModules = [Mousewheel]
   props.options?.modules?.includes('navigation') && (swiperModules.push(Navigation))
   props.options?.modules?.includes('pagination') && (swiperModules.push(Pagination))
   return swiperModules
 })
 const sliderRef = ref()
+const swiperSliderTarget = computed(() => sliderRef.value?.el)
+const isHovered = useElementHover(swiperSliderTarget)
 const activeSlideIndex = ref(0)
 const progressWidth = ref(0)
 const sliderWrapperRef = ref()
@@ -45,9 +44,29 @@ const sliderContainerIsVisible = useElementVisibility(sliderWrapperRef)
 watch(progressWidth, (val) => {
   sliderProgressPercent.value = `${(37.6991 - (val * 37.6991)).toFixed(2)}`
 })
+
 function onSwiper(swiper: any) {
   sliderRef.value = swiper
 }
+watch(isHovered, (val) => {
+  if (val) {
+    reset()
+    pause()
+  }
+  else {
+    resume()
+  }
+})
+watchThrottled(counter, (val) => {
+  if (val === props.options.autoplay.delay)
+    activeSlideIndex.value + 1 >= props.sliders.length ? sliderRef.value.slideTo(0) : sliderRef.value.slideNext()
+
+  if (val >= props.options.autoplay.delay)
+    reset()
+
+  const percent = (val / props.options.autoplay.delay) * 100
+  progressWidth.value = +((percent / 100)).toFixed(2)
+}, { throttle: 10 })
 const pagination = {
   clickable: true,
   renderBullet(index, className) {
@@ -76,17 +95,17 @@ watch(windowScrollY, (val) => {
 
 <template>
   <Swiper
-    ref="sliderWrapperRef" :autoplay="options?.autoplay || false" :allow-touch-move="false" :loop="sliders.length > 1"
+    ref="sliderWrapperRef" :autoplay="options?.autoplay || false" :allow-touch-move="mdAndLarger" :loop="false"
     :navigation="sliders.length > 1 && options?.modules?.includes('navigation')"
     :pagination="sliders.length > 1 && options?.modules?.includes('pagination') ? pagination : false" :modules="modules"
     class="hero-slider bg-white dark:bg-black" :slides-per-view="1" :space-between="0"
     :auto-height="false"
+    :mousewheel="false"
     @swiper="onSwiper"
-    @slide-change="onSlideChange" @autoplay-time-left="(__s, __time, progress) => progressWidth = 1 - progress"
-    @mouse-over="() => sliderRef?.autoplay.pause()" @mouse-out="() => sliderRef?.autoplay.resume()"
+    @active-index-change="onSlideChange"
   >
     <SwiperSlide
-      v-for="(slide, index) in sliders" :key="slide.id" class="flex h-full relative"
+      v-for="(slide, index) in sliders" :key="index" class="flex h-full relative"
     >
       <header class="justify-center items-center flex w-full">
         <div
@@ -112,8 +131,8 @@ watch(windowScrollY, (val) => {
           :style="{ ...sliderStyles.container }"
         >
           <div
-            v-if="index === activeSlideIndex" class="transition-opacity duration-0.5s"
-            :class="{ 'opacity-100': sliderContainerIsVisible, 'animate__animated': index === activeSlideIndex }"
+            v-show="index === activeSlideIndex"
+            :class="{ animate__animated: index === activeSlideIndex }"
           >
             <component :is="slide.content" />
           </div>
@@ -122,7 +141,7 @@ watch(windowScrollY, (val) => {
     </SwiperSlide>
     <template v-if="sliders.length > 1">
       <div class="swiper-progressBar">
-        <div class="swiper-bar" :style="{ width: `${progressWidth * 100}%` }" />
+        <div class="swiper-bar transition-width-300" :style="{ width: `${progressWidth * 100}%` }" />
       </div>
       <nav class="nav-slit">
         <a class="prev" href="javascript:;" @click="activeSlideIndex < 1 ? sliderRef.slideTo(sliders.length) : sliderRef.slidePrev()">
@@ -163,7 +182,7 @@ watch(windowScrollY, (val) => {
   @apply bg-black;
 
   >.swiper-wrapper {
-    @apply !cursor-default;
+    @apply !cursor-grab active:!cursor-grabbing;
     &>.swiper-slide>img {
       @apply w-full h-full object-cover;
     }
@@ -194,7 +213,7 @@ watch(windowScrollY, (val) => {
       .icon-wrap {
         position: relative;
         display: block;
-        padding: 3rem 0px;
+        padding: 2.55rem 0px;
 
         i.icon {
           font-size: 1rem;
@@ -217,7 +236,7 @@ watch(windowScrollY, (val) => {
       div {
         position: absolute;
         top: 0;
-        width: 160px;
+        width: 8.5rem;
         height: 100%;
         background-color: #939a9f;
         transition: transform 0.3s 0.3s;

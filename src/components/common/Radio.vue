@@ -4,6 +4,7 @@ import { useRouteQuery } from '@vueuse/router'
 import { useFuse } from '@vueuse/integrations/useFuse'
 import { useIDBKeyval } from '@vueuse/integrations/useIDBKeyval'
 import { useSortable } from '@vueuse/integrations/useSortable'
+
 // import { mdAndLarger, smAndSmaller } from '~/common/stores'
 // const { t } = useI18n()
 // const router = useRouter()
@@ -287,7 +288,7 @@ onMounted(async () => {
               </template>
             </a-button>
           </div>
-          <div class="flex-1 flex justify-center relative overflow-hidden">
+          <div class="flex-1 flex justify-center relative">
             <a-slider
               v-model:model-value="volumeValue" class="w-full" :min="0" :max="100"
               :default-value="volumeValue" :disabled="muted"

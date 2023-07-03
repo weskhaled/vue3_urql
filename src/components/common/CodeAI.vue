@@ -183,99 +183,105 @@ function onSubmitToAI() {
     conversation: { history: newConversation.history.filter(item => !item.aborted) },
     temperature: 0.7,
   }
+  try {
+    fetchEventSource(`${API_URL}/ai/chat`, {
+      method: 'POST',
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(paramsObj),
+      openWhenHidden: true,
+      signal: controller.value.signal,
+      async onopen(response) {
+        if (response.ok && response.headers.get('content-type') === EventStreamContentType) {
+          valueNavEditor.value = false
+          fetchingFromAi.value = true
+          lastResponse.value = ''
+          if (resultResponse.value.length > 0)
+            resultResponse.value += '\n// AI Response:\n'
 
-  fetchEventSource(`${API_URL}/ai/chat`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(paramsObj),
-    openWhenHidden: true,
-    signal: controller.value.signal,
-    async onopen(response) {
-      if (response.ok && response.headers.get('content-type') === EventStreamContentType) {
-        valueNavEditor.value = false
-        fetchingFromAi.value = true
-        lastResponse.value = ''
-        if (resultResponse.value.length > 0)
-          resultResponse.value += '\n// AI Response:\n'
-
-        codemirrorReadOnly.value = true
-        tabActiveKey.value = '1'
+          codemirrorReadOnly.value = true
+          tabActiveKey.value = '1'
+          nextTick(() => {
+            conversationWrapperRef.value?.scrollTo({
+              top: conversationWrapperRef.value?.scrollHeight,
+              behavior: 'smooth',
+            })
+          })
+          resumeScrollHeightCm()
+          console.warn('Connection Established', response)
+        // everything's good
+        }
+        else if (response.status >= 400 && response.status < 500 && response.status !== 429) {
+          message.error(`Error: ${response?.statusText} - ${response?.status}`)
+          controller.value.abort()
+          // client-side errors are usually non-retriable:
+          throw new Error('RetriableError')
+        }
+        else {
+          controller.value.abort()
+          throw new Error('FatalError')
+        }
+      },
+      onmessage(msg) {
+        const { data } = msg
+        if (data) {
+          try {
+            const text = JSON.parse(data).choices[0]?.delta?.content?.replace(/``/g, '// ')?.replace(/`/g, '')
+            if (text)
+              addChunkToEditor(text)
+          }
+          catch (err) {
+            fetchingFromAi.value = false
+            pauseScrollHeightCM()
+            conversation.history = [
+              ...newConversation.history,
+              {
+                speaker: 'bot',
+                text: lastResponse.value,
+                time: useNow().value,
+                aborted: true,
+                error: err,
+              },
+            ]
+            console.error(`Failed to parse data: ${data}`)
+          }
+        }
+      },
+      onclose() {
+        fetchingFromAi.value = false
+        conversation.history = [
+          ...newConversation.history,
+          {
+            speaker: 'bot',
+            text: lastResponse.value,
+            time: useNow().value,
+            aborted: false,
+          },
+        ]
+        pauseScrollHeightCM()
         nextTick(() => {
+          valueNavEditor.value = true
+          userMessageRef.value?.focus()
           conversationWrapperRef.value?.scrollTo({
             top: conversationWrapperRef.value?.scrollHeight,
             behavior: 'smooth',
           })
         })
-        resumeScrollHeightCm()
-        console.warn('Connection Established', response)
-        // everything's good
-      }
-      else if (response.status >= 400 && response.status < 500 && response.status !== 429) {
-        message.error(`Error: ${response?.statusText} - ${response?.status}`)
-        controller.value.abort()
-        // client-side errors are usually non-retriable:
-        throw new Error('RetriableError')
-      }
-      else {
-        controller.value.abort()
-        throw new Error('FatalError')
-      }
-    },
-    onmessage(msg) {
-      const { data } = msg
-      if (data) {
-        try {
-          const text = JSON.parse(data).choices[0]?.delta?.content?.replace(/``/g, '// ')?.replace(/`/g, '')
-          if (text)
-            addChunkToEditor(text)
-        }
-        catch (err) {
-          fetchingFromAi.value = false
-          pauseScrollHeightCM()
-          conversation.history = [
-            ...newConversation.history,
-            {
-              speaker: 'bot',
-              text: lastResponse.value,
-              time: useNow().value,
-              aborted: true,
-              error: err,
-            },
-          ]
-          console.error(`Failed to parse data: ${data}`)
-        }
-      }
-    },
-    onclose() {
-      fetchingFromAi.value = false
-      conversation.history = [
-        ...newConversation.history,
-        {
-          speaker: 'bot',
-          text: lastResponse.value,
-          time: useNow().value,
-          aborted: false,
-        },
-      ]
-      pauseScrollHeightCM()
-      nextTick(() => {
-        valueNavEditor.value = true
-        userMessageRef.value?.focus()
-        conversationWrapperRef.value?.scrollTo({
-          top: conversationWrapperRef.value?.scrollHeight,
-          behavior: 'smooth',
-        })
-      })
-      codemirrorReadOnly.value = false
-      console.warn('Connection Closed by the Server')
-    },
-    onerror(err) {
-      fetchingFromAi.value = false
-      console.error('There was an error from the Server!', err)
-    },
-  })
+        codemirrorReadOnly.value = false
+        console.warn('Connection Closed by the Server')
+      },
+      onerror(err) {
+        fetchingFromAi.value = false
+        console.error('There was an error from the Server!', err)
+      },
+    })
+  }
+  catch (error) {
+    controller.value.abort()
+    console.error(error)
+  }
 }
 </script>
 

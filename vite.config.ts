@@ -1,14 +1,17 @@
 import path from 'node:path'
 import { defineConfig, loadEnv } from 'vite'
+
 // import Preview from 'vite-plugin-vue-component-preview'
 import Vue from '@vitejs/plugin-vue'
 import { ViteImageOptimizer } from 'vite-plugin-image-optimizer'
 import Pages from 'vite-plugin-pages'
+
 // import VueRouter from 'unplugin-vue-router/vite'
 import generateSitemap from 'vite-ssg-sitemap'
 import Layouts from 'vite-plugin-vue-layouts'
 import Components from 'unplugin-vue-components/vite'
 import AutoImport from 'unplugin-auto-import/vite'
+
 // import { VueRouterAutoImports } from 'unplugin-vue-router'
 import Markdown from 'vite-plugin-vue-markdown'
 import { VitePWA } from 'vite-plugin-pwa'
@@ -18,8 +21,10 @@ import Inspector from 'vite-plugin-vue-inspector'
 import LinkAttributes from 'markdown-it-link-attributes'
 import Unocss from 'unocss/vite'
 import Shiki from 'markdown-it-shiki'
+
 // @ts-expect-error failed to resolve types
 import VueMacros from 'unplugin-vue-macros/vite'
+
 // import { ViteWebfontDownload } from 'vite-plugin-webfont-dl'
 import { ArcoResolver, VueUseComponentsResolver } from 'unplugin-vue-components/resolvers'
 
@@ -178,16 +183,8 @@ export default ({ mode }) => {
         toggleButtonVisibility: 'never',
       }),
 
-      // // https://github.com/feat-agency/vite-plugin-webfont-dl
-      // ViteWebfontDownload([
-      //   'https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;700&family=Fira+Code:wght@400;600&family=Montserrat:ital,wght@0,200;0,400;0,700;1,200;1,400;1,700&display=swap',
-      // ], {
-      //   injectAsStyleTag: false,
-      //   minifyCss: true,
-      //   async: true,
-      //   cache: true,
-      //   proxy: false,
-      // }),
+      // https://github.com/feat-agency/vite-plugin-webfont-dl
+      // ViteWebfontDownload(),
     ],
     css: {
       preprocessorOptions: {
@@ -223,7 +220,7 @@ export default ({ mode }) => {
 
     ssr: {
       // TODO: workaround until they support native ESM
-      noExternal: ['workbox-window', /vue-i18n/, '@arco-design/web-vue', 'scroll-into-view-if-needed', 'isotope-layout', '@googlemaps/js-api-loader'],
+      noExternal: ['workbox-window', /vue-i18n/, '@arco-design/web-vue', 'scroll-into-view-if-needed', 'isotope-layout', '@googlemaps/js-api-loader', 'idb-keyval', '@vueuse/integrations/useIDBKeyval'],
     },
     server: {
       hmr: {

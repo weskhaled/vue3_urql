@@ -10,6 +10,7 @@ import { FreeMode, Mousewheel, Scrollbar } from 'swiper'
 import { isAuthenticated, mdAndLarger } from '~/common/stores'
 import { useIsotope } from '~/composables/isotope'
 import 'swiper/css/scrollbar'
+
 // import TheWindow from '~/components/common/TheWindow.vue'
 import CodeAI from '~/components/common/CodeAI.vue'
 
@@ -34,7 +35,7 @@ const formContact = reactive({
 
 const sliders: Ref<any[]> = ref([
   {
-    title: '1/2',
+    title: 'Intro',
     content: h('div', { class: 'text-left max-w-3xl ml-0' }, [h('h1', { class: 'font-bold text-2rem md:text-4rem leading-tight ![--animate-delay:0.1s] animate__animated animate__slideInDown' }, 'Hi, I’am Khaled. Full-Stack Js Developer based in Paris 👋'), h('p', { class: 'text-4 ![--animate-delay:0.15s] animate__delay-2s animate__animated animate__backInUp' }, 'Expert customer support team is all around the globe, ready and excited to help.')]),
     image: {
       screen: '/img/slider-1.jpg',
@@ -42,8 +43,8 @@ const sliders: Ref<any[]> = ref([
     },
   },
   {
-    title: '2/2',
-    content: h('div', { class: 'text-left flex h-[calc(100vh-15rem)] w-full mx-auto' }, [h(CodeAI, { class: 'mx-auto delay-0s animate__animated animate__slideInDown' })]),
+    title: 'code.ai',
+    content: h('div', { class: 'text-left flex h-[calc(100vh-15rem)] w-full mx-auto ![--animate-delay:4.15s]' }, [h(CodeAI, { class: 'mx-auto delay-0s animate__animated animate__slideInDown' })]),
     image: {
       screen: 'https://images.unsplash.com/photo-1620121692029-d088224ddc74?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2800&q=80',
       thumb: 'https://images.unsplash.com/photo-1620121692029-d088224ddc74?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=250&q=80',
@@ -477,7 +478,7 @@ function submitContact({ values, errors }) {
       </div>
     </header>
     <section class="relative font-sans">
-      <HeroSlider :grab-cursor="false" class="h-[calc(100vh-2rem)] min-h-400px" :sliders="sliders" />
+      <HeroSlider :grab-cursor="false" class="h-[calc(100vh-3rem)] md:h-[calc(100vh)] !min-h-400px" :sliders="sliders" />
     </section>
     <section class="relative">
       <div class="bg-white dark:bg-black">
@@ -738,7 +739,7 @@ function submitContact({ values, errors }) {
     </section>
     <UseElementVisibility v-slot="{ isVisible }">
       <section bg-white dark:bg-black relative z-1>
-        <div class="absolute left--1/10 top-1/2 translate-y--1/2">
+        <div class="absolute left--1/10 top-1/2 translate-y--1/2 z--1">
           <img alt="" :class="[mdAndLarger && isVisible ? 'animate__animated animate__fadeInLeft animate__delay-0s opacity-100' : 'animate__animated animate__fadeOutLeft']" class="" src="/img/docs.png">
         </div>
         <div class="absolute right--1/20 top-4/10 translate-y--1/2">
