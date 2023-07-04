@@ -12,7 +12,7 @@ export interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   sliders: () => [],
-  options: () => ({ modules: ['pagination'], autoplay: { delay: 200, waitForTransition: true }, containerClass: [] }),
+  options: () => ({ modules: ['pagination'], autoplay: { delay: 350, waitForTransition: true }, containerClass: [] }),
 })
 
 const breakpoints = useBreakpoints(breakpointsTailwind)

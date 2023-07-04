@@ -35,13 +35,15 @@ export default defineConfig({
         // these will extend the default theme
         sans: [
           {
-            name: 'Montserrat',
+            name: 'Figtree',
+            // name: 'Montserrat',
+            // name: 'DM Sans',
             // name: 'Work Sans',
             italic: true,
             weights: ['300', '400', '600', '700', '800'],
           },
         ],
-        mono: ['Fira Code', 'Fira Mono:400,700'],
+        mono: ['Space Grotesk', 'Fira Code:400,700'],
         // custom ones
         script: [
           {
@@ -49,6 +51,14 @@ export default defineConfig({
             italic: false,
             weights: ['400'],
             provider: 'google',
+          },
+        ],
+        general: [
+          {
+            name: 'General Sans',
+            italic: false,
+            weights: ['300', '400', '500', '600', '700', '800'],
+            provider: 'fontshare',
           },
         ],
       },

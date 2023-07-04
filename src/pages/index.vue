@@ -13,6 +13,7 @@ import 'swiper/css/scrollbar'
 
 // import TheWindow from '~/components/common/TheWindow.vue'
 import CodeAI from '~/components/common/CodeAI.vue'
+import Radio from '~/components/common/Radio.vue'
 
 const googleApiKey = import.meta.env.VITE_GOOGLE_API_KEY
 
@@ -36,7 +37,7 @@ const formContact = reactive({
 const sliders: Ref<any[]> = ref([
   {
     title: 'Intro',
-    content: h('div', { class: 'text-left max-w-3xl ml-0' }, [h('h1', { class: 'font-bold text-2rem md:text-4rem leading-tight ![--animate-delay:0.1s] animate__animated animate__slideInDown' }, 'Hi, I’am Khaled. Full-Stack Js Developer based in Paris 👋'), h('p', { class: 'text-4 ![--animate-delay:0.15s] animate__delay-2s animate__animated animate__backInUp' }, 'Expert customer support team is all around the globe, ready and excited to help.')]),
+    content: h('div', { class: 'text-left max-w-3xl ml-0 font-general' }, [h('h1', { class: 'font-extrabold text-2rem md:text-4rem leading-tight ![--animate-delay:0.1s] animate__animated animate__slideInDown' }, 'Hi, I’am Khaled. Full-Stack Js Developer based in Paris 👋'), h('p', { class: 'font-light text-4 ![--animate-delay:0.15s] animate__delay-2s animate__animated animate__backInUp' }, 'Experienced Full-stack JS developer proficient in VueJS, NestJS, NodeJS, and Tailwind CSS. Skilled in creating dynamic user interfaces, efficient back-end development, and implementing responsive designs.')]),
     image: {
       screen: '/img/slider-1.jpg',
       thumb: '/img/slider-1.jpg',
@@ -48,6 +49,14 @@ const sliders: Ref<any[]> = ref([
     image: {
       screen: 'https://images.unsplash.com/photo-1620121692029-d088224ddc74?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2800&q=80',
       thumb: 'https://images.unsplash.com/photo-1620121692029-d088224ddc74?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=250&q=80',
+    },
+  },
+  {
+    title: 'Radio In',
+    content: h('div', { class: 'text-left flex items-center w-full mx-auto ![--animate-delay:4.15s] max-w-xl' }, [h(Radio, { class: 'mx-auto delay-0s animate__animated animate__slideInDown' })]),
+    image: {
+      screen: 'https://images.unsplash.com/photo-1637789594401-5a0dac0d3e36?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=788&q=80',
+      thumb: 'https://images.unsplash.com/photo-1637789594401-5a0dac0d3e36?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=90&q=80',
     },
   },
 ])
