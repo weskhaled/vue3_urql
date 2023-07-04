@@ -1,9 +1,11 @@
 <!-- eslint-disable vue/one-component-per-file -->
 <script setup lang="ts">
 import { EventStreamContentType, fetchEventSource } from '@microsoft/fetch-event-source'
+import { ImagePreview } from '@arco-design/web-vue/es/image'
 import { mdAndSmaller } from '~/common/stores'
 import { useTesseract } from '~/composables/tesseract'
 import CodeMirror from '~/components/common/CodeMirror/CodeMirror.vue'
+import '@arco-design/web-vue/es/image/style/css'
 
 const API_URL = import.meta.env.VITE_API_URL
 
@@ -11,6 +13,8 @@ const { files, open, reset, onChange } = useFileDialog({ accept: '.png, .jpg, .j
 const { message } = useMessage()
 const { init: initRecognition, result, status } = useTesseract()
 const windowContentRef = ref<HTMLElement>()
+const editorTabsRef = ref<HTMLElement>()
+const totalTabsWidth = ref(0)
 const windowLayoutSplit = useStorage('window-layout-split', 0)
 const codemirrorRef = ref<HTMLElement>()
 const userMessageRef = ref<HTMLElement>()
@@ -22,6 +26,8 @@ const { y: yCmScrollDOM } = useScroll(cmScrollDOM, { behavior: 'auto' })
 const [valueNavEditor, toggleNavEditor] = useToggle()
 const [valueSpeechRecognition, toggleSpeechRecognition] = useToggle()
 const [valueEnterToSubmit, toggleEnterToSubmit] = useToggle()
+const tabsListNavEl: Ref<HTMLElement> = computed(() => editorTabsRef.value?.$el?.querySelector('.arco-tabs-nav-tab-list') as HTMLElement)
+const { x: xTabsListNav, arrivedState } = useScroll(tabsListNavEl, { behavior: 'smooth', throttle: 100 })
 
 const controller = shallowRef(new AbortController())
 
@@ -49,10 +55,30 @@ const speech = useSpeechRecognition({
   continuous: true,
 })
 
+watchOnce(tabsListNavEl, async (val) => {
+  if (val) {
+    await nextTick()
+    val.querySelectorAll('.arco-tabs-tab').forEach((child) => {
+      totalTabsWidth.value += Number.parseInt(child.offsetWidth, 10)
+    })
+  }
+})
+
 watch(speech.result, (val) => {
   if (val)
     textFromSpeech.value = val
 })
+
+function calculateTabsWidth() {
+  totalTabsWidth.value = 0
+  tabsListNavEl.value?.querySelectorAll('.arco-tabs-tab').forEach((child) => {
+    totalTabsWidth.value += Number.parseInt(child.offsetWidth, 10)
+  })
+}
+
+function splitEditorMove() {
+  calculateTabsWidth()
+}
 
 const tabs = shallowReactive([
   {
@@ -88,6 +114,60 @@ const tabs = shallowReactive([
       },
     }),
   },
+  {
+    key: '2a',
+    title: '2dscasdcsadjclksjdcklsdjclkjsadclkjsdc',
+    icon: 'i-tabler-brand-openai',
+    closable: true,
+    props: {
+    },
+    component: h('p', 'test 1'),
+  },
+  {
+    key: '2',
+    title: '2dscasdcsadjclksjdcklsdjclkjsadclkjsdc',
+    icon: 'i-tabler-brand-openai',
+    closable: true,
+    props: {
+    },
+    component: h('p', 'test 1'),
+  },
+  {
+    key: '3',
+    title: '2dscasdcsadjclksjdcklsdjclkjsadclkjsdc',
+    icon: 'i-tabler-brand-openai',
+    closable: true,
+    props: {
+    },
+    component: h('p', 'test 1'),
+  },
+  {
+    key: '4',
+    title: '2dscasdcsadjclksjdcklsdjclkjsadclkjsdc',
+    icon: 'i-tabler-brand-openai',
+    closable: true,
+    props: {
+    },
+    component: h('p', 'test 1'),
+  },
+  {
+    key: '5',
+    title: '2dscasdcsadjclksjdcklsdjclkjsadclkjsdc',
+    icon: 'i-tabler-brand-openai',
+    closable: true,
+    props: {
+    },
+    component: h('p', 'test 1'),
+  },
+  {
+    key: '6',
+    title: '2dscasdcsadjclksjdcklsdjclkjsadclkjsdc',
+    icon: 'i-tabler-brand-openai',
+    closable: true,
+    props: {
+    },
+    component: h('p', 'test 1'),
+  },
 ])
 
 function fileToObjectUrl(file: File) {
@@ -111,7 +191,7 @@ function handleAddTab(__event, file = File) {
     props: {
       modelValue: file,
       windowContentRef,
-      wrapperClasses: 'overflow-auto flex flex-col',
+      wrapperClasses: 'overflow-auto flex flex-col ![&_.arco-image-preview-mask]:bg-transparent',
     },
     component: defineComponent({
       name: 'ImageViewer',
@@ -119,10 +199,11 @@ function handleAddTab(__event, file = File) {
       setup(props) {
         const wrapperTarget = computed(() => props.windowContentRef.value)
         const { height } = useElementSize(wrapperTarget)
+        const containerRef = ref<HTMLElement>()
 
         return () =>
-          h('div', { class: props.wrapperClasses, style: { height: `${height.value - 36}px` } }, [
-            h('img', { src: fileToObjectUrl(props.modelValue), class: 'max-h-full max-w-full m-auto' }),
+          h('div', { id: 'image-preview-container', ref: containerRef, class: props.wrapperClasses, style: { height: `${height.value - 36}px` } }, [
+            h(ImagePreview, { src: fileToObjectUrl(props.modelValue), closable: false, defaultVisible: true, maskClosable: false, popupContainer: containerRef.value }),
           ])
       },
     }),
@@ -130,14 +211,17 @@ function handleAddTab(__event, file = File) {
   })
   nextTick(() => {
     tabActiveKey.value = `__${file.name}`
+    calculateTabsWidth()
   })
 }
 
-function handleDeleteTab(key: string, __event) {
+function handleDeleteTab(key: string) {
   const tabIndex = tabs.findIndex(item => item.key === key)
   tabIndex > -1 && tabs.splice(tabIndex, 1)
+
   nextTick(() => {
     tabActiveKey.value = '1'
+    calculateTabsWidth()
   })
 }
 
@@ -315,7 +399,7 @@ function onSubmitToAI() {
         ref="windowContentRef"
         class="overflow-hidden w-full h-full min-h-0 b-t border-[var(--color-neutral-3)] relative md:flex"
       >
-        <a-split v-model:size="windowLayoutSplit" min="280px" max="0.6" default-size="0.3" class="editor-split w-full">
+        <a-split v-model:size="windowLayoutSplit" min="280px" max="0.6" default-size="0.3" class="editor-split w-full" @moving="splitEditorMove">
           <template #first>
             <nav
               class="b-r-1px md:b-r-0 border-[var(--color-neutral-3)] h-full w-[calc(100%-3rem)] md:w-auto absolute md:relative h-full flex flex-col bg-light-1/85 dark:bg-dark-8/85 backdrop-blur z-9 transition-all !md:translate-x-0"
@@ -324,7 +408,7 @@ function onSubmitToAI() {
               <div
                 class="h-9 b-b border-[var(--color-neutral-3)] bg-white dark:bg-black px-1 flex flex-none justify-between items-center"
               >
-                <span class="text-zinc-7 dark:text-zinc-3 text-sm/9">
+                <span class="text-zinc-7 dark:text-zinc-3 text-sm/9 select-none">
                   Conversation
                 </span>
                 <div flex>
@@ -571,12 +655,19 @@ function onSubmitToAI() {
           </template>
           <!-- tabs -->
           <template #second>
-            <div class="flex-grow w-full z-7 bg-light-1 dark:bg-dark-9">
+            <div class="flex-grow w-full z-7 bg-light-1 dark:bg-dark-9 relative">
+              <span class="cursor-pointer flex items-center transition-all-230 absolute z-9 top-0 left-0 w-5 h-8.75 before-content-[''] before-pointer-events-none before-absolute before-h-full before-z-2 before-w-4rem before-bg-gradient-to-r before-from-white before-to-white/6 dark:before-from-black dark:before-to-black/5 hover:bg-white dark:hover-bg-black" :class="{ 'opacity-0 invisible pointer-events-none': arrivedState.left }" @click="() => xTabsListNav -= 100">
+                <span class="mx-auto relative z-3" i-carbon-chevron-left />
+              </span>
+              <span class="cursor-pointer flex items-center transition-all-230 absolute z-9 top-0 right-0 w-5 h-8.75 before-content-[''] before-pointer-events-none before-absolute before-right-0 before-h-full before-z-2 before-w-4rem before-bg-gradient-to-l before-from-white before-to-white/6 dark:before-from-black dark:before-to-black/5 hover:bg-white dark:hover-bg-black" :class="{ 'opacity-0 invisible pointer-events-none': arrivedState.right || (totalTabsWidth < (editorTabsRef?.$el?.offsetWidth)) }" @click="() => xTabsListNav += 100">
+                <span class="mx-auto relative z-3" i-carbon-chevron-right />
+              </span>
+
               <a-tabs
-                editable type="card" size="small" class="custom-tabs" :active-key="tabActiveKey" @tab-click="(key) => tabActiveKey = `${key}`" @delete="handleDeleteTab"
+                ref="editorTabsRef" editable type="card" size="small" class="custom-tabs" :active-key="tabActiveKey" @tab-click="(key) => tabActiveKey = `${key}`" @delete="handleDeleteTab"
               >
                 <template #extra>
-                  <div class="px-1 flex items-center">
+                  <div class="px-1 flex items-center select-none">
                     <a-button class="md:hidden" size="mini" type="primary" @click="toggleNavEditor()">
                       <template #icon>
                         <span i-carbon-list class="" />
@@ -586,7 +677,7 @@ function onSubmitToAI() {
                 </template>
                 <a-tab-pane v-for="tab in tabs" :key="tab.key" :closable="tab.closable">
                   <template #title>
-                    <div class="flex items-center">
+                    <div class="flex items-center select-none">
                       <span class="mr-1" :class="tab.icon" />
                       <span :title="tab.title" class="max-w-32 truncate">{{ tab.title }}</span>
                     </div>
@@ -611,19 +702,6 @@ function onSubmitToAI() {
 </template>
 
 <style lang="less">
-.arco-upload-list-item-content {
-  @apply items-initial justify-between;
-
-  .arco-upload-list-item-name {
-    @apply mr-auto;
-  }
-
-  .arco-upload-progress {
-    @apply flex h-inherit items-center justify-center w-12 m--1 ml-0 bg-blue-9 rounded-r-2px;
-    background-color: var(--color-neutral-2);
-  }
-}
-
 .editor-split {
   .arco-split-pane.arco-split-pane-first {
     @apply !lt-md:flex-none;
@@ -680,6 +758,9 @@ function onSubmitToAI() {
 
     .arco-tabs-nav-tab-list {
       @apply !overflow-x-auto !overflow-y-hidden !mr-9 !md:mr-0 scrollbar scrollbar-track-color-dark-7 dark:scrollbar-track-color-dark-9 scrollbar-track-color-black/60 scrollbar-thumb-color-white/70 scrollbar-h-1px scrollbar-radius-0 scrollbar-track-radius-0 scrollbar-thumb-radius-0;
+      &::-webkit-scrollbar {
+        display: none!important;
+      }
     }
     // .arco-tabs-nav-extra {
     //   @apply !sticky right-0 bg-green;
@@ -703,6 +784,9 @@ function onSubmitToAI() {
       &:first-child {
         @apply !border-l-0;
       }
+      // &:last-child {
+      //   @apply !border-r-0;
+      // }
 
       &.arco-tabs-tab-active {
         // @apply shadow-[inset_0_2px_2px_-2px_blue-5];

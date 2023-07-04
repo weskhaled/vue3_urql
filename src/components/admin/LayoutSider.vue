@@ -2,6 +2,7 @@
 import { vOnClickOutside } from '@vueuse/components'
 import { MenuItem, SubMenu } from '@arco-design/web-vue'
 import { isDark } from '~/composables/dark'
+
 // import '@arco-design/web-vue/es/menu-item/style/css.js'
 import { layoutBoxed, mdAndLarger, mdAndSmaller, menuItems, sideCollapsed, sideFixed, sideHidden, smAndSmaller } from '~/common/stores'
 import generatedRoutes from '~pages'
@@ -15,7 +16,7 @@ const visibleDrawer = ref(false)
 
 async function onClickMenuItem(key) {
   sideHidden.value = true
-  await router.push(key)
+  return await router.push(key)
 }
 const selectedKeysSider = ref<string[]>([])
 const openKeySider = ref<string[]>([])

@@ -42,8 +42,9 @@ function handleSubmit({ values, errors }) {
   }
 }
 
-onMounted(() => {
-  isAuthenticated.value && router.push({ name: 'admin' })
+onMounted(async () => {
+  if (isAuthenticated.value)
+    await router.push({ name: 'admin' })
 })
 </script>
 

@@ -25,7 +25,7 @@ async function logout() {
           </template>
         </a-button>
       </div>
-      <a href="" class="" @click.prevent="router.push('/')">
+      <a href="" class="" @click.prevent="() => router.push('/')">
         <span
           class="tracking-tight inline-block text-4/5 border-2px uppercase border-dark dark:border-light text-dark dark:text-light font-semibold py-1 px-2"
         >

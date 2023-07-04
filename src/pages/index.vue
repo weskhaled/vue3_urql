@@ -37,7 +37,7 @@ const formContact = reactive({
 const sliders: Ref<any[]> = ref([
   {
     title: 'Intro',
-    content: h('div', { class: 'text-left max-w-3xl ml-0 font-general' }, [h('h1', { class: 'font-extrabold text-2rem md:text-4rem leading-tight ![--animate-delay:0.1s] animate__animated animate__slideInDown' }, 'Hi, I’am Khaled. Full-Stack Js Developer based in Paris 👋'), h('p', { class: 'font-light text-4 ![--animate-delay:0.15s] animate__delay-2s animate__animated animate__backInUp' }, 'Experienced Full-stack JS developer proficient in VueJS, NestJS, NodeJS, and Tailwind CSS. Skilled in creating dynamic user interfaces, efficient back-end development, and implementing responsive designs.')]),
+    content: h('div', { class: 'text-left max-w-3xl ml-0 font-general flex flex-col' }, [h('h1', { class: 'font-extrabold text-2rem md:text-4rem leading-tight ![--animate-delay:0.1s] animate__animated animate__slideInDown' }, 'Hi, I’am Khaled. Full-Stack Js Developer based in Paris 👋'), h('p', { class: 'font-light text-4 p-2 bg-light dark:bg-dark ![--animate-delay:0.15s] animate__delay-2s animate__animated animate__backInUp' }, 'Experienced Full-stack JS developer proficient in VueJS, NestJS, NodeJS, and Tailwind CSS. Skilled in creating dynamic user interfaces, efficient back-end development, and implementing responsive designs.')]),
     image: {
       screen: '/img/slider-1.jpg',
       thumb: '/img/slider-1.jpg',
@@ -45,7 +45,7 @@ const sliders: Ref<any[]> = ref([
   },
   {
     title: 'code.ai',
-    content: h('div', { class: 'text-left flex h-[calc(100vh-15rem)] w-full mx-auto ![--animate-delay:4.15s]' }, [h(CodeAI, { class: 'mx-auto delay-0s animate__animated animate__slideInDown' })]),
+    content: h('div', { class: 'text-left flex h-[calc(100vh-15rem)] !max-h-50rem w-full mx-auto ![--animate-delay:4.15s]' }, [h(CodeAI, { class: 'mx-auto delay-0s animate__animated animate__slideInDown' })]),
     image: {
       screen: 'https://images.unsplash.com/photo-1620121692029-d088224ddc74?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2800&q=80',
       thumb: 'https://images.unsplash.com/photo-1620121692029-d088224ddc74?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=250&q=80',
@@ -55,8 +55,8 @@ const sliders: Ref<any[]> = ref([
     title: 'Radio In',
     content: h('div', { class: 'text-left flex items-center w-full mx-auto ![--animate-delay:4.15s] max-w-xl' }, [h(Radio, { class: 'mx-auto delay-0s animate__animated animate__slideInDown' })]),
     image: {
-      screen: 'https://images.unsplash.com/photo-1637789594401-5a0dac0d3e36?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=788&q=80',
-      thumb: 'https://images.unsplash.com/photo-1637789594401-5a0dac0d3e36?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=90&q=80',
+      screen: 'https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=900&q=80',
+      thumb: 'https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=250&q=80',
     },
   },
 ])
@@ -411,7 +411,7 @@ function submitContact({ values, errors }) {
           class="header-right"
           :class="(windowScrollY > 200) ? '[--primary-6:0,0,0] md:dark:[--primary-6:255,255,255]' : '[--primary-6:0,0,0] md:[--primary-6:0,0,0] dark:[--primary-6:255,255,255]'"
         >
-          <a-button v-if="isAuthenticated" class="!hover:bg-zinc-6/30" type="text" size="large" @click.stop="async() => await router.push('/admin')">
+          <a-button v-if="isAuthenticated" class="!hover:bg-zinc-6/30" type="text" size="large" @click="async() => await router.push('/auth/login')">
             <template #icon>
               <span class="w-5 h-5 mx-1 block text-lg i-carbon-user-avatar-filled-alt" />
             </template>
@@ -487,7 +487,7 @@ function submitContact({ values, errors }) {
       </div>
     </header>
     <section class="relative font-sans">
-      <HeroSlider :grab-cursor="false" class="h-[calc(100vh-3rem)] md:h-[calc(100vh)] !min-h-400px" :sliders="sliders" />
+      <HeroSlider :grab-cursor="false" class="h-[calc(100vh-3rem)] md:h-[calc(100vh)] !max-h-70rem !min-h-400px" :sliders="sliders" />
     </section>
     <section class="relative">
       <div class="bg-white dark:bg-black">
@@ -1135,10 +1135,10 @@ function submitContact({ values, errors }) {
           </div>
         </div>
       </div>
-      <div ref="mapRef" class="h-100vh min-h-2xl w-full relative z-1" />
+      <div ref="mapRef" class="h-100vh min-h-2xl !max-h-40rem w-full relative z-1" />
     </section>
-    <footer block pb-0px>
-      <div class="footer-container py-6 relative z-1 bg-light-2 dark:bg-dark-8">
+    <footer block pb-0px relative>
+      <div class="footer-container mb-12 !mb-0 py-6 relative z-1 bg-light-2 dark:bg-dark-8">
         <div class="container px-4 mx-auto">
           <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div class="">
@@ -1259,8 +1259,8 @@ function submitContact({ values, errors }) {
           </div>
         </div>
       </div>
-      <div class="copyrights bottom-0 z-0 w-full bg-light-5 dark:bg-dark-9 b-t-px border-zinc-4/15">
-        <div class="container mx-auto p-3">
+      <div class="copyrights w-full bottom-0 z-0 bg-light-5 dark:bg-dark-9 b-t-px border-zinc-4/15">
+        <div class="p-2 container mx-auto">
           <div class="grid grid-cols-1 md:grid-cols-2">
             <p class="text-center md:text-left leading-8">
               Copyrights © 2023 All Rights Reserved by WesKhaled.

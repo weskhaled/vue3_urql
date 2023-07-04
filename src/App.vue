@@ -26,6 +26,7 @@ useHead({
     },
   ],
 })
+
 const locales = {
   'en-US': enUS,
   'fr-FR': frFR,
