@@ -409,7 +409,7 @@ function submitContact({ values, errors }) {
         <div class="header-center" />
         <div
           class="header-right"
-          :class="(windowScrollY > 200) ? '[--primary-6:0,0,0] md:dark:[--primary-6:255,255,255]' : '[--primary-6:0,0,0] md:[--primary-6:0,0,0] dark:[--primary-6:255,255,255]'"
+          :class="(windowScrollY > 200) ? '[--primary-6:0,0,0] dark:[--primary-6:255,255,255]' : '[--primary-6:0,0,0] [--primary-6:0,0,0] dark:[--primary-6:255,255,255]'"
         >
           <a-button v-if="isAuthenticated" class="!hover:bg-zinc-6/30" type="text" size="large" @click="async() => await router.push('/auth/login')">
             <template #icon>
@@ -1312,7 +1312,7 @@ function submitContact({ values, errors }) {
 }
 
 header.home-header {
-  @apply top-0 left-0 right-0 z-50 md:transition-all w-full z-10 transition-all transform md:fixed border-b border-zinc-100/20 dark:border-zinc-700/50 bg-zinc-6/20 dark:bg-black/30;
+  @apply top-0 left-0 right-0 z-50 md:transition-all w-full z-10 transition-all transform fixed border-b border-zinc-100/20 dark:border-zinc-700/50 bg-zinc-6/20 dark:bg-black/30;
 
   .header-container {
     @apply px-4 container mx-auto flex justify-between items-center transition-all font-sans text-sm md:text-4 font-semibold py-1 md:py-8 md:pb-6;
@@ -1340,7 +1340,7 @@ header.home-header {
     @apply bg-light-900/50 dark:bg-dark-900/80 shadow-sm shadow-dark-50/5 backdrop-blur;
 
     .header-container {
-      @apply py-2;
+      @apply md:py-2;
 
       .header-center {
         nav.header-nav {
