@@ -37,7 +37,7 @@ const formContact = reactive({
 const sliders: Ref<any[]> = ref([
   {
     title: 'Intro',
-    content: h('div', { class: 'text-left max-w-3xl ml-0 font-general flex flex-col' }, [h('h1', { class: 'font-extrabold text-2rem md:text-4rem leading-tight ![--animate-delay:0.1s] animate__animated animate__slideInDown' }, 'Hi, I’am Khaled. Full-Stack Js Developer based in Paris 👋'), h('p', { class: 'font-light text-4 p-2 bg-light dark:bg-dark ![--animate-delay:0.15s] animate__delay-2s animate__animated animate__backInUp' }, 'Experienced Full-stack JS developer proficient in VueJS, NestJS, NodeJS, and Tailwind CSS. Skilled in creating dynamic user interfaces, efficient back-end development, and implementing responsive designs.')]),
+    content: h('div', { class: 'text-left max-w-3xl ml-0 font-general flex flex-col' }, [h('h1', { class: 'font-extrabold text-2rem md:text-4rem leading-tight ![--animate-delay:0.1s] animate__animated animate__slideInDown' }, 'Hi, I’am Khaled. Full-Stack Js Developer based in Paris 👋'), h('p', { class: 'font-thin text-5 ![--animate-delay:0.15s] animate__delay-2s animate__animated animate__backInUp' }, 'Experienced Full-Stack JS developer proficient in VueJS, NestJS, NodeJS, and Tailwind.')]),
     image: {
       screen: '/img/slider-1.jpg',
       thumb: '/img/slider-1.jpg',
@@ -371,7 +371,7 @@ const { results } = useFuse(inputSkillsSearch, skills, {
 
 function scrollTo(id: string) {
   window?.scrollTo({
-    top: document?.getElementById(id).offsetTop - (mdAndLarger.value ? 58 : (sourceTransition.value !== 0 ? ((windowHeight.value * 0.7) - 58) : 58)),
+    top: document?.getElementById(id).offsetTop - (mdAndLarger.value ? 48 : (sourceTransition.value !== 0 ? ((windowHeight.value * 0.7) - 48) : 48)),
     behavior: 'smooth',
   })
   sourceTransition.value = 0
@@ -1064,7 +1064,7 @@ function submitContact({ values, errors }) {
             </div>
             <div flex items-center>
               <span>Where am I located?</span>
-              <a-switch v-model="showMaps" class="ml-2" type="line" />
+              <a-switch v-model="showMaps" size="small" class="ml-2" />
             </div>
           </div>
           <div class="absolute top-[calc(100%)] w-[calc(100%-2rem)] h-full duration-25 ![--animate-delay:0.25s] animate__delay-0s ![--animate-duration:0.45s]" :class="[showMaps ? 'animate__animated animate__fadeOutDown pointer-events-none invisible' : ('animate__animated animate__fadeInUp visible')]">
@@ -1135,7 +1135,7 @@ function submitContact({ values, errors }) {
           </div>
         </div>
       </div>
-      <div ref="mapRef" class="h-100vh min-h-2xl !max-h-40rem w-full relative z-1" />
+      <div ref="mapRef" class="h-100vh min-h-2xl !max-h-55rem w-full relative z-1" />
     </section>
     <footer block pb-0px relative>
       <div class="footer-container mb-12 !mb-0 py-6 relative z-1 bg-light-2 dark:bg-dark-8">

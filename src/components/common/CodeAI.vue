@@ -114,60 +114,6 @@ const tabs = shallowReactive([
       },
     }),
   },
-  {
-    key: '2a',
-    title: '2dscasdcsadjclksjdcklsdjclkjsadclkjsdc',
-    icon: 'i-tabler-brand-openai',
-    closable: true,
-    props: {
-    },
-    component: h('p', 'test 1'),
-  },
-  {
-    key: '2',
-    title: '2dscasdcsadjclksjdcklsdjclkjsadclkjsdc',
-    icon: 'i-tabler-brand-openai',
-    closable: true,
-    props: {
-    },
-    component: h('p', 'test 1'),
-  },
-  {
-    key: '3',
-    title: '2dscasdcsadjclksjdcklsdjclkjsadclkjsdc',
-    icon: 'i-tabler-brand-openai',
-    closable: true,
-    props: {
-    },
-    component: h('p', 'test 1'),
-  },
-  {
-    key: '4',
-    title: '2dscasdcsadjclksjdcklsdjclkjsadclkjsdc',
-    icon: 'i-tabler-brand-openai',
-    closable: true,
-    props: {
-    },
-    component: h('p', 'test 1'),
-  },
-  {
-    key: '5',
-    title: '2dscasdcsadjclksjdcklsdjclkjsadclkjsdc',
-    icon: 'i-tabler-brand-openai',
-    closable: true,
-    props: {
-    },
-    component: h('p', 'test 1'),
-  },
-  {
-    key: '6',
-    title: '2dscasdcsadjclksjdcklsdjclkjsadclkjsdc',
-    icon: 'i-tabler-brand-openai',
-    closable: true,
-    props: {
-    },
-    component: h('p', 'test 1'),
-  },
 ])
 
 function fileToObjectUrl(file: File) {
@@ -659,7 +605,7 @@ function onSubmitToAI() {
               <span class="cursor-pointer flex items-center transition-all-230 absolute z-9 top-0 left-0 w-5 h-8.75 before-content-[''] before-pointer-events-none before-absolute before-h-full before-z-2 before-w-4rem before-bg-gradient-to-r before-from-white before-to-white/6 dark:before-from-black dark:before-to-black/5 hover:bg-white dark:hover-bg-black" :class="{ 'opacity-0 invisible pointer-events-none': arrivedState.left }" @click="() => xTabsListNav -= 100">
                 <span class="mx-auto relative z-3" i-carbon-chevron-left />
               </span>
-              <span class="cursor-pointer flex items-center transition-all-230 absolute z-9 top-0 right-0 w-5 h-8.75 before-content-[''] before-pointer-events-none before-absolute before-right-0 before-h-full before-z-2 before-w-4rem before-bg-gradient-to-l before-from-white before-to-white/6 dark:before-from-black dark:before-to-black/5 hover:bg-white dark:hover-bg-black" :class="{ 'opacity-0 invisible pointer-events-none': arrivedState.right || (totalTabsWidth < (editorTabsRef?.$el?.offsetWidth)) }" @click="() => xTabsListNav += 100">
+              <span class="cursor-pointer flex items-center transition-all-230 absolute z-9 top-0 right-9 md:right-0 w-5 h-8.75 before-content-[''] before-pointer-events-none before-absolute before-right-0 before-h-full before-z-2 before-w-4rem before-bg-gradient-to-l before-from-white before-to-white/6 dark:before-from-black dark:before-to-black/5 hover:bg-white dark:hover-bg-black" :class="{ 'opacity-0 invisible pointer-events-none': arrivedState.right || !!(totalTabsWidth < editorTabsRef?.$el?.offsetWidth) }" @click="() => xTabsListNav += 100">
                 <span class="mx-auto relative z-3" i-carbon-chevron-right />
               </span>
 
