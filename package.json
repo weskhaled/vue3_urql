@@ -41,6 +41,7 @@
     "@vueuse/router": "^10.2.1",
     "animate.css": "^4.1.1",
     "codemirror": "^6.0.1",
+    "dayjs": "^1.11.9",
     "fuse.js": "^6.6.2",
     "graphql": "^16.7.1",
     "graphql-ws": "^5.14.0",

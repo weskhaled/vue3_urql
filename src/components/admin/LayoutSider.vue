@@ -48,15 +48,11 @@ watch(mdAndSmaller, (val) => {
             <span
               class="tracking-tight inline-block text-4/5 border-2px uppercase border-black dark:border-white font-semibold py-1 px-2"
             >
-              <span class="hidden sm:inline-block">
+              <span class="inline-block">
                 <span class="font-light mr--1.3">
                   WE
                 </span>
                 Brand
-              </span>
-              <span class="inline-block sm:hidden">
-                <span class="font-light mr--1">W
-                </span>B
               </span>
             </span>
           </a>
