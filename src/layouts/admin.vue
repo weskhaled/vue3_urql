@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { gql, useQuery } from '@urql/vue'
 import { UseDraggable as Draggable } from '@vueuse/components'
+
 // import { promiseTimeout } from '@vueuse/core'
 import { currentUser, isAuthenticated, layoutBoxed, mdAndSmaller, sideFixed, smAndSmaller } from '~/common/stores'
 
@@ -41,7 +42,7 @@ error.value && (message.error('Error', `${error.value}`))
           <AdminLayoutHeader />
         </a-layout-header>
         <a-layout class="flex flex-col min-h-[calc(100vh-3.625rem)] ml-0 !mt-14.5 transition-margin" :class="[sideFixed ? (smAndSmaller ? '!md:ml-12' : '!md:ml-60') : '!md:ml-12']">
-          <a-layout-content class="grow-1">
+          <a-layout-content class="grow-1 flex flex-auto flex-col">
             <RouterView />
           </a-layout-content>
           <a-layout-footer class="grow-0">
