@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // import { promiseTimeout } from '@vueuse/core'
-import { mdAndSmaller, userLang } from '~/common/stores'
+import { mdAndLarger, mdAndSmaller, userLang } from '~/common/stores'
 
 const coefficient = 1000 * 60 * 5
 const vHScrollContainerRef = ref<HTMLElement>()
@@ -19,30 +19,31 @@ const mockedEvents = ref([
     title: 'Event 1',
     start: new Date(2023, 6, 10, 10, 0),
     end: new Date(2023, 6, 10, 11, 30),
-    color: 'red',
+    color: '#9d174d',
   },
   {
     id: 2,
     title: 'Event 2',
     start: new Date(2023, 6, 11, 11, 10),
     end: new Date(2023, 6, 11, 12, 15),
-    color: 'green',
+    color: '#0f766e',
   },
   {
     id: 3,
     title: 'Event 3',
     start: new Date(2023, 6, 12, 1, 15),
     end: new Date(2023, 6, 12, 3, 45),
-    color: 'blue',
+    color: '#2563eb',
   },
   {
     id: 4,
     title: 'Event 4',
     start: new Date(2023, 6, 12, 1, 15),
     end: new Date(2023, 6, 12, 2, 30),
-    color: 'blue',
+    color: '#6d28d9',
   },
 ])
+
 const { width } = useElementSize(vHScrollContainerRef)
 const { x, y, isScrolling, arrivedState, directions } = useScroll(vHScrollContainerRef)
 
@@ -71,25 +72,12 @@ const eventsInWeek = computed(() => {
     const selectedDateYear = selectedDate.getFullYear()
 
     return (
-      (eventStartDay >= selectedDateDay && eventEndDay >= 7 && eventEndDay <= selectedDateDay + 7)
+      (eventStartDay >= selectedDateDay && eventEndDay >= (mdAndLarger.value ? 7 : 2) && eventEndDay <= selectedDateDay + (mdAndLarger.value ? 7 : 2))
       && (eventStartMonth >= selectedDateMonth && eventEndMonth <= selectedDateMonth)
       && (eventStartYear >= selectedDateYear && eventEndYear <= selectedDateYear)
     )
   })
 })
-
-// watch(isScrolling, (val) => {
-//   console.log('arrivedState', arrivedState)
-//   console.log('dayPerWeekWidth', dayPerWeekWidth.value)
-//   console.log('directions', directions)
-//   console.log('isScrolling', val)
-//   console.log('isScrolling X', x.value)
-//   console.log('isScrolling Y', y.value)
-//   console.log('width', width.value)
-//   console.log('max width scroll: ', daysPerWeekWidth.value - width.value)
-//   console.log('width', daysPerWeekWidth.value)
-//   console.log('scrollWidth', vHScrollContainerRef.value.scrollWidth - width.value)
-// })
 const selectedDate = computed(() => {
   return new Date(selectedYear.value, selectedMonth.value, selectedDay.value)
 })
@@ -106,6 +94,10 @@ const days = computed(() => {
   return Array.from({ length: new Date(selectedYear.value, selectedMonth.value + 1, 0).getDate() }, (_, i) => new Date(selectedYear.value, selectedMonth.value, i + 1))
 })
 
+const daysInWeek = computed(() => {
+  return Array.from({ length: mdAndLarger.value ? 7 : 2 }, (_, i) => useDateFormat(new Date(selectedYear.value, selectedMonth.value, selectedDay.value + (i - 0)), 'YYYY-MM-DD', { locales: userLang.value }).value)
+})
+
 const totalYearDays = computed(() => {
   const year = selectedYear.value
   return ((year % 4 === 0 && year % 100 > 0) || year % 400 === 0) ? 366 : 365
@@ -113,17 +105,20 @@ const totalYearDays = computed(() => {
 
 async function movingStart(e: Event) {
   selectedEvent.value = null
+  await nextTick()
   selectedEventRef.value = e.target?.closest('.event') as HTMLElement
   selectedEvent.value = { ...mockedEvents.value.find(event => event.id === Number.parseInt(selectedEventRef.value.dataset.event_id, 10)) }
 }
 
-function moving(__size: { width: number; height: number }, __e: Event) {
+function moving(size: { width: number; height: number }, __e: Event) {
+  size.height = 200
+
   if (selectedEvent.value && selectedEventRef.value?.offsetHeight) {
     const durationFromEventLength = +(selectedEventRef.value?.clientHeight) * 60 / 90
     selectedEvent.value.end = new Date(Math.round(new Date(selectedEvent.value.start.getTime() + durationFromEventLength * 60000).getTime() / coefficient) * coefficient)
-    // const fundedEvent = mockedEvents.value.find(event => event.id === selectedEvent.value.id)
-    // if (fundedEvent)
-    //   fundedEvent.end = selectedEvent.value.end
+    const fundedEvent = mockedEvents.value.find(event => event.id === selectedEvent.value.id)
+    if (fundedEvent)
+      fundedEvent.end = selectedEvent.value.end
   }
 }
 
@@ -133,13 +128,14 @@ async function movingEnd(__e: Event) {
     selectedEvent.value.end = new Date(Math.round(new Date(selectedEvent.value.start.getTime() + durationFromEventLength * 60000).getTime() / coefficient) * coefficient)
     const eventDuration = selectedEvent.value.end.getTime() - selectedEvent.value.start.getTime()
 
-    await nextTick()
-    selectedEventRef.value.style.height = `${eventDuration / 60000 * 90 / 60}px`
+    // await nextTick()
     // const fundedEvent = mockedEvents.value.find(event => event.id === selectedEvent.value.id)
     // if (fundedEvent)
     //   fundedEvent.end = selectedEvent.value.end
 
+    // await nextTick()
     // await promiseTimeout(1200)
+    // selectedEventRef.value.style.height = `${eventDuration / 60000 * 90 / 60}px`
   }
 }
 </script>
@@ -197,18 +193,18 @@ async function movingEnd(__e: Event) {
           </div>
         </div>
         <div id="days-per-week" ref="daysPerWeekRef" class="w-full inline-flex relative before-z-4 min-h-0 min-w-0 flex-auto">
-          <div v-for="(daysPerWeek, index) in Array.from({ length: mdAndSmaller ? 2 : 7 }, (_, i) => useDateFormat(new Date(selectedYear, selectedMonth, selectedDay + (i - 0)), 'YYYY-MM-DD', { locales: userLang }).value)" :id="`date_id_${daysPerWeek}`" :key="index" class="day min-w-1/2 w-1/2 lg:min-w-1/7 lg:w-1/7 inline-table !h-auto">
+          <div v-for="(dayPerWeek, index) in daysInWeek" :id="`date_id_${dayPerWeek}`" :key="index" class="day min-w-1/2 w-1/2 lg:min-w-1/7 lg:w-1/7 inline-table !h-auto">
             <div class="h-auto w-full">
               <div class="px-0 flex-0 text-3.2/7 uppercase sticky top-0 z-9999">
                 <span v-if="index === 0" class="w-11 h-7.3 top-0 absolute left--11 border-b-1px border-zinc-4/25 bg-light-5/85 dark:bg-dark-8/85" />
                 <div class="px-2 bg-light-5/85 dark:bg-dark-8/85 border-b-1px border-zinc-4/25">
-                  {{ useDateFormat(daysPerWeek, 'dddd, DD/MM', { locales: userLang }).value }}
+                  {{ useDateFormat(dayPerWeek, 'dddd, DD/MM', { locales: userLang }).value }}
                 </div>
               </div>
-              <div class="mx-1" :class="{ 'opacity-100': +useDateFormat(daysPerWeek, 'MM', { locales: userLang }).value !== selectedMonth + 1 }">
+              <div class="mx-1" :class="{ 'opacity-100': +useDateFormat(dayPerWeek, 'MM', { locales: userLang }).value !== selectedMonth + 1 }">
                 <div class="mx-auto w-full text-center bg-blue-5/2 relative px-2">
                   <a-resize-box
-                    v-for="(event, index) in eventsInWeek.filter(e => useDateFormat(new Date(e.start), 'YYYY-MM-DD', { locales: userLang }).value === useDateFormat(daysPerWeek, 'YYYY-MM-DD', { locales: userLang }).value)" :id="`event_id_${event.id}`"
+                    v-for="(event, index) in eventsInWeek.filter(e => useDateFormat(new Date(e.start), 'YYYY-MM-DD', { locales: userLang }).value === useDateFormat(dayPerWeek, 'YYYY-MM-DD', { locales: userLang }).value)" :id="`event_id_${event.id}`"
                     :key="event.id"
                     :directions="['bottom']"
                     class="event cursor-pointer bg-blue-2/60 dark:bg-blue-5/60 flex items-center justify-center !absolute top--1px mx-0 w-[calc(100%-0rem)] !min-h-22.5px left-0 [&_.arco-resizebox-trigger-icon]:my--4px [&_.arco-resizebox-trigger-icon-wrapper]:bg-blue-9 [&_.arco-icon]:text-white"
@@ -216,8 +212,9 @@ async function movingEnd(__e: Event) {
                       top: `${(+useDateFormat(new Date(event.start), 'H', { locales: userLang }).value * 90) + ((+useDateFormat(new Date(event.start), 'm', { locales: userLang }).value * 90) / 60)}px`,
                       height: `${(+useDateFormat(new Date(event.end), 'H', { locales: userLang }).value - +useDateFormat(new Date(event.start), 'H', { locales: userLang }).value) * 90 + ((+useDateFormat(new Date(event.end), 'm', { locales: userLang }).value * 90) / 60 - (+useDateFormat(new Date(event.start), 'm', { locales: userLang }).value * 90) / 60)}px`,
                       zIndex: index + 1,
-                      left: `${100 / eventsInWeek.filter(e => useDateFormat(new Date(e.start), 'YYYY-MM-DD', { locales: userLang }).value === useDateFormat(daysPerWeek, 'YYYY-MM-DD', { locales: userLang }).value).length * eventsInWeek.filter(e => useDateFormat(new Date(e.start), 'YYYY-MM-DD', { locales: userLang }).value === useDateFormat(daysPerWeek, 'YYYY-MM-DD', { locales: userLang }).value).findIndex(e => e.id === event.id)}%`,
-                      width: `${100 / eventsInWeek.filter(e => useDateFormat(new Date(e.start), 'YYYY-MM-DD', { locales: userLang }).value === useDateFormat(daysPerWeek, 'YYYY-MM-DD', { locales: userLang }).value).length}%`,
+                      backgroundColor: event.color,
+                      left: `${100 / eventsInWeek.filter(e => useDateFormat(new Date(e.start), 'YYYY-MM-DD', { locales: userLang }).value === useDateFormat(dayPerWeek, 'YYYY-MM-DD', { locales: userLang }).value).length * eventsInWeek.filter(e => useDateFormat(new Date(e.start), 'YYYY-MM-DD', { locales: userLang }).value === useDateFormat(dayPerWeek, 'YYYY-MM-DD', { locales: userLang }).value).findIndex(e => e.id === event.id)}%`,
+                      width: `${100 / eventsInWeek.filter(e => useDateFormat(new Date(e.start), 'YYYY-MM-DD', { locales: userLang }).value === useDateFormat(dayPerWeek, 'YYYY-MM-DD', { locales: userLang }).value).length}%`,
                     }"
                     :data-event_id="event.id"
                     @moving-start="(e) => movingStart(e)"
@@ -233,7 +230,7 @@ async function movingEnd(__e: Event) {
                       </span>
                     </div>
                   </a-resize-box>
-                  <div v-for="time in Array.from({ length: 24 }, (_, i) => i)" :id="useDateFormat(`${daysPerWeek} ${time}:00:00`, 'YYYY-MM-DD_HH:mm', { locales: userLang }).value" :key="time" class="h-90px flex flex-col relative px-1">
+                  <div v-for="time in Array.from({ length: 24 }, (_, i) => i)" :id="useDateFormat(`${dayPerWeek} ${time}:00:00`, 'YYYY-MM-DD_HH:mm', { locales: userLang }).value" :key="time" class="h-90px flex flex-col relative px-1">
                     <div class="border-b-1px border-blue-6/20 h-1/2 border-dashed pointer-events-none">
                       <span />
                     </div>
