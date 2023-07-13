@@ -1,45 +1,71 @@
 <script setup lang="ts">
 // import { promiseTimeout } from '@vueuse/core'
+// import { UseDraggable as Draggable } from '@vueuse/components'
 import { mdAndLarger, mdAndSmaller, userLang } from '~/common/stores'
 
+const { x: xMouse, y: yMouse } = useMouse()
+
 const coefficient = 1000 * 60 * 5
+let cleanUp: () => void
+const durationFromEventHeight = (height: number) => (+(Math.round(height - 2)) * 60 / 90) * 60000
+function toHHMMSS(sec_num: number) {
+  const hours = Math.floor(sec_num / 3600)
+  const minutes = Math.floor((sec_num - (hours * 3600)) / 60)
+  const seconds = sec_num - (hours * 3600) - (minutes * 60)
+
+  let hoursStr = hours.toString()
+  let minutesStr = minutes.toString()
+  let secondsStr = seconds.toString()
+
+  if (hours < 10)
+    hoursStr = `0${hours}`
+  if (minutes < 10)
+    minutesStr = `0${minutes}`
+  if (seconds < 10)
+    secondsStr = `0${seconds}`
+
+  return `${hoursStr}:${minutesStr}:${secondsStr}`
+}
+
 const vHScrollContainerRef = ref<HTMLElement>()
 const dayPerWeekWidth = ref<number>()
 const daysPerWeekRef = ref<HTMLElement>()
-const selectedEventRef = ref<HTMLElement>()
-const selectedEvent = ref<any>(null)
+const dragHandlerEventResizeRef = ref<HTMLElement>()
+const dragHandlerEventMoveRef = ref<HTMLElement>()
 const daysPerWeekWidth = ref<number>(0)
 const selectedYear = ref(new Date().getFullYear())
 const selectedMonth = ref(new Date().getMonth())
 const selectedDay = ref(new Date().getDate())
 
+const { isOutside } = useMouseInElement(vHScrollContainerRef)
+
 const mockedEvents = ref([
   {
     id: 1,
     title: 'Event 1',
-    start: new Date(2023, 6, 10, 10, 0),
-    end: new Date(2023, 6, 10, 11, 30),
+    start: new Date(2023, 6, 15, 10, 0),
+    end: new Date(2023, 6, 15, 11, 30),
     color: '#9d174d',
   },
   {
     id: 2,
     title: 'Event 2',
-    start: new Date(2023, 6, 11, 11, 10),
-    end: new Date(2023, 6, 11, 12, 15),
+    start: new Date(2023, 6, 13, 11, 10),
+    end: new Date(2023, 6, 13, 12, 15),
     color: '#0f766e',
   },
   {
     id: 3,
     title: 'Event 3',
-    start: new Date(2023, 6, 12, 1, 15),
-    end: new Date(2023, 6, 12, 3, 45),
+    start: new Date(2023, 6, 14, 1, 0),
+    end: new Date(2023, 6, 14, 3, 0),
     color: '#2563eb',
   },
   {
     id: 4,
     title: 'Event 4',
-    start: new Date(2023, 6, 12, 1, 15),
-    end: new Date(2023, 6, 12, 2, 30),
+    start: new Date(2023, 6, 14, 1, 0),
+    end: new Date(2023, 6, 14, 3, 0),
     color: '#6d28d9',
   },
 ])
@@ -47,15 +73,14 @@ const mockedEvents = ref([
 const { width } = useElementSize(vHScrollContainerRef)
 const { x, y, isScrolling, arrivedState, directions } = useScroll(vHScrollContainerRef)
 
-watchOnce(daysPerWeekRef, async (val) => {
-  if (val) {
-    await nextTick()
-    dayPerWeekWidth.value = val.querySelector('.day:nth-child(1)')?.clientWidth || 0
-    val.querySelectorAll('.day').forEach((child) => {
-      daysPerWeekWidth.value += Number.parseInt(child.clientWidth, 10)
-    })
-  }
-})
+// watchOnce(daysPerWeekRef, async (val) => {
+//   if (val) {
+//     dayPerWeekWidth.value = val.querySelector('.day:nth-child(1)')?.clientWidth || 0
+//     val.querySelectorAll('.day').forEach((child) => {
+//       daysPerWeekWidth.value += Number.parseInt(child.clientWidth, 10)
+//     })
+//   }
+// })
 const eventsInWeek = computed(() => {
   return mockedEvents.value.filter((event) => {
     const eventStart = new Date(event.start)
@@ -76,8 +101,32 @@ const eventsInWeek = computed(() => {
       && (eventStartMonth >= selectedDateMonth && eventEndMonth <= selectedDateMonth)
       && (eventStartYear >= selectedDateYear && eventEndYear <= selectedDateYear)
     )
-  })
+  }).map(e => ({ ...e, height: Math.round((e.end.getTime() - e.start.getTime()) / 60000 * 90 / 60) }))
 })
+
+const eventsInSelectedWeek = day => eventsInWeek.value.filter(e => useDateFormat(new Date(e.start), 'YYYY-MM-DD', { locales: userLang.value }).value === useDateFormat(day, 'YYYY-MM-DD', { locales: userLang.value }).value)
+
+const selectedEventRef = computed(() => {
+  const targetClicked = dragHandlerEventMoveRef.value || dragHandlerEventResizeRef.value
+  return targetClicked ? targetClicked.closest('.event') as HTMLElement : null
+})
+
+const selectedEventByRef = computed({
+  get() {
+    return selectedEventRef.value ? eventsInWeek.value.find(event => event.id === Number.parseInt(`${selectedEventRef.value?.dataset.event_id}`, 10)) : null
+  },
+  set(newValue) {
+    if (!newValue)
+      return
+
+    const fundedEvent = eventsInWeek.value.find(event => event.id === newValue.id)
+    if (fundedEvent) {
+      fundedEvent.end = newValue?.end
+      fundedEvent.height = newValue?.height
+    }
+  },
+})
+
 const selectedDate = computed(() => {
   return new Date(selectedYear.value, selectedMonth.value, selectedDay.value)
 })
@@ -103,41 +152,102 @@ const totalYearDays = computed(() => {
   return ((year % 4 === 0 && year % 100 > 0) || year % 400 === 0) ? 366 : 365
 })
 
-async function movingStart(e: Event) {
-  selectedEvent.value = null
-  await nextTick()
-  selectedEventRef.value = e.target?.closest('.event') as HTMLElement
-  selectedEvent.value = { ...mockedEvents.value.find(event => event.id === Number.parseInt(selectedEventRef.value.dataset.event_id, 10)) }
-}
+watch(dragHandlerEventResizeRef, (val) => {
+  if (val && selectedEventRef.value && selectedEventByRef.value && typeof window !== 'undefined') {
+    cleanUp = useEventListener(window, 'mousemove', () => {
+      if (!selectedEventRef.value || !selectedEventByRef.value)
+        return
 
-function moving(size: { width: number; height: number }, __e: Event) {
-  size.height = 200
+      const { y: dragHandlerY, height } = useElementBounding(selectedEventRef)
 
-  if (selectedEvent.value && selectedEventRef.value?.offsetHeight) {
-    const durationFromEventLength = +(selectedEventRef.value?.clientHeight) * 60 / 90
-    selectedEvent.value.end = new Date(Math.round(new Date(selectedEvent.value.start.getTime() + durationFromEventLength * 60000).getTime() / coefficient) * coefficient)
-    const fundedEvent = mockedEvents.value.find(event => event.id === selectedEvent.value.id)
-    if (fundedEvent)
-      fundedEvent.end = selectedEvent.value.end
+      const { start } = selectedEventByRef.value || { start: new Date() }
+      const durationFromEventLength = (+(Math.round(yMouse.value - useWindowScroll().y.value - (dragHandlerY.value - 2))) * 60 / 90) * 60000
+      const eventDuration = new Date(Math.round(new Date(start.getTime() + durationFromEventLength).getTime() / coefficient) * coefficient).getTime() - start.getTime()
+      selectedEventByRef.value.end = new Date(Math.round(new Date(start.getTime() + durationFromEventLength).getTime() / coefficient) * coefficient)
+      selectedEventByRef.value.height = height.value
+      selectedEventRef.value.style.setProperty('height', `${eventDuration / 60000 * 90 / 60}px`)
+      selectedEventRef.value.classList.add('event--resizing')
+      selectedEventRef.value.setAttribute('data-end', `${selectedEventByRef.value.end}`)
+    })
+
+    useEventListener(window, 'mouseup', () => {
+      cleanUp()
+      selectedEventRef.value?.classList.remove('event--resizing')
+      dragHandlerEventResizeRef.value = undefined
+    })
   }
-}
+})
 
-async function movingEnd(__e: Event) {
-  if (selectedEvent.value && selectedEventRef.value?.offsetHeight) {
-    const durationFromEventLength = +(selectedEventRef.value?.offsetHeight) * 60 / 90
-    selectedEvent.value.end = new Date(Math.round(new Date(selectedEvent.value.start.getTime() + durationFromEventLength * 60000).getTime() / coefficient) * coefficient)
-    const eventDuration = selectedEvent.value.end.getTime() - selectedEvent.value.start.getTime()
+watch(dragHandlerEventMoveRef, (val) => {
+  if (val && selectedEventRef.value && selectedEventByRef.value && typeof document !== 'undefined') {
+    cleanUp = useEventListener(document, 'mousemove', async (e) => {
+      if (!selectedEventRef.value || !selectedEventByRef.value)
+        return
 
-    // await nextTick()
-    // const fundedEvent = mockedEvents.value.find(event => event.id === selectedEvent.value.id)
-    // if (fundedEvent)
-    //   fundedEvent.end = selectedEvent.value.end
+      vHScrollContainerRef.value?.classList.add('event--moving')
+      const target = e.target as HTMLElement
 
-    // await nextTick()
-    // await promiseTimeout(1200)
-    // selectedEventRef.value.style.height = `${eventDuration / 60000 * 90 / 60}px`
+      if (target) {
+        const { day_col_time, day_index } = target?.dataset
+        const { id } = selectedEventByRef.value
+        if (day_col_time && id && day_index) {
+          const fundedEvent = eventsInWeek.value.find(event => event.id === id)
+          if (fundedEvent) {
+            const { left: selectedEventLeft, top: selectedEventTop, width: selectedEventWidth } = useElementBounding(selectedEventRef)
+            const { left: targetLeft, width: targetWidth } = useElementBounding(target)
+
+            // console.log(target.offsetTop)
+            // console.log(e.pageX - selectedEventWidth.value - selectedEventLeft.value)
+            // selectedEventRef.value.style.setProperty('position', 'absolute!important')
+            selectedEventRef.value.style.setProperty('z-index', '99')
+            selectedEventRef.value.style.setProperty('top', `${target.offsetTop}px`)
+            fundedEvent.start = new Date(day_col_time.replace('_', ' '))
+            fundedEvent.end = new Date(fundedEvent.end.getTime() + (fundedEvent.start.getTime() - selectedEventByRef.value.start.getTime()))
+            selectedEventByRef.value.start = new Date(day_col_time.replace('_', ' '))
+            selectedEventByRef.value.end = new Date(selectedEventByRef.value.end.getTime() + (fundedEvent.start.getTime() - selectedEventByRef.value.start.getTime()))
+            // await nextTick()
+            // const newLeft = (100 * day_index) + (8 * day_index)
+            // if (Math.abs((newLeft - selectedEventLeft.value) + 8) > 7) {
+            selectedEventRef.value.style.setProperty('left', `calc(${day_index * 100}% + ${day_index * 8}px)`)
+            // }
+          }
+        }
+      }
+      // console.log(id)
+      // console.log(dragHandlerX.value)
+      // console.log(dragHandlerY.value)
+      // console.log(xMouse.value)
+      // console.log(yMouse.value)
+    })
+
+    useEventListener(document, 'mouseup', (e) => {
+      vHScrollContainerRef.value?.classList.remove('event--moving')
+      // const { id } = selectedEventByRef.value || { id: 0 }
+      // mockedEvents.value = mockedEvents.value.filter(e => e.id !== id)
+      dragHandlerEventMoveRef.value = undefined
+      cleanUp()
+    })
   }
-}
+})
+watch(isOutside, (val) => {
+  if (val && typeof cleanUp === 'function') {
+    cleanUp()
+    dragHandlerEventResizeRef.value = undefined
+    dragHandlerEventMoveRef.value = undefined
+  }
+})
+// watch(() => useElementBounding(selectedEventRef).height.value, async (val) => {
+//   if (val && selectedEventByRef.value) {
+//     const { id, start } = selectedEventByRef.value || { start: new Date() }
+//     const durationFromEventLength = (+(Math.round(val - 2)) * 60 / 90) * 60000
+//     // selectedEventByRef.value = { ...selectedEventByRef.value, height: val, end: new Date(Math.round(new Date(start.getTime() + durationFromEventLength).getTime() / coefficient) * coefficient) }
+//     selectedEventByRef.value.end = new Date(Math.round(new Date(start.getTime() + durationFromEventLength).getTime() / coefficient) * coefficient)
+//     selectedEventByRef.value.height = val
+//     const fundedEvent = eventsInWeek.value.find(event => event.id === id)
+//     console.log(fundedEvent)
+//     console.log(selectedEventByRef.value)
+//   }
+// })
 </script>
 
 <template>
@@ -183,7 +293,7 @@ async function movingEnd(__e: Event) {
       </div>
     </div>
     <div class="border-t-1px border-gray-2/20 flex flex-auto relative">
-      <div ref="vHScrollContainerRef" class="ml-0 flex flex-nowrap flex-auto content-stretch items-stretch overflow-auto relative min-h-92 h-[calc(100vh-10.3rem)] overflow-auto">
+      <div ref="vHScrollContainerRef" class="calendarVHScrollContainer ml-0 flex flex-nowrap flex-auto content-stretch items-stretch overflow-auto relative min-h-92 h-[calc(100vh-10.3rem)] overflow-auto">
         <div class="time-fixed-side sticky flex flex-col min-w-11 w-11 z-10 left-0 mt-7.2 text-3">
           <span class="w-11 h-7.3 top--7.3 absolute left-0 border-b-1px bg-slate-2/30 dark:bg-slate-8/30 border-zinc-2/30 dark:border-zinc-6/30 border-r-1px backdrop-blur z-1" />
           <div v-for="time in Array.from({ length: 24 }, (_, i) => `${i < 10 ? '0' : ''}${i}`)" :key="time" class="min-h-90px text-center bg-slate-2/30 dark:bg-slate-8/30 backdrop-blur border-zinc-3/30 dark:border-zinc-6/30 border-r-1px">
@@ -193,44 +303,54 @@ async function movingEnd(__e: Event) {
           </div>
         </div>
         <div id="days-per-week" ref="daysPerWeekRef" class="w-full inline-flex relative before-z-4 min-h-0 min-w-0 flex-auto">
-          <div v-for="(dayPerWeek, index) in daysInWeek" :id="`date_id_${dayPerWeek}`" :key="index" class="day min-w-1/2 w-1/2 lg:min-w-1/7 lg:w-1/7 inline-table !h-auto">
+          <div v-for="(dayPerWeek, dayIndex) in daysInWeek" :id="`date_id_${dayPerWeek}`" :key="dayIndex" class="day min-w-1/2 w-1/2 lg:min-w-1/7 lg:w-1/7 inline-table !h-auto">
             <div class="h-auto w-full">
-              <div class="px-0 flex-0 text-3.2/7 uppercase sticky top-0 z-9999">
-                <span v-if="index === 0" class="w-11 h-7.3 top-0 absolute left--11 border-b-1px border-zinc-4/25 bg-light-5/85 dark:bg-dark-8/85" />
+              <div class="px-0 flex-0 text-3.2/7 uppercase sticky top-0 z-9999 select-none">
+                <span v-if="dayIndex === 0" class="w-11 h-7.3 top-0 absolute left--11 border-b-1px border-zinc-4/25 bg-light-5/85 dark:bg-dark-8/85" />
                 <div class="px-2 bg-light-5/85 dark:bg-dark-8/85 border-b-1px border-zinc-4/25">
                   {{ useDateFormat(dayPerWeek, 'dddd, DD/MM', { locales: userLang }).value }}
                 </div>
               </div>
               <div class="mx-1" :class="{ 'opacity-100': +useDateFormat(dayPerWeek, 'MM', { locales: userLang }).value !== selectedMonth + 1 }">
                 <div class="mx-auto w-full text-center bg-blue-5/2 relative px-2">
-                  <a-resize-box
-                    v-for="(event, index) in eventsInWeek.filter(e => useDateFormat(new Date(e.start), 'YYYY-MM-DD', { locales: userLang }).value === useDateFormat(dayPerWeek, 'YYYY-MM-DD', { locales: userLang }).value)" :id="`event_id_${event.id}`"
+                  <div
+                    v-for="(event, indexEvent) in eventsInSelectedWeek(dayPerWeek)" :id="`event_id_${event.id}`"
                     :key="event.id"
-                    :directions="['bottom']"
-                    class="event cursor-pointer bg-blue-2/60 dark:bg-blue-5/60 flex items-center justify-center !absolute top--1px mx-0 w-[calc(100%-0rem)] !min-h-22.5px left-0 [&_.arco-resizebox-trigger-icon]:my--4px [&_.arco-resizebox-trigger-icon-wrapper]:bg-blue-9 [&_.arco-icon]:text-white"
+                    draggable="false"
+                    class="event select-none cursor-pointer bg-blue-2/60 dark:bg-blue-5/60 flex items-center justify-center !absolute top--1px mx-0 w-[calc(100%-0rem)] overflow-hidden !min-h-22.5px left-0 [&_.arco-resizebox-trigger-icon]:my--4px [&_.arco-resizebox-trigger-icon-wrapper]:bg-blue-9 [&_.arco-icon]:text-white"
                     :style="{
-                      top: `${(+useDateFormat(new Date(event.start), 'H', { locales: userLang }).value * 90) + ((+useDateFormat(new Date(event.start), 'm', { locales: userLang }).value * 90) / 60)}px`,
-                      height: `${(+useDateFormat(new Date(event.end), 'H', { locales: userLang }).value - +useDateFormat(new Date(event.start), 'H', { locales: userLang }).value) * 90 + ((+useDateFormat(new Date(event.end), 'm', { locales: userLang }).value * 90) / 60 - (+useDateFormat(new Date(event.start), 'm', { locales: userLang }).value * 90) / 60)}px`,
-                      zIndex: index + 1,
+                      top: `${Math.round((+useDateFormat(new Date(event.start), 'H', { locales: userLang }).value * 90) + ((+useDateFormat(new Date(event.start), 'm', { locales: userLang }).value * 90) / 60))}px`,
+                      zIndex: indexEvent + 1,
+                      height: `${event.height}px`,
                       backgroundColor: event.color,
-                      left: `${100 / eventsInWeek.filter(e => useDateFormat(new Date(e.start), 'YYYY-MM-DD', { locales: userLang }).value === useDateFormat(dayPerWeek, 'YYYY-MM-DD', { locales: userLang }).value).length * eventsInWeek.filter(e => useDateFormat(new Date(e.start), 'YYYY-MM-DD', { locales: userLang }).value === useDateFormat(dayPerWeek, 'YYYY-MM-DD', { locales: userLang }).value).findIndex(e => e.id === event.id)}%`,
-                      width: `${100 / eventsInWeek.filter(e => useDateFormat(new Date(e.start), 'YYYY-MM-DD', { locales: userLang }).value === useDateFormat(dayPerWeek, 'YYYY-MM-DD', { locales: userLang }).value).length}%`,
+                      left: `${100 / eventsInSelectedWeek(dayPerWeek).length * eventsInSelectedWeek(dayPerWeek).findIndex(e => e.id === event.id)}%`,
+                      width: `${100 / eventsInSelectedWeek(dayPerWeek).length}%`,
                     }"
                     :data-event_id="event.id"
-                    @moving-start="(e) => movingStart(e)"
-                    @moving-end="(e) => movingEnd(e)"
-                    @moving="moving"
                   >
-                    <div class="flex flex-col text-left text-sm/4 w-full p-1 select-none">
-                      <span class="uppercase">
-                        {{ event.title }}
-                      </span>
-                      <span>
-                        {{ useDateFormat(new Date(event.start), 'hh:mm', { locales: userLang }).value }} - {{ useDateFormat(new Date(event.end), 'HH:mm', { locales: userLang }).value }}
-                      </span>
+                    <div class="flex flex-col text-left text-3/4 w-full p-1 select-none overflow-auto h-full justify-between">
+                      <div>
+                        <div class="uppercase">
+                          {{ event.title }}
+                        </div>
+                        <div>
+                          {{ useDateFormat(new Date(event.start), 'hh:mm', { locales: userLang }).value }} - {{ useDateFormat(event.end, 'HH:mm', { locales: userLang }).value }}
+                        </div>
+                      </div>
+                      <div class="text-center mb-1">
+                        <span class="font-mono text-2.3/3 p-0.3 inline-block bg-dark-7 text-white rounded-1px">
+                          <span>Duration:{{ toHHMMSS(Math.round(((selectedEventByRef?.id === event.id && selectedEventByRef?.height) || event.height) * 3600 / 90)) }}</span>
+                        </span>
+                      </div>
                     </div>
-                  </a-resize-box>
-                  <div v-for="time in Array.from({ length: 24 }, (_, i) => i)" :id="useDateFormat(`${dayPerWeek} ${time}:00:00`, 'YYYY-MM-DD_HH:mm', { locales: userLang }).value" :key="time" class="h-90px flex flex-col relative px-1">
+                    <div class="w-4 h-4 bg-slate-2/50 hover:bg-slate-3 active:bg-slate-3 transition-all delay-0s absolute top-0 right-0 flex items-center cursor-grab active:cursor-grabbing" @mousedown="(e) => dragHandlerEventMoveRef = e.target as HTMLElement">
+                      <span i-fluent-drag-20-regular class="w-3.5 h-3.5 mx-auto !text-dark-5" />
+                    </div>
+                    <div class="w-full h-1 bg-slate-2/50 hover:bg-slate-3 active:bg-slate-3 transition-all delay-0.3s absolute bottom-0 flex items-center cursor-s-resize" @mousedown="(e) => dragHandlerEventResizeRef = e.target as HTMLElement">
+                      <span i-fluent-line-horizontal-1-20-filled class="w-4 h-1 mx-auto !text-dark-5" />
+                    </div>
+                  </div>
+                  <div v-for="time in Array.from({ length: 24 }, (_, i) => i)" :key="time" :data-day_index="dayIndex" :data-day_col_time="useDateFormat(`${dayPerWeek} ${time}:00:00`, 'YYYY-MM-DD_HH:mm', { locales: userLang }).value" class="h-90px flex flex-col relative px-1">
                     <div class="border-b-1px border-blue-6/20 h-1/2 border-dashed pointer-events-none">
                       <span />
                     </div>
@@ -255,6 +375,13 @@ async function movingEnd(__e: Event) {
 </template>
 
 <style lang="less">
+.calendarVHScrollContainer {
+  &.event--moving {
+    .event {
+      @apply !pointer-events-none;
+    }
+  }
+}
 </style>
 
 <route lang="yaml">
