@@ -11,7 +11,6 @@ import { isAuthenticated, mdAndLarger } from '~/common/stores'
 import { useIsotope } from '~/composables/isotope'
 import 'swiper/css/scrollbar'
 
-// import TheWindow from '~/components/common/TheWindow.vue'
 import CodeAI from '~/components/common/CodeAI.vue'
 import Radio from '~/components/common/Radio.vue'
 
@@ -37,7 +36,7 @@ const formContact = reactive({
 const sliders: Ref<any[]> = ref([
   {
     title: 'Intro',
-    content: h('div', { class: 'text-left max-w-3xl ml-0 font-general flex flex-col' }, [h('h1', { class: 'font-extrabold text-2rem md:text-4rem leading-tight ![--animate-delay:0.1s] animate__animated animate__slideInDown' }, 'Hi, I’am Khaled. Full-Stack Js Developer based in Paris 👋'), h('p', { class: 'font-thin text-5 ![--animate-delay:0.15s] animate__delay-2s animate__animated animate__backInUp' }, 'Experienced Full-Stack JS developer proficient in VueJS, NestJS, NodeJS, and Tailwind.')]),
+    content: h('div', { class: 'text-left max-w-3xl ml-0 font-general flex flex-col' }, [h('h1', { class: 'font-chillax font-semibold uppercase text-2rem md:text-4rem leading-tight ![--animate-delay:0.1s] animate__animated animate__slideInDown' }, 'Hi, I’am Khaled. Full-Stack Js Developer based in Paris 👋'), h('p', { class: 'font-thin text-5 ![--animate-delay:0.15s] animate__delay-2s animate__animated animate__backInUp' }, 'Experienced Full-Stack JS developer proficient in VueJS, NestJS, NodeJS, and Tailwind.')]),
     image: {
       screen: '/img/slider-1.jpg',
       thumb: '/img/slider-1.jpg',
@@ -371,7 +370,7 @@ const { results } = useFuse(inputSkillsSearch, skills, {
 
 function scrollTo(id: string) {
   window?.scrollTo({
-    top: document?.getElementById(id).offsetTop - 56,
+    top: document?.getElementById(id).offsetTop - (mdAndLarger.value ? 57 : 48),
     behavior: 'smooth',
   })
   sourceTransition.value = 0

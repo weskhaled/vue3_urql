@@ -61,6 +61,14 @@ export default defineConfig({
             provider: 'fontshare',
           },
         ],
+        chillax: [
+          {
+            name: 'chillax',
+            italic: false,
+            weights: ['200', '300', '400', '600', '700'],
+            provider: 'fontshare',
+          },
+        ],
       },
     }),
     presetScrollbar(),
