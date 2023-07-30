@@ -4,6 +4,7 @@
 import { mdAndLarger, mdAndSmaller, userLang } from '~/common/stores'
 
 const { x: xMouse, y: yMouse } = useMouse()
+const { dayjs } = useDayjs()
 
 const coefficient = 1000 * 60 * 5
 let cleanUp: () => void
@@ -26,7 +27,9 @@ function toHHMMSS(sec_num: number) {
 
   return `${hoursStr}:${minutesStr}:${secondsStr}`
 }
-
+function doDatesOverlap(start_1, end_1, start_2, end_2) {
+  return Math.max(start_1, start_2) < Math.min(end_1, end_2)
+}
 const vHScrollContainerRef = ref<HTMLElement>()
 const dayPerWeekWidth = ref<number>()
 const daysPerWeekRef = ref<HTMLElement>()
@@ -50,22 +53,22 @@ const mockedEvents = [
   {
     id: 2,
     title: 'Event 2',
-    start: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 2, 3, 5),
-    end: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 2, 4, 15),
+    start: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 1, 1, 50),
+    end: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 1, 4, 15),
     color: '#0f766e',
   },
   {
     id: 3,
     title: 'Event 3',
-    start: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 3, 1, 5),
-    end: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 3, 14, 15),
+    start: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 2, 1, 5),
+    end: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 2, 14, 15),
     color: '#2563eb',
   },
   {
     id: 4,
     title: 'Event 4',
-    start: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 4, 3, 5),
-    end: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 4, 4, 15),
+    start: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 3, 3, 5),
+    end: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 3, 4, 15),
     color: '#6d28d9',
   },
 ]
@@ -206,7 +209,7 @@ watch(dragHandlerEventMoveRef, (val) => {
             // fundedEvent.height = eventDuration / 60000 * 90 / 60
             // selectedEventRef.value.style.setProperty('height', `${eventDuration / 60000 * 90 / 60}px`)
             // console.log(eventDuration)
-
+            await nextTick()
             selectedEventRef.value.style.setProperty('width', '100%')
             selectedEventRef.value.style.setProperty('left', `calc(${(+day_index - +selectedEventDayIndex) * 100}% + ${(+day_index - +selectedEventDayIndex) * 8}px)`)
             // selectedEventRef.value.dataset.day_index = day_index
@@ -243,6 +246,10 @@ watch(isOutside, (val) => {
     dragHandlerEventMoveRef.value = undefined
   }
 })
+onMounted(() => {
+  // const d = mockedEvents[0].start
+  // console.log(dayjs(d).add(3, 'day').format('YYYY-MM-DD HH:mm:ss'))
+})
 </script>
 
 <template>
@@ -272,7 +279,7 @@ watch(isOutside, (val) => {
           class="select-none border-b-1px border-zinc-4/15 bg-white/15 dark:bg-black/15 grid grid-cols-12 flex flex-nowrap w-full justify-between py-4 px-2 overflow-auto overflow-y-hidden items-center text-3.5 text-center font-600"
         >
           <a
-            v-for="(month, index) in months" :key="month" href="javascript;"
+            v-for="(month, index) in months" :key="index" href="javascript;"
             class="cursor-pointer px-1 w-auto capitalize relative"
             @click.prevent="selectedMonth = index, selectedDay = 1"
           >
@@ -370,8 +377,8 @@ watch(isOutside, (val) => {
                       zIndex: indexEvent + 1,
                       height: `${event.height}px`,
                       backgroundColor: event.color,
-                      left: `${100 / eventsInSelectedWeek(dayPerWeek).length * eventsInSelectedWeek(dayPerWeek).findIndex(e => e.id === event.id)}%`,
-                      width: `${100 / (eventsInSelectedWeek(dayPerWeek).length || 1)}%`,
+                      left: `${(100 / (eventsInSelectedWeek(dayPerWeek).filter(e => doDatesOverlap(new Date(event.start), new Date(event.end), new Date(e.start), new Date(e.end))).length * (eventsInSelectedWeek(dayPerWeek).some(e => doDatesOverlap(new Date(event.start), new Date(event.end), new Date(e.start), new Date(e.end))) && eventsInSelectedWeek(dayPerWeek).filter(e => doDatesOverlap(new Date(event.start), new Date(event.end), new Date(e.start), new Date(e.end))).findIndex(e => e.id === event.id) || 0)))}%`,
+                      width: `${100 / (eventsInSelectedWeek(dayPerWeek).filter(e => doDatesOverlap(new Date(event.start), new Date(event.end), new Date(e.start), new Date(e.end))).length || 1)}%`,
                     }" :data-event_id="event.id"
                   >
                     <div
@@ -382,10 +389,10 @@ watch(isOutside, (val) => {
                           {{ event.title }}
                         </div>
                         <div class="event--date-from-to">
-                          {{ ((start) => useDateFormat(new Date(start), 'hh:mm', {
+                          {{ ((start) => useDateFormat(new Date(start), 'HH:mm', {
                             locales: userLang,
                           }).value)((selectedEventByRef?.id === event.id && selectedEventByRef?.start) || event.start) }}
-                          - {{ ((end) => useDateFormat(end, 'hh:mm', { locales: userLang }).value)((selectedEventByRef?.id
+                          - {{ ((end) => useDateFormat(end, 'HH:mm', { locales: userLang }).value)((selectedEventByRef?.id
                             === event.id && selectedEventByRef?.end) || event.end) }}
                         </div>
                       </div>
