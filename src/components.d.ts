@@ -58,6 +58,8 @@ declare module 'vue' {
     ATooltip: typeof import('@arco-design/web-vue')['Tooltip']
     ATrigger: typeof import('@arco-design/web-vue')['Trigger']
     AUpload: typeof import('@arco-design/web-vue')['Upload']
+    CommonCalendar: typeof import('./components/common/Calendar/index.vue')['default']
+    CommonCalendarEvent: typeof import('./components/common/Calendar/Event.vue')['default']
     CommonCodeAI: typeof import('./components/common/CodeAI.vue')['default']
     CommonCodeMirrorCodeMirror: typeof import('./components/common/CodeMirror/CodeMirror.vue')['default']
     CommonPageHeader: typeof import('./components/common/PageHeader.vue')['default']

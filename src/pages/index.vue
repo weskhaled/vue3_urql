@@ -6,7 +6,7 @@ import { Loader } from '@googlemaps/js-api-loader'
 import Typed from 'typed.js'
 import JCaptcha from 'js-captcha'
 import { vIntersectionObserver, vOnClickOutside } from '@vueuse/components'
-import { FreeMode, Mousewheel, Scrollbar } from 'swiper'
+import { FreeMode, Mousewheel, Scrollbar } from 'swiper/modules'
 import { isAuthenticated, mdAndLarger } from '~/common/stores'
 import { useIsotope } from '~/composables/isotope'
 import 'swiper/css/scrollbar'
@@ -370,7 +370,7 @@ const { results } = useFuse(inputSkillsSearch, skills, {
 
 function scrollTo(id: string) {
   window?.scrollTo({
-    top: document?.getElementById(id).offsetTop - (mdAndLarger.value ? 57 : 48),
+    top: document?.getElementById(id)?.offsetTop ?? 0 - (mdAndLarger.value ? 57 : 48),
     behavior: 'smooth',
   })
   sourceTransition.value = 0
@@ -1292,7 +1292,7 @@ function submitContact({ values, errors }) {
   </div>
   <a-button
     :class="[windowScrollY < 200 && 'translate-y-[calc(100%+50px)]']" type="primary" shape="circle"
-    class="transition-all translate-y-0 fixed right-15 bottom-10 z-5" @click="wrapperY = 0"
+    class="transition-all fixed right-15 bottom-10 z-5" @click="wrapperY = 0"
   >
     <i i-carbon-arrow-up class="" />
   </a-button>

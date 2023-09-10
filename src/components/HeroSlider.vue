@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { breakpointsTailwind, useBreakpoints } from '@vueuse/core'
-import { Mousewheel, Navigation, Pagination } from 'swiper'
+import { Mousewheel, Navigation, Pagination } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import { isDark } from '~/composables/dark'
 import 'swiper/css'

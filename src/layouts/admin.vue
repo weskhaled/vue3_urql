@@ -3,7 +3,7 @@ import { gql, useQuery } from '@urql/vue'
 import { UseDraggable as Draggable } from '@vueuse/components'
 
 // import { promiseTimeout } from '@vueuse/core'
-import { currentUser, isAuthenticated, layoutBoxed, mdAndSmaller, sideFixed, smAndSmaller } from '~/common/stores'
+import { currentUser, isAuthenticated, layoutBoxed, mdAndSmaller, refreshToken, sideFixed, smAndSmaller, token } from '~/common/stores'
 
 // const { t } = useI18n()
 const router = useRouter()
@@ -24,12 +24,25 @@ const queryMe = gql`
       role
     }
   }`
+try {
+  const { data, error } = await useQuery({
+    query: queryMe,
+  })
+  if (error.value) {
+    message.error('Error', `${error.value}`)
+    token.value = null
+    refreshToken.value = null
+    router.push({ name: 'auth-login' })
+  }
 
-const { data, error } = await useQuery({
-  query: queryMe,
-})
-data.value && (currentUser.value = data.value.me)
-error.value && (message.error('Error', `${error.value}`))
+  data.value && (currentUser.value = data.value.me)
+}
+catch (error) {
+  message.error('Error', `${error}`)
+  token.value = null
+  refreshToken.value = null
+  router.push({ name: 'auth-login' })
+}
 // await promiseTimeout(120000)
 </script>
 

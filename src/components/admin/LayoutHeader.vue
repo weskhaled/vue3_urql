@@ -5,7 +5,7 @@ import { currentUser, refreshToken, sideFixed, sideHidden, token, userLang } fro
 // const { t } = useI18n()
 const router = useRouter()
 const { message } = useMessage()
-const { isFullscreen, enter, exit, toggle: toggleFullscreen } = useFullscreen()
+const { isFullscreen, toggle: toggleFullscreen } = useFullscreen()
 
 async function logout() {
   token.value = null
@@ -42,7 +42,7 @@ async function logout() {
         </span>
       </a>
     </div>
-    <div class="hidden md:flex items-center border-zinc-4/20 border-x px-2 [--primary-6:var(--gray-9)]">
+    <div class="hidden md:flex items-center border-zinc-4/20 border-x px-2 [--primary-6:var(--gray-9)]!">
       <a-badge :count="9" dot :offset="[-22, 5]" class="[&>.arco-badge-custom-dot]:overflow-visible">
         <template #content>
           <span class="block h-1.5 w-1.5 pointer-events-none rounded-full bg-green-500 relative shadow-[0_0_0_1px_var(--color-bg-2)]">
@@ -161,6 +161,11 @@ async function logout() {
 </template>
 
 <style scoped lang="less">
+header {
+  .arco-btn-text, .arco-btn-text[type='button'], .arco-btn-text[type='submit'] {
+    color: inherit!important;
+  }
+}
 // :deep(.arco-menu-horizontal .arco-menu-inner) {
 //   @apply !p-0;
 // }
