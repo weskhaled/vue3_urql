@@ -1,3 +1,4 @@
+import { cwd } from 'node:process'
 import path from 'node:path'
 import { defineConfig, loadEnv } from 'vite'
 
@@ -16,20 +17,18 @@ import AutoImport from 'unplugin-auto-import/vite'
 import Markdown from 'vite-plugin-vue-markdown'
 import { VitePWA } from 'vite-plugin-pwa'
 import VueI18n from '@intlify/unplugin-vue-i18n/vite'
-import Inspect from 'vite-plugin-inspect'
-import Inspector from 'vite-plugin-vue-inspector'
+import VueDevTools from 'vite-plugin-vue-devtools'
 import LinkAttributes from 'markdown-it-link-attributes'
 import Unocss from 'unocss/vite'
 import Shiki from 'markdown-it-shiki'
-
-// @ts-expect-error failed to resolve types
 import VueMacros from 'unplugin-vue-macros/vite'
 
-// import { ViteWebfontDownload } from 'vite-plugin-webfont-dl'
-import { ArcoResolver, VueUseComponentsResolver } from 'unplugin-vue-components/resolvers'
+import WebfontDownload from 'vite-plugin-webfont-dl'
+import { vitePluginForArco } from '@arco-plugins/vite-vue'
+import { VueUseComponentsResolver } from 'unplugin-vue-components/resolvers'
 
-export default ({ mode }) => {
-  process.env = { ...process.env, ...loadEnv(mode, process.cwd()) }
+export default ({ mode }: any) => {
+  const env = loadEnv(mode, cwd())
 
   return defineConfig({
     resolve: {
@@ -82,11 +81,11 @@ export default ({ mode }) => {
         vueTemplate: true,
         resolvers: [
           VueUseComponentsResolver(),
-          ArcoResolver({
-            sideEffect: true,
-            importStyle: 'less',
-            resolveIcons: true,
-          }),
+          // ArcoResolver({
+          //   sideEffect: true,
+          //   importStyle: 'less',
+          //   resolveIcons: true,
+          // }),
         ],
       }),
 
@@ -100,11 +99,6 @@ export default ({ mode }) => {
         directoryAsNamespace: true,
         resolvers: [
           VueUseComponentsResolver(),
-          ArcoResolver({
-            sideEffect: true,
-            importStyle: 'less',
-            resolveIcons: true,
-          }),
         ],
       }),
       // https://github.com/antfu/unocss
@@ -174,17 +168,21 @@ export default ({ mode }) => {
         include: [path.resolve(__dirname, 'locales/**')],
       }),
 
-      // https://github.com/antfu/vite-plugin-inspect
-      // Visit http://localhost:3333/__inspect/ to see the inspector
-      Inspect(),
-
-      // https://github.com/webfansplz/vite-plugin-vue-inspector
-      Inspector({
-        toggleButtonVisibility: 'never',
-      }),
-
       // https://github.com/feat-agency/vite-plugin-webfont-dl
-      // ViteWebfontDownload(),
+      WebfontDownload([
+        'https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=Montserrat:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=swap',
+      ]),
+
+      // https://github.com/webfansplz/vite-plugin-vue-devtools
+      VueDevTools(),
+
+      // https://github.com/arco-design/arco-plugins/blob/main/packages/plugin-vite-vue/README.md
+      vitePluginForArco({
+        style: true,
+        modifyVars: {
+          'arcoblue-6': '#00aaff',
+        },
+      }),
     ],
     css: {
       preprocessorOptions: {
@@ -229,18 +227,18 @@ export default ({ mode }) => {
       },
       proxy: {
         '/api': {
-          target: process.env.VITE_API_URL || 'http://localhost:3000',
+          target: env.VITE_API_URL || 'http://localhost:3000',
           changeOrigin: true,
           rewrite: path => path.replace(/^\/api/, ''),
         },
         '/graphql': {
-          target: `${process.env.VITE_API_URL || 'http://localhost:3000'}/graphql`,
+          target: `${env.VITE_API_URL || 'http://localhost:3000'}/graphql`,
           changeOrigin: true,
           rewrite: path => path.replace(/^\/graphql/, ''),
         },
         // Proxying websockets or socket.io: ws://localhost:5173/socket.io -> ws://localhost:5174/socket.io
         '/socket.io': {
-          target: process.env.VITE_API_WS_URL || 'ws://localhost:3000/graphql',
+          target: env.VITE_API_WS_URL || 'ws://localhost:3000/graphql',
           ws: true,
           secure: true,
           rewrite: path => path.replace(/^\/socket.io/, ''),

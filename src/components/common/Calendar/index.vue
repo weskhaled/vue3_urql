@@ -3,8 +3,8 @@
 import Event from './Event.vue'
 import { mdAndLarger, mdAndSmaller, userLang } from '~/common/stores'
 
-const { x: xMouse, y: yMouse } = useMouse()
-const { dayjs } = useDayjs()
+const { y: yMouse } = useMouse()
+// const { dayjs } = useDayjs()
 
 const coefficient = 1000 * 60 * 5
 

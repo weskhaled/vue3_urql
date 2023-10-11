@@ -1,6 +1,7 @@
 import { mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
-// import { useI18n } from 'vue-i18n'
+
+import { useI18n } from 'vue-i18n'
 import ThisForTest from '~/components/ThisForTest.vue'
 import { userLang } from '~/common/stores'
 

@@ -488,7 +488,7 @@ function submitContact({ values, errors }) {
     <section class="relative font-sans">
       <HeroSlider :grab-cursor="false" class="h-[calc(100vh-3rem)] md:h-[calc(100vh)] !max-h-70rem !min-h-400px" :sliders="sliders" />
     </section>
-    <section class="relative">
+    <section class="relative md:mb--16">
       <div class="bg-white dark:bg-black">
         <div class="container mx-auto px-4">
           <div
@@ -637,7 +637,7 @@ function submitContact({ values, errors }) {
         </div>
       </div>
     </section>
-    <section id="resume" bg-white dark:bg-black relative z-1>
+    <section id="resume" bg-white dark:bg-black relative z-1 class="md:pt-14">
       <div class="container max-w-3xl mx-auto p-4 mx">
         <UseElementVisibility v-slot="{ isVisible }">
           <div class="absolute left--1/30 top-2/10 translate-y--1/2">

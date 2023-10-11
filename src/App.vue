@@ -27,7 +27,7 @@ useHead({
   ],
 })
 
-const locales = {
+const locales: any = {
   'en-US': enUS,
   'fr-FR': frFR,
 }
@@ -35,6 +35,7 @@ const locales = {
 const localeProvider = computed(() => {
   return locales[userLang.value] || enUS
 })
+
 watch(userLang, async (val) => {
   val && availableLocales.includes(val) && (await loadLanguageAsync(val))
 })
