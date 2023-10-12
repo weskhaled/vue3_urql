@@ -11,7 +11,7 @@ async function logout() {
   token.value = null
   refreshToken.value = null
   message.warning({ content: 'Loged out', showIcon: true, closable: true })
-  await router.push({ name: 'auth-login' })
+  await router.push({ name: '/auth/login' })
 }
 </script>
 

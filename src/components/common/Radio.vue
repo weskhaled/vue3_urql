@@ -12,7 +12,7 @@ const { message } = useMessage()
 const stationUrlResolvedQuery = useRouteQuery('station', null)
 const countryUrlResolvedQuery = useRouteQuery('country', null)
 const { data: radioStationsIDB, isFinished: isFinishedRadioStations } = useIDBKeyval('radio-stations', [])
-const { data: savedStationsIDB, isFinished: isFinishedSavedStations } = useIDBKeyval('saved-stations', [])
+const { data: savedStationsIDB } = useIDBKeyval('saved-stations', [])
 
 const mediaVolume: Ref<number> = useStorage('radio-volume', 50)
 const selectedCountry: Ref<string> = useStorage('selected-country', 'FR')

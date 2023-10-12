@@ -30,7 +30,7 @@ function handleSubmit({ values, errors }) {
       if (data) {
         refreshToken.value = data.signIn.refreshToken
         token.value = data.signIn.accessToken
-        await router.push({ name: 'admin' })
+        await router.push({ name: '/admin/' })
       }
 
       error && (message.error({
@@ -44,7 +44,7 @@ function handleSubmit({ values, errors }) {
 
 onMounted(async () => {
   if (isAuthenticated.value)
-    await router.push({ name: 'admin' })
+    await router.push({ name: '/admin/' })
 })
 </script>
 

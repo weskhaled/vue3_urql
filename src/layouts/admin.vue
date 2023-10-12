@@ -15,7 +15,7 @@ const handle = ref<HTMLElement | null>(null)
 
 watch(isAuthenticated, (newVal, oldVal) => {
   if (oldVal && !newVal)
-    router.push({ name: 'auth-login' })
+    router.push({ name: '/auth/login' })
 })
 const queryMe = gql`
   query queryMe {
@@ -32,7 +32,7 @@ try {
     message.error('Error', `${error.value}`)
     token.value = null
     refreshToken.value = null
-    router.push({ name: 'auth-login' })
+    router.push({ name: '/auth/login' })
   }
 
   data.value && (currentUser.value = data.value.me)
@@ -41,7 +41,7 @@ catch (error) {
   message.error('Error', `${error}`)
   token.value = null
   refreshToken.value = null
-  router.push({ name: 'auth-login' })
+  router.push({ name: '/auth/login' })
 }
 // await promiseTimeout(120000)
 </script>

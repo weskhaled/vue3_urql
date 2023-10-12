@@ -7,13 +7,13 @@ import Vue from '@vitejs/plugin-vue'
 import { ViteImageOptimizer } from 'vite-plugin-image-optimizer'
 import Pages from 'vite-plugin-pages'
 
-// import VueRouter from 'unplugin-vue-router/vite'
+import VueRouter from 'unplugin-vue-router/vite'
 import generateSitemap from 'vite-ssg-sitemap'
 import Layouts from 'vite-plugin-vue-layouts'
 import Components from 'unplugin-vue-components/vite'
 import AutoImport from 'unplugin-auto-import/vite'
 
-// import { VueRouterAutoImports } from 'unplugin-vue-router'
+import { VueRouterAutoImports } from 'unplugin-vue-router'
 import Markdown from 'vite-plugin-vue-markdown'
 import { VitePWA } from 'vite-plugin-pwa'
 import VueI18n from '@intlify/unplugin-vue-i18n/vite'
@@ -23,7 +23,7 @@ import Unocss from 'unocss/vite'
 import Shiki from 'markdown-it-shiki'
 import VueMacros from 'unplugin-vue-macros/vite'
 
-import WebfontDownload from 'vite-plugin-webfont-dl'
+// import WebfontDownload from 'vite-plugin-webfont-dl'
 import { vitePluginForArco } from '@arco-plugins/vite-vue'
 import { VueUseComponentsResolver } from 'unplugin-vue-components/resolvers'
 
@@ -37,7 +37,7 @@ export default ({ mode }: any) => {
       },
     },
     plugins: [
-      // VueRouter(),
+      VueRouter(),
       VueMacros({
         plugins: {
           vue: Vue({
@@ -66,8 +66,8 @@ export default ({ mode }: any) => {
       AutoImport({
         imports: [
           'vue',
-          'vue-router',
-          // VueRouterAutoImports,
+          // 'vue-router',
+          VueRouterAutoImports,
           'vue-i18n',
           'vue/macros',
           '@vueuse/head',
@@ -169,9 +169,7 @@ export default ({ mode }: any) => {
       }),
 
       // https://github.com/feat-agency/vite-plugin-webfont-dl
-      WebfontDownload([
-        'https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=Montserrat:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=swap',
-      ]),
+      // WebfontDownload('https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300;0,400;0,500;0,900;1,300;1,400;1,500;1,900&family=Fira+Code:wght@300;400;500;600;700&family=Kaushan+Script&family=Montserrat:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&family=Space+Grotesk:wght@300;400;700&display=swap'),
 
       // https://github.com/webfansplz/vite-plugin-vue-devtools
       VueDevTools(),

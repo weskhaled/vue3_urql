@@ -1,19 +1,20 @@
 <script setup lang="ts">
 import { gql, useClientHandle, useQuery, useSubscription } from '@urql/vue'
 import { IconSearch } from '@arco-design/web-vue/es/icon'
+import { definePage } from 'vue-router/auto'
 
 // import { promiseTimeout } from '@vueuse/core'
 import { mdAndLarger, smAndSmaller } from '~/common/stores'
 import { customFetch } from '~/common/services/customFetch'
 
-// definePage({
-//   name: 'adminIndex',
-//   path: '/admin',
-//   // alias: ['/admin'],
-//   meta: {
-//     layout: 'admin',
-//   },
-// })
+definePage({
+  name: '/admin/',
+  path: '/admin',
+  // alias: ['/admin'],
+  meta: {
+    layout: 'admin',
+  },
+})
 const { client: urqlClient } = useClientHandle()
 const { t } = useI18n()
 const { message } = useMessage()

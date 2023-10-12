@@ -30,7 +30,7 @@ export default defineConfig({
     }),
     presetTypography(),
     presetWebFonts({
-      provider: 'google',
+      // provider: 'google',
       fonts: {
         // these will extend the default theme
         sans: [
@@ -43,14 +43,13 @@ export default defineConfig({
             weights: ['300', '400', '600', '700', '800'],
           },
         ],
-        mono: ['Space Grotesk', 'Fira Code:400,700'],
+        mono: ['Space Grotesk'],
         // custom ones
         script: [
           {
             name: 'Kaushan Script',
             italic: false,
             weights: ['400'],
-            provider: 'google',
           },
         ],
         general: [
