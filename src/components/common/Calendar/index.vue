@@ -3,83 +3,53 @@
 import Event from './Event.vue'
 import { mdAndLarger, mdAndSmaller, userLang } from '~/common/stores'
 
+export interface Props {
+  events?: Array<any>
+}
+const props = withDefaults(defineProps<Props>(), {
+  events: () => [],
+})
+
+const emit = defineEmits(['eventChanged'])
+
+onMounted(() => {
+  // console.log(props.events[0].start)
+  // const d = props.events[0].start
+  // console.log(dayjs(d).format('YYYY-MM-DD HH:mm:ss'))
+})
+
 const { y: yMouse } = useMouse()
-// const { dayjs } = useDayjs()
+const { dayjs } = useDayjs()
 
 const coefficient = 1000 * 60 * 5
 
+// const totalYearDays = computed(() => {
+//   const year = selectedYear.value
+//   return ((year % 4 === 0 && year % 100 > 0) || year % 400 === 0) ? 366 : 365
+// })
+
 let cleanUp: () => void
 
-const durationFromEventHeight = (height: number) => (+(Math.round(height - 2)) * 60 / 90) * 60000
+function doDatesOverlap(start_1: Date, end_1: Date, start_2: Date, end_2: Date): boolean {
+  const start1 = start_1.getTime()
+  const end1 = end_1.getTime()
+  const start2 = start_2.getTime()
+  const end2 = end_2.getTime()
 
-function toHHMMSS(sec_num: number) {
-  const hours = Math.floor(sec_num / 3600)
-  const minutes = Math.floor((sec_num - (hours * 3600)) / 60)
-  const seconds = sec_num - (hours * 3600) - (minutes * 60)
-
-  let hoursStr = hours.toString()
-  let minutesStr = minutes.toString()
-  let secondsStr = seconds.toString()
-
-  if (hours < 10)
-    hoursStr = `0${hours}`
-  if (minutes < 10)
-    minutesStr = `0${minutes}`
-  if (seconds < 10)
-    secondsStr = `0${seconds}`
-
-  return `${hoursStr}:${minutesStr}:${secondsStr}`
+  return Math.max(start1, start2) < Math.min(end1, end2)
 }
-
-function doDatesOverlap(start_1, end_1, start_2, end_2) {
-  return Math.max(start_1, start_2) < Math.min(end_1, end_2)
-}
-
 const vHScrollContainerRef = ref<HTMLElement>()
 const dayPerWeekWidth = ref<number>()
 const daysPerWeekRef = ref<HTMLElement>()
 const dragHandlerEventResizeRef = ref<HTMLElement>()
 const dragHandlerEventMoveRef = ref<HTMLElement>()
-const daysPerWeekWidth = ref<number>(0)
 const selectedYear = ref(new Date().getFullYear())
 const selectedMonth = ref(new Date().getMonth())
 const selectedDay = ref(new Date().getDate())
 
 const { isOutside } = useMouseInElement(vHScrollContainerRef)
 
-const mockedEvents = [
-  {
-    id: 1,
-    title: 'Event 1',
-    start: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 1, 10),
-    end: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 2, 15),
-    color: '#9d174d',
-  },
-  {
-    id: 2,
-    title: 'Event 2',
-    start: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 1, 1, 50),
-    end: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 1, 4, 15),
-    color: '#0f766e',
-  },
-  {
-    id: 3,
-    title: 'Event 3',
-    start: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 2, 1, 5),
-    end: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 2, 14, 15),
-    color: '#2563eb',
-  },
-  {
-    id: 4,
-    title: 'Event 4',
-    start: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 3, 3, 5),
-    end: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 3, 4, 15),
-    color: '#6d28d9',
-  },
-]
-
-const { width } = useElementSize(vHScrollContainerRef)
-const { x, y, isScrolling, arrivedState, directions } = useScroll(vHScrollContainerRef)
+const { x, y } = useScroll(vHScrollContainerRef)
 
 // watchOnce(daysPerWeekRef, async (val) => {
 //   if (val) {
@@ -89,8 +59,9 @@ const { x, y, isScrolling, arrivedState, directions } = useScroll(vHScrollContai
 //     })
 //   }
 // })
+// const eventsInWeek = ref([])
 const eventsInWeek = computed(() => {
-  return mockedEvents.filter((event) => {
+  return props.events.filter((event) => {
     const eventStart = new Date(event.start)
     const eventEnd = new Date(event.end)
     const eventStartDay = eventStart.getDate()
@@ -109,7 +80,7 @@ const eventsInWeek = computed(() => {
       && (eventStartMonth >= selectedDateMonth && eventEndMonth <= selectedDateMonth)
       && (eventStartYear >= selectedDateYear && eventEndYear <= selectedDateYear)
     )
-  }).map(e => ({ ...e, height: Math.round((e.end.getTime() - e.start.getTime()) / 60000 * 90 / 60) }))
+  }).map(e => ({ ...e, height: Math.round((new Date(e.end).getTime() - new Date(e.start).getTime()) / 60000 * 90 / 60) }))
 })
 
 const eventsInSelectedWeek = day => eventsInWeek.value.filter(e => useDateFormat(e.start, 'YYYY-MM-DD', { locales: userLang.value }).value === useDateFormat(day, 'YYYY-MM-DD', { locales: userLang.value }).value)
@@ -155,11 +126,6 @@ const daysInWeek = computed(() => {
   return Array.from({ length: mdAndLarger.value ? 7 : 2 }, (_, i) => useDateFormat(new Date(selectedYear.value, selectedMonth.value, selectedDay.value + (i - 0)), 'YYYY-MM-DD', { locales: userLang.value }).value)
 })
 
-const totalYearDays = computed(() => {
-  const year = selectedYear.value
-  return ((year % 4 === 0 && year % 100 > 0) || year % 400 === 0) ? 366 : 365
-})
-
 watch(dragHandlerEventResizeRef, (val) => {
   if (val && selectedEventRef.value && selectedEventByRef.value && typeof window !== 'undefined') {
     cleanUp = useEventListener(window, 'mousemove', () => {
@@ -167,12 +133,12 @@ watch(dragHandlerEventResizeRef, (val) => {
         return
 
       const { y: dragHandlerY, height } = useElementBounding(selectedEventRef)
-
-      const { start } = selectedEventByRef.value || { start: new Date() }
+      const { start } = selectedEventByRef.value
       const durationFromEventLength = (+(Math.round(yMouse.value - useWindowScroll().y.value - (dragHandlerY.value - 2))) * 60 / 90) * 60000
-      const eventDuration = new Date(Math.round(new Date(start.getTime() + durationFromEventLength).getTime() / coefficient) * coefficient).getTime() - start.getTime()
-      selectedEventByRef.value.end = new Date(Math.round(new Date(start.getTime() + durationFromEventLength).getTime() / coefficient) * coefficient)
-      selectedEventByRef.value.height = height.value
+      const eventDuration = new Date(Math.round(new Date(new Date(start).getTime() + durationFromEventLength).getTime() / coefficient) * coefficient).getTime() - new Date(start).getTime()
+      // selectedEventByRef.value.end = new Date(Math.round(new Date(new Date(start).getTime() + durationFromEventLength).getTime() / coefficient) * coefficient).toISOString()
+      selectedEventByRef.value.end = dayjs((new Date(start).getTime())).add(eventDuration, 'millisecond').second(0).format('YYYY-MM-DD HH:mm:ss')
+      selectedEventByRef.value.height = height.value.toFixed(2)
       selectedEventRef.value.style.setProperty('height', `${eventDuration / 60000 * 90 / 60}px`)
       selectedEventRef.value.classList.add('event--resizing')
       selectedEventRef.value.setAttribute('data-end', `${selectedEventByRef.value.end}`)
@@ -180,6 +146,7 @@ watch(dragHandlerEventResizeRef, (val) => {
 
     useEventListener(window, 'mouseup', () => {
       cleanUp()
+      selectedEventByRef.value && emit('eventChanged', { ...selectedEventByRef.value })
       selectedEventRef.value?.classList.remove('event--resizing')
       dragHandlerEventResizeRef.value = undefined
     })
@@ -203,14 +170,20 @@ watch(dragHandlerEventMoveRef, (val) => {
           const fundedEvent = eventsInWeek.value.find(event => event.id === id)
           if (fundedEvent) {
             selectedEventRef.value.style.setProperty('z-index', '99')
-            const top = `${Math.round((+useDateFormat(new Date(day_col_time.replace('_', ' ')), 'H', { locales: userLang.value }).value * 90) + ((+useDateFormat(new Date(day_col_time.replace('_', ' ')), 'm', { locales: userLang.value }).value * 90) / 60))}px`
+            // const top = `${Math.round((+useDateFormat(new Date(day_col_time.replace('_', ' ')), 'H', { locales: userLang.value }).value * 90) + ((+useDateFormat(new Date(day_col_time.replace('_', ' ')), 'm', { locales: userLang.value }).value * 90) / 60))}px`
+            // convert top using useDateFormat to dayjs
+            const top = `${Math.round((+dayjs(day_col_time.replace('_', ' ')).format('H') * 90) + ((+dayjs(day_col_time.replace('_', ' ')).format('m') * 90) / 60))}px`
             selectedEventRef.value.style.setProperty('top', top)
-            fundedEvent.start = new Date(day_col_time.replace('_', ' '))
-            fundedEvent.end = new Date(fundedEvent.end.getTime() + (fundedEvent.start.getTime() - selectedEventByRef.value.start.getTime()))
-            selectedEventByRef.value.start = new Date(day_col_time.replace('_', ' '))
-            selectedEventByRef.value.end = new Date(selectedEventByRef.value.end.getTime() + (fundedEvent.start.getTime() - selectedEventByRef.value.start.getTime()))
-
-            const eventDuration = new Date(Math.round(fundedEvent.start.getTime() - fundedEvent.end.getTime())).getTime()
+            // fundedEvent.start = new Date(day_col_time.replace('_', ' '))
+            // fundedEvent.end = new Date(new Date(fundedEvent.end).getTime() + (new Date(fundedEvent.start).getTime() - new Date(selectedEventByRef.value.start).getTime()))
+            // selectedEventByRef.value.start = new Date(day_col_time.replace('_', ' ')).toISOString()
+            selectedEventByRef.value.start = dayjs(day_col_time.replace('_', ' ')).format('YYYY-MM-DD HH:mm:ss')
+            // const end = new Date(new Date(fundedEvent.end).getTime() + (new Date(fundedEvent.start).getTime() - new Date(selectedEventByRef.value.start).getTime()))
+            // selectedEventByRef.value.end = new Date(new Date(day_col_time.replace('_', ' ')).getFullYear(), new Date(day_col_time.replace('_', ' ')).getMonth(), new Date(day_col_time.replace('_', ' ')).getDate(), end.getHours(), end.getMinutes()).toISOString()
+            selectedEventByRef.value.end = dayjs(fundedEvent.end).set('date', +dayjs(day_col_time.replace('_', ' ')).format('DD')).format('YYYY-MM-DD HH:mm:ss')
+            selectedEventByRef.value.duration = dayjs(dayjs(selectedEventByRef.value.end).diff(dayjs(selectedEventByRef.value.start)))
+            // console.log('fundedEvent.end', dayjs(fundedEvent.end).set('date', new Date(day_col_time.replace('_', ' ')).getDate()).format('YYYY-MM-DD HH:mm:ss'))
+            // const eventDuration = new Date(Math.round(new Date(fundedEvent.start).getTime() - new Date(fundedEvent.end).getTime())).getTime()
             // fundedEvent.height = eventDuration / 60000 * 90 / 60
             // selectedEventRef.value.style.setProperty('height', `${eventDuration / 60000 * 90 / 60}px`)
             // console.log(eventDuration)
@@ -236,24 +209,20 @@ watch(dragHandlerEventMoveRef, (val) => {
       )
         return
 
-      // console.log(day_index)
-      // console.log(selectedEventRef.value)
+      emit('eventChanged', { ...selectedEventByRef.value })
       selectedEventRef.value.dataset.day_index = day_index
       vHScrollContainerRef.value?.classList.remove('event--moving')
       dragHandlerEventMoveRef.value = undefined
     })
   }
 })
+
 watch(isOutside, (val) => {
   if (val && typeof cleanUp === 'function') {
     cleanUp()
     dragHandlerEventResizeRef.value = undefined
     dragHandlerEventMoveRef.value = undefined
   }
-})
-onMounted(() => {
-  // const d = mockedEvents[0].start
-  // console.log(dayjs(d).add(3, 'day').format('YYYY-MM-DD HH:mm:ss'))
 })
 </script>
 
@@ -377,8 +346,7 @@ onMounted(() => {
                       top: `${Math.round((+useDateFormat(new Date(event.start), 'H', { locales: userLang }).value * 90) + ((+useDateFormat(new Date(event.start), 'm', { locales: userLang }).value * 90) / 60))}px`,
                       zIndex: indexEvent + 1,
                       height: `${event.height}px`,
-                      backgroundColor: event.color,
-                      left: `${(100 / (eventsInSelectedWeek(dayPerWeek).filter(e => doDatesOverlap(new Date(event.start), new Date(event.end), new Date(e.start), new Date(e.end))).length * (eventsInSelectedWeek(dayPerWeek).some(e => doDatesOverlap(new Date(event.start), new Date(event.end), new Date(e.start), new Date(e.end))) && eventsInSelectedWeek(dayPerWeek).filter(e => doDatesOverlap(new Date(event.start), new Date(event.end), new Date(e.start), new Date(e.end))).findIndex(e => e.id === event.id) || 0)))}%`,
+                      marginLeft: `${(100 / (eventsInSelectedWeek(dayPerWeek).filter(e => doDatesOverlap(new Date(event.start), new Date(event.end), new Date(e.start), new Date(e.end))).length * (eventsInSelectedWeek(dayPerWeek).some(e => doDatesOverlap(new Date(event.start), new Date(event.end), new Date(e.start), new Date(e.end))) && eventsInSelectedWeek(dayPerWeek).filter(e => doDatesOverlap(new Date(event.start), new Date(event.end), new Date(e.start), new Date(e.end))).findIndex(e => e.id === event.id) || 0)))}%`,
                       width: `${100 / (eventsInSelectedWeek(dayPerWeek).filter(e => doDatesOverlap(new Date(event.start), new Date(event.end), new Date(e.start), new Date(e.end))).length || 1)}%`,
                     }"
                     :data-event_id="event.id"

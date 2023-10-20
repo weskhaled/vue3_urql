@@ -165,7 +165,7 @@ onMounted(() => {
     .then((google) => {
       gMaps.value = new google.maps.Map(mapRef.value, mapOptions)
     })
-    .catch((e) => {})
+    .catch(() => {})
 
   myCaptcha.value = new JCaptcha({
     el: '.jCaptcha',
@@ -375,9 +375,16 @@ function scrollTo(id: string) {
   })
   sourceTransition.value = 0
 }
-function submitContact({ values, errors }) {
+function submitContact({ __values, __errors }) {
   myCaptcha.value.validate()
 }
+useScriptTag(
+  'https://assets.calendly.com/assets/external/widget.js',
+  // on script tag loaded.
+  () => {
+    Calendly.initBadgeWidget({ url: 'https://calendly.com/weskhaled', text: 'Schedule time with me', color: '#0069ff', textColor: '#ffffff', branding: false })
+  },
+)
 </script>
 
 <template>
@@ -522,9 +529,7 @@ function submitContact({ values, errors }) {
                 <div class="pt-4">
                   <Swiper
                     class="pb-5" :slides-per-view="4" :space-between="10" direction="horizontal"
-                    :mousewheel="true" :free-mode="true" :grab-cursor="true" :scrollbar="{
-                      hide: true,
-                    }" :modules="[Scrollbar, Mousewheel, FreeMode]"
+                    :mousewheel="true" :free-mode="true" :grab-cursor="true" :modules="[Scrollbar, Mousewheel, FreeMode]"
                   >
                     <SwiperSlide
                       v-for="(skill, index) in results" :key="index"
@@ -1291,8 +1296,8 @@ function submitContact({ values, errors }) {
     </footer>
   </div>
   <a-button
-    :class="[windowScrollY < 200 && 'translate-y-[calc(100%+50px)]']" type="primary" shape="circle"
-    class="transition-all fixed right-15 bottom-10 z-5" @click="wrapperY = 0"
+    :class="[windowScrollY < 200 && 'translate-y-[calc(100%+250px)]']" type="primary" shape="circle"
+    class="transition-all fixed right-15 bottom-20 z-5" @click="wrapperY = 0"
   >
     <i i-carbon-arrow-up class="" />
   </a-button>
@@ -1306,6 +1311,7 @@ function submitContact({ values, errors }) {
 </template>
 
 <style lang="less" scoped>
+@import 'https://assets.calendly.com/assets/external/widget.css';
 :deep(.arco-notification) {
   padding: 4px;
 }
