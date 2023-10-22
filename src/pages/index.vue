@@ -15,7 +15,6 @@ import CodeAI from '~/components/common/CodeAI.vue'
 import Radio from '~/components/common/Radio.vue'
 
 const googleApiKey = import.meta.env.VITE_GOOGLE_API_KEY
-
 const windowHeight = useWindowSize().height
 const isMounted = useMounted()
 const inputSkillsSearch = ref('')
@@ -378,13 +377,6 @@ function scrollTo(id: string) {
 function submitContact({ __values, __errors }) {
   myCaptcha.value.validate()
 }
-useScriptTag(
-  'https://assets.calendly.com/assets/external/widget.js',
-  // on script tag loaded.
-  () => {
-    Calendly.initBadgeWidget({ url: 'https://calendly.com/weskhaled', text: 'Schedule time with me', color: '#0069ff', textColor: '#ffffff', branding: false })
-  },
-)
 </script>
 
 <template>

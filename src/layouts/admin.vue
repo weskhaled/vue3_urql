@@ -6,6 +6,8 @@ import { UseDraggable as Draggable } from '@vueuse/components'
 import { currentUser, isAuthenticated, layoutBoxed, mdAndSmaller, refreshToken, sideFixed, smAndSmaller, token } from '~/common/stores'
 
 // const { t } = useI18n()
+const { unloadCalendly } = useCalendly()
+unloadCalendly()
 const router = useRouter()
 const { message } = useMessage()
 const { width: windowWidth, height: windowHeight } = useWindowSize()
