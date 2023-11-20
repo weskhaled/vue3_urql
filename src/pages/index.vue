@@ -15,6 +15,15 @@ import CodeAI from '~/components/common/CodeAI.vue'
 import Radio from '~/components/common/Radio.vue'
 
 const googleApiKey = import.meta.env.VITE_GOOGLE_API_KEY
+
+const { loadCalendly, unloadCalendly } = useCalendly()
+
+onMounted(async () => {
+  await loadCalendly()
+})
+onUnmounted(() => {
+  unloadCalendly()
+})
 const windowHeight = useWindowSize().height
 const isMounted = useMounted()
 const inputSkillsSearch = ref('')
@@ -35,7 +44,7 @@ const formContact = reactive({
 const sliders: Ref<any[]> = ref([
   {
     title: 'Intro',
-    content: h('div', { class: 'text-left max-w-3xl ml-0 font-general flex flex-col' }, [h('h1', { class: 'font-chillax font-semibold uppercase text-2rem md:text-4rem leading-tight ![--animate-delay:0.1s] animate__animated animate__slideInDown' }, 'Hi, I’am Khaled. Full-Stack Js Developer based in Paris 👋'), h('p', { class: 'font-thin text-5 ![--animate-delay:0.15s] animate__delay-2s animate__animated animate__backInUp' }, 'Experienced Full-Stack JS developer proficient in VueJS, NestJS, NodeJS, and Tailwind.')]),
+    content: h('div', { class: 'text-left max-w-3xl ml-0 font-general flex flex-col' }, [h('h1', { class: 'font-chillax font-semibold uppercase text-2rem md:text-4rem leading-tight ![--animate-delay:0.1s] animate__animated animate__slideInDown' }, 'Hi, I’am Khaled. Full-Stack Developer based in Paris 👋'), h('p', { class: 'font-thin text-5 ![--animate-delay:0.15s] animate__delay-2s animate__animated animate__backInUp' }, 'Experienced Full-Stack JS developer proficient in VueJS, NestJS, NodeJS, and Tailwind.')]),
     image: {
       screen: '/img/slider-1.jpg',
       thumb: '/img/slider-1.jpg',
@@ -279,6 +288,12 @@ const skills = ref(
       title: 'Nodejs',
       logo: 'i-logos-nodejs-icon',
       tags: ['backend', 'js', 'ts'],
+      percent: 0.7,
+    },
+    {
+      title: 'Microsoft azure',
+      logo: 'i-logos-microsoft-azure',
+      tags: ['backend'],
       percent: 0.7,
     },
     {
