@@ -684,7 +684,7 @@ function submitContact({ __values, __errors }) {
             class="text-lg font-400 md:text-3xl/10 mb-3"
           >
             <span>
-              I'm Khaled, 33 years old Full-Stack JS/TS developer based on Paris.
+              I'm Khaled, 35 years old Full-Stack web developer based on Paris.
             </span>
             <span />
           </h3>
@@ -711,7 +711,7 @@ function submitContact({ __values, __errors }) {
             </div>
             <div mb-4>
               <UseElementVisibility v-slot="{ isVisible }">
-                <span text-xs block mb--3>VueJs</span>
+                <span text-xs block mb--3>Vue/Nuxt</span>
                 <a-progress
                   :percent="isVisible ? 0.9 : 0" :color="{
                     '0%': 'rgb(var(--primary-6))',
@@ -773,42 +773,6 @@ function submitContact({ __values, __errors }) {
           </h3>
           <div>
             <a-timeline mode="alternate" label-position="relative">
-              <a-timeline-item label="2012">
-                L3 – Développement des SI
-                <span block font-mono text-xs>
-                  Institut Sup. Technologie, Tunisie
-                </span>
-              </a-timeline-item>
-              <a-timeline-item label="2015" label-position="same">
-                M2 – Master en logiciels libres
-                <span block font-mono text-xs>
-                  Institut Sup. Informatique, Tunisie
-                </span>
-              </a-timeline-item>
-              <a-timeline-item label="2014-09 / 2016-02" position="bottom">
-                Junior Front-end Developer
-                <span block font-mono text-xs>
-                  DevFuture
-                </span>
-              </a-timeline-item>
-              <a-timeline-item label="2016-02 / 2019-01" label-position="same">
-                Front-end Developer
-                <span block font-mono text-xs>
-                  Peaksource
-                </span>
-              </a-timeline-item>
-              <a-timeline-item label="2019-01 / 2021-05" label-position="same">
-                Full-Stack Js/Ts Developer
-                <span block font-mono text-xs>
-                  Sclable Business Solutions<span class="bg-zinc-4/30 px-0.3">GmbH</span>
-                </span>
-              </a-timeline-item>
-              <a-timeline-item label="2021-05 / 2022-06" label-position="same">
-                Full-Stack Js/Ts, AWS Developer
-                <span block font-mono text-xs>
-                  Ticketchainer
-                </span>
-              </a-timeline-item>
               <a-timeline-item label="2022-06 / Current" label-position="same">
                 <template #dot>
                   <span class="h-1.5 w-1.5 rounded-full bg-blue-500 relative">
@@ -817,9 +781,39 @@ function submitContact({ __values, __errors }) {
                     />
                   </span>
                 </template>
-                Full-Stack Js/Ts Developer
+                Front-end Developer
                 <span block font-mono text-xs>
-                  SOFTEAM
+                  NIBELIS
+                </span>
+              </a-timeline-item>
+              <a-timeline-item label="2021-05 / 2022-08" label-position="same">
+                Full-Stack Js/Ts, AWS Developer
+                <span block font-mono text-xs>
+                  Ticketchainer
+                </span>
+              </a-timeline-item>
+              <a-timeline-item label="2019-01 / 2021-05" label-position="same">
+                Full-Stack Developer
+                <span block font-mono text-xs>
+                  Sclable Business Solutions<span class="bg-zinc-4/30 px-0.3">GmbH</span>
+                </span>
+              </a-timeline-item>
+              <a-timeline-item label="2016-02 / 2019-01" label-position="same">
+                Front-end Developer
+                <span block font-mono text-xs>
+                  PEAKSOURCE Group
+                </span>
+              </a-timeline-item>
+              <a-timeline-item label="2015" label-position="same">
+                M2 – Master en logiciels libres
+                <span block font-mono text-xs>
+                  Institut Sup. Informatique, Tunisie
+                </span>
+              </a-timeline-item>
+              <a-timeline-item label="2013">
+                L3 – Développement des SI
+                <span block font-mono text-xs>
+                  Institut Sup. Technologie, Tunisie
                 </span>
               </a-timeline-item>
             </a-timeline>
