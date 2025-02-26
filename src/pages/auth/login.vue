@@ -1,45 +1,45 @@
 <script setup lang="ts">
-import { useMutation } from '@urql/vue'
-import { isAuthenticated, refreshToken, token } from '~/common/stores'
+import { isAuthenticated } from '~/common/stores'
 
 const router = useRouter()
-const { message } = useMessage()
-const { t } = useI18n()
+// const { message } = useMessage()
+// const { t } = useI18n()
 const currentYear = useDateFormat(useNow(), 'YYYY')
 
 const loginLoading = ref(false)
 const loginFormRef = ref()
-const querySignIn = `
-    mutation SignIn($input: SignInInput!) {
-      signIn(input: $input) {
-        refreshToken
-        accessToken
-      }
-  }`
-const loginResult = useMutation(querySignIn)
+// const querySignIn = `
+//     mutation SignIn($input: SignInInput!) {
+//       signIn(input: $input) {
+//         refreshToken
+//         accessToken
+//       }
+//   }`
+// const loginResult = useMutation(querySignIn)
 const form = reactive({
   username: 'weskhaled',
   password: '0000',
   rememberMe: false,
 })
-function handleSubmit({ values, errors }) {
-  if (!errors) {
-    loginLoading.value = true
-    const params = reactivePick(values, 'username', 'password')
-    loginResult.executeMutation({ input: params }).then(async ({ data, error }) => {
-      if (data) {
-        refreshToken.value = data.signIn.refreshToken
-        token.value = data.signIn.accessToken
-        await router.push({ name: '/admin/' })
-      }
+async function handleSubmit() {
+  return await router.push({ name: '/admin/' })
+  // if (!errors) {
+  //   loginLoading.value = true
+  //   const params = reactivePick(values, 'username', 'password')
+  //   loginResult.executeMutation({ input: params }).then(async ({ data, error }) => {
+  //     if (data) {
+  //       refreshToken.value = data.signIn.refreshToken
+  //       token.value = data.signIn.accessToken
+  //       await router.push({ name: '/admin/' })
+  //     }
 
-      error && (message.error({
-        content: error.graphQLErrors[0]?.message || t('unauthorized'),
-        duration: 2000,
-      }))
-      loginLoading.value = false
-    })
-  }
+  //     error && (message.error({
+  //       content: error.graphQLErrors[0]?.message || t('unauthorized'),
+  //       duration: 2000,
+  //     }))
+  //     loginLoading.value = false
+  //   })
+  // }
 }
 
 onMounted(async () => {

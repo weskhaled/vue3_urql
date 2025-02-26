@@ -1,50 +1,50 @@
 <script setup lang="ts">
-import { gql, useQuery } from '@urql/vue'
 import { UseDraggable as Draggable } from '@vueuse/components'
 
 // import { promiseTimeout } from '@vueuse/core'
-import { currentUser, isAuthenticated, layoutBoxed, mdAndSmaller, refreshToken, sideFixed, smAndSmaller, token } from '~/common/stores'
+import { layoutBoxed, mdAndSmaller, sideFixed, smAndSmaller } from '~/common/stores'
 
 // const { t } = useI18n()
 const { unloadCalendly } = useCalendly()
 unloadCalendly()
-const router = useRouter()
-const { message } = useMessage()
+// const router = useRouter()
+// const { message } = useMessage()
 const { width: windowWidth, height: windowHeight } = useWindowSize()
 
 const popupVisible = ref(false)
 const handle = ref<HTMLElement | null>(null)
 
-watch(isAuthenticated, (newVal, oldVal) => {
-  if (oldVal && !newVal)
-    router.push({ name: '/auth/login' })
-})
-const queryMe = gql`
-  query queryMe {
-    me {
-      nickname
-      role
-    }
-  }`
-try {
-  const { data, error } = await useQuery({
-    query: queryMe,
-  })
-  if (error.value) {
-    message.error('Error', `${error.value}`)
-    token.value = null
-    refreshToken.value = null
-    router.push({ name: '/auth/login' })
-  }
+// watch(isAuthenticated, (newVal, oldVal) => {
+//   if (oldVal && !newVal)
+//     router.push({ name: '/auth/login' })
+// })
+// const queryMe = gql`
+//   query queryMe {
+//     me {
+//       nickname
+//       role
+//     }
+//   }`
 
-  data.value && (currentUser.value = data.value.me)
-}
-catch (error) {
-  message.error('Error', `${error}`)
-  token.value = null
-  refreshToken.value = null
-  router.push({ name: '/auth/login' })
-}
+// try {
+//   const { data, error } = await useQuery({
+//     query: queryMe,
+//   })
+//   if (error.value) {
+//     message.error('Error', `${error.value}`)
+//     token.value = null
+//     refreshToken.value = null
+//     router.push({ name: '/auth/login' })
+//   }
+
+//   data.value && (currentUser.value = data.value.me)
+// }
+// catch (error) {
+//   message.error('Error', `${error}`)
+//   token.value = null
+//   refreshToken.value = null
+//   router.push({ name: '/auth/login' })
+// }
 // await promiseTimeout(120000)
 </script>
 

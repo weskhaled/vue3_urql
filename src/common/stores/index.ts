@@ -18,7 +18,8 @@ export const userLang = useStorage('user-lang', getLanguage())
 
 export const token: Ref<string | null> = useStorage('token', null)
 export const refreshToken: Ref<string | null> = useStorage('refreshToken', null)
-export const isAuthenticated = computed(() => token.value && token.value?.length && refreshToken.value && refreshToken.value?.length)
+// export const isAuthenticated = computed(() => token.value && token.value?.length && refreshToken.value && refreshToken.value?.length)
+export const isAuthenticated = computed(() => true)
 export const currentUser: Ref<any | null> = ref(null)
 
 export const layoutBoxed: Ref<boolean> = useStorage('layout-boxed', false)

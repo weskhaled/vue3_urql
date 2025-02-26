@@ -230,7 +230,7 @@ watch(isOutside, (val) => {
   <div class="p-0 bg-slate-2 dark:bg-slate-7">
     <div class="flex flex-col">
       <div
-        class="select-none border-b-1px border-zinc-4/25 bg-white/35 dark:bg-black/35 pt-4.5 flex flex-nowrap overflow-auto overflow-y-hidden snap-proximity snap-x w-auto items-center pb-3.5 text-3.2 text-center font-600"
+        class="select-none border-b-1px border-zinc-4/25 bg-white/35 dark:bg-black/35 flex flex-nowrap overflow-auto overflow-y-hidden snap-proximity snap-x w-auto items-center py-3 text-3.2 text-center font-600"
       >
         <span
           v-for="year in years" :key="year"
@@ -244,7 +244,7 @@ watch(isOutside, (val) => {
         </span>
       </div>
       <div
-        class="select-none border-b-1px border-zinc-4/15 bg-white/15 dark:bg-black/15 grid grid-cols-12 flex flex-nowrap w-full justify-between py-4 px-2 overflow-auto overflow-y-hidden items-center text-3 text-center font-600"
+        class="select-none border-b-1px border-zinc-4/15 bg-white/15 dark:bg-black/15 grid grid-cols-12 flex flex-nowrap w-full justify-between py-3 px-2 overflow-auto overflow-y-hidden items-center text-3 text-center font-600"
       >
         <a
           v-for="(month, index) in months" :key="month" href="javascript;"

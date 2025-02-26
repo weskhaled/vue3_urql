@@ -9,7 +9,7 @@ import '@arco-design/web-vue/es/image/style/css'
 
 const API_URL = import.meta.env.VITE_API_URL
 
-const { files, open, reset, onChange } = useFileDialog({ accept: '.png, .jpg, .jpeg, .gif, .bmp, .tiff, .tif', multiple: false })
+const { files, open, reset } = useFileDialog({ accept: '.png, .jpg, .jpeg, .gif, .bmp, .tiff, .tif', multiple: false })
 const { message } = useMessage()
 const { init: initRecognition, result, status } = useTesseract()
 const windowContentRef = ref<HTMLElement>()
@@ -319,7 +319,7 @@ function onSubmitToAI() {
   <div class="w-full rounded-sm overflow-hidden ring-1 ring-[var(--color-neutral-3)] flex box-border min-h-xl">
     <div class="rounded-t-sm flex flex-col h-auto w-full overflow-hidden">
       <div
-        class="py-2 items-center px-4 gap-8 flex justify-between w-full bg-light-1/90 dark:bg-dark-9/90 backdrop-blur"
+        class="py-1 items-center px-2 gap-8 flex justify-between w-full bg-light-1/90 dark:bg-dark-9/90 backdrop-blur"
       >
         <div class="flex items-center">
           <div class="w-2.5 h-2.5 rounded-full bg-[#EC6A5F]" />

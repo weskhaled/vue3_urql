@@ -109,17 +109,17 @@ async function handleSearch(value: string) {
 <template>
   <section class="mt--14.5 h-[calc(100vh-2.55rem)] relative overflow-hidden">
     <!-- <div class="absolute top-0 w-full h-full z-2 pointer-events-none shadow-zinc-6/40 dark:shadow-zinc-1/40 shadow-[inset_0_8px_8px_-8px_var(--un-shadow-color),inset_0_-8px_8px_-8px_var(--un-shadow-color)]" /> -->
-    <div id="maps" ref="mapRef" class="h-full z-1" />
-    <div v-if="valueList" class="absolute w-full h-full backdrop-blur backdrop-filter bg-white/75 dark:bg-black/75 z-2 top-0" />
+    <div id="maps" ref="mapRef" class="h-full z-1 bg-gray-2" />
+    <!-- <div v-if="valueList" class="absolute w-full h-full backdrop-blur backdrop-filter bg-white/75 dark:bg-black/75 z-2 top-0" /> -->
     <div class="flex flex-row-reverse absolute w-full h-full top-0">
       <div
         class="flex flex-col h-full pt-16 top-0 z-3 p-2 transition-all w-full"
         :class="[valueList ? 'md:w-2/2' : 'md:w-1/2']"
       >
         <div
-          class="bg-white/95 flex-1 h-full dark:bg-dark-8/95 w-full rounded-1 overflow-hidden shadow-sm shadow-black/10 border-1px border-gray/25 relative"
+          class="bg-white/95 flex-1 h-full dark:bg-dark-9/95 w-full rounded-0 overflow-hidden shadow-sm shadow-black/10 border-1px dark:border-gray-6/25 border-gray-4/25 relative"
         >
-          <div class="header leading-6.5 bg-slate-1 dark:bg-dark-4 p-2 flex flex-none justify-between">
+          <div class="header leading-6.5 bg-slate-1 dark:bg-dark-8 p-2 flex flex-none justify-between">
             <div class="text-3.5">
               {{ filters.filterType === 'rent' ? 'Location' : 'Achat' }} à&nbsp;
               <a-space v-if="optionsPlaceValue.length">
@@ -144,7 +144,7 @@ async function handleSearch(value: string) {
               </a-button>
             </div>
           </div>
-          <div class="content w-full h-[calc(100%-2.65rem)] flex flex-col flex-1 overflow-auto">
+          <div class="content w-full h-[calc(100%-2.5rem)] flex flex-col flex-1 overflow-auto">
             <div class="p-2 pb-0 flex-none">
               <div class="flex space-x-1">
                 <a-select v-model="filters.filterType" class="w-2/6" placeholder="Votre projet" allow-clear :bordered="true">
@@ -263,7 +263,7 @@ async function handleSearch(value: string) {
                   </div>
                 </div>
               </div>
-              <div class="p-2 pb-0 h-[calc(100%-6.3rem)] relative">
+              <div class="p-2 pb-0 h-[calc(100%-3rem)] relative">
                 <div v-if="data && !error && !isFetching" class="h-full">
                   <div class="grid grid-cols-1 gap-2" :class="[valueList ? 'md:grid-cols-4' : 'md:grid-cols-2']">
                     <div v-for="item in data.realEstateAds" :key="item.id">
@@ -343,7 +343,7 @@ async function handleSearch(value: string) {
                   </span>
                 </div>
                 <div class="sticky bottom-0 border-t-1px border-dark/10 dark:border-gray-4/20 z-2 m--2 mt-0 flex justify-end items-center px-3 leading-14 bg-white dark:bg-dark-9">
-                  <a-pagination v-model:current="filters.page" v-model:page-size="filters.size" class="flex items-center" :default-current="1" :total="data?.total || 0" size="small" :page-size-options="[24, 52, 100, 200]" :default-page-size="24" show-total show-page-size :disabled="isFetching" @page-size-change="() => { filters.page = 1 }" />
+                  <a-pagination v-model:current="filters.page" v-model:page-size="filters.size" class="flex items-center" :default-current="1" :total="data?.total || 0" size="small" :page-size-options="[24, 52, 100, 200]" :default-page-size="2" show-total show-page-size :disabled="isFetching" @page-size-change="() => { filters.page = 1 }" />
                 </div>
               </div>
             </div>
