@@ -22,7 +22,7 @@
 const sliders: Ref<any[]> = ref([
   {
     title: '1/2',
-    content: h('div', { class: 'text-left max-w-3xl pt-14.5 mt-6' }, [h('p', { class: 'text-4 ![--animate-delay:0.15s] animate__delay-1s animate__animated animate__fadeInUp' }, 'This is just a cover'), h('h1', { class: 'mb-2 font-bold text-lg md:text-2xl leading-tight ![--animate-delay:0.1s] animate__delay-2s animate__animated animate__slideInUp' }, 'Welcome to Page Test')]),
+    content: h('div', { class: 'text-left max-w-3xl py-2 mt-14 md:py-4 md:mt-14' }, [h('p', { class: 'text-4 ![--animate-delay:0.15s] animate__delay-1s animate__animated animate__fadeInUp' }, 'This is just a cover'), h('h1', { class: 'mb-2 font-bold text-lg md:text-2xl leading-tight ![--animate-delay:0.1s] animate__delay-2s animate__animated animate__slideInUp' }, 'Welcome to Page Test')]),
     image: {
       screen: 'https://images.unsplash.com/photo-1645747103867-0669a7eff310?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80',
       screenDark: 'https://images.unsplash.com/photo-1649778457108-4e9a88b5d726?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80',
@@ -34,7 +34,7 @@ const sliders: Ref<any[]> = ref([
 
 <template>
   <div mt--14.5>
-    <HeroSlider :grab-cursor="true" :options="{ modules: [], autoplay: false, containerClass: ['mt-auto !px-5'] }" class="h-auto" :sliders="sliders" />
+    <HeroSlider :options="{ modules: [], autoplay: false, grabCursor: false, containerClass: ['mt-auto !px-5'] }" class="h-auto" :sliders="sliders" />
   </div>
   <div container mx-auto>
     <main class="py-5 px-5">

@@ -316,8 +316,8 @@ function onSubmitToAI() {
 </script>
 
 <template>
-  <div class="w-full rounded-sm overflow-hidden ring-1 ring-[var(--color-neutral-3)] flex box-border min-h-xl">
-    <div class="rounded-t-sm flex flex-col h-auto w-full overflow-hidden">
+  <div class="w-full rounded-0 overflow-hidden ring-1 ring-[var(--color-neutral-3)] flex box-border min-h-xl">
+    <div class="rounded-0 flex flex-col h-auto w-full overflow-hidden">
       <div
         class="py-1 items-center px-2 gap-8 flex justify-between w-full bg-light-1/90 dark:bg-dark-9/90 backdrop-blur"
       >

@@ -3,7 +3,7 @@
 
 <template>
   <CommonPageHeader
-    class="mt--14.5 pt-14.5"
+    class="mt--6.5 pt-14.5 py-6"
     bg-img="https://images.unsplash.com/photo-1645747103867-0669a7eff310?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80"
     bg-img-dark="https://images.unsplash.com/photo-1617397578305-53a7feadd726?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2942&q=80"
     :content-parallax="true"

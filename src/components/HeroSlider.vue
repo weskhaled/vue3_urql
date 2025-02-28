@@ -12,7 +12,7 @@ export interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   sliders: () => [],
-  options: () => ({ modules: ['pagination'], autoplay: { delay: 350, waitForTransition: true }, containerClass: [] }),
+  options: () => ({ modules: ['pagination'], autoplay: { delay: 350, waitForTransition: true }, grabCursor: true, containerClass: [] }),
 })
 
 const breakpoints = useBreakpoints(breakpointsTailwind)
@@ -67,6 +67,7 @@ watchThrottled(counter, (val) => {
   const percent = (val / props.options.autoplay.delay) * 100
   progressWidth.value = +((percent / 100)).toFixed(2)
 }, { throttle: 10 })
+
 const pagination = {
   clickable: true,
   renderBullet(index, className) {
@@ -82,13 +83,11 @@ function onSlideChange() {
   activeSlideIndex.value = activeIndex
 }
 watch(windowScrollY, (val) => {
-  if (mdAndLarger.value) {
-    if (sliderContainerIsVisible.value) {
-      const percentInView = sliderHeight.value + val + sliderTop.value - (val + sliderHeight.value)
-      sliderStyles.container.top = `${1 - percentInView * 0.25}px`
-      sliderStyles.container.opacity = `${((percentInView * 0.1) + 100)}%`
-      sliderStyles.hederImage.backgroundPosition = `50% ${percentInView / 25}%`
-    }
+  if (sliderContainerIsVisible.value) {
+    const percentInView = sliderHeight.value + val + sliderTop.value - (val + sliderHeight.value)
+    sliderStyles.container.top = `${1 - percentInView * 0.25}px`
+    sliderStyles.container.opacity = `${((percentInView * 0.1) + 100)}%`
+    sliderStyles.hederImage.backgroundPosition = `50% ${percentInView / 25}%`
   }
 })
 </script>
@@ -98,8 +97,11 @@ watch(windowScrollY, (val) => {
     ref="sliderWrapperRef" :autoplay="options?.autoplay || false" :allow-touch-move="mdAndLarger" :loop="false"
     :navigation="sliders.length > 1 && options?.modules?.includes('navigation')"
     :pagination="sliders.length > 1 && options?.modules?.includes('pagination') ? pagination : false" :modules="modules"
-    class="hero-slider bg-white dark:bg-black" :slides-per-view="1" :space-between="0"
+    class="hero-slider bg-white dark:bg-black"
+    :class="[options.grabCursor && '!cursor-grab active:!cursor-grabbing']"
+    :slides-per-view="1" :space-between="0"
     :auto-height="false"
+    :grab-cursor="true"
     :mousewheel="false"
     @swiper="onSwiper"
     @active-index-change="onSlideChange"
@@ -182,7 +184,7 @@ watch(windowScrollY, (val) => {
   @apply bg-black;
 
   >.swiper-wrapper {
-    @apply !cursor-grab active:!cursor-grabbing;
+    // @apply !cursor-grab active:!cursor-grabbing;
     &>.swiper-slide>img {
       @apply w-full h-full object-cover;
     }
